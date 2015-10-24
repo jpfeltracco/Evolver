@@ -28,6 +28,7 @@ public class EvolutionAlgorithm implements Runnable {
 	private GaussianRandomizer r;
 	private Element[] elements;
 	private final int numThreads;
+	private Controller[] controllers;
 
 	public EvolutionAlgorithm(Type t, int numPerGen, float mutationAmt, Class<Simulation> sim, Class<Controller> controller)
 			throws InstantiationException, IllegalAccessException {
@@ -49,6 +50,31 @@ public class EvolutionAlgorithm implements Runnable {
 		numThreads = availableControllers / controlPerSim; 
 		numPerGen = 10 * (numThreads * controlPerSim);
 		
+		
+		controllers = new Controller[availableControllers];
+		controllers[0] = null;
+		for(int i = 0; i < availableControllers; i++){
+			Constructor<Controller> con = null;
+			try {
+				con = controller.getConstructor(int.class, int.class);
+			} catch (NoSuchMethodException e2) {
+				e2.printStackTrace();
+			} catch (SecurityException e2) {
+				e2.printStackTrace();
+			}
+			try {
+				controllers[i] = con.newInstance(controlInputs, controlOutputs);
+			} catch (InstantiationException e1) {
+				e1.printStackTrace();
+			} catch (IllegalAccessException e1) {
+				e1.printStackTrace();
+			} catch (IllegalArgumentException e1) {
+				e1.printStackTrace();
+			} catch (InvocationTargetException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 	}
 
 	private Simulation makeNewSim() throws InstantiationException, IllegalAccessException {
@@ -64,29 +90,6 @@ public class EvolutionAlgorithm implements Runnable {
 				e.config = new double[configSize];
 				for (int i = 0; i < configSize; i++)
 					e.config[i] = r.getRandomGenerator().nextDouble();
-			}
-			
-			Controller[] controllers = new Controller[availableControllers];
-			for(int i = 0; i < availableControllers; i++){
-				Constructor<Controller> con = null;
-				try {
-					con = controller.getConstructor(int.class, int.class);
-				} catch (NoSuchMethodException e2) {
-					e2.printStackTrace();
-				} catch (SecurityException e2) {
-					e2.printStackTrace();
-				}
-				try {
-					controllers[i] = con.newInstance(controlInputs, controlOutputs);
-				} catch (InstantiationException e1) {
-					e1.printStackTrace();
-				} catch (IllegalAccessException e1) {
-					e1.printStackTrace();
-				} catch (IllegalArgumentException e1) {
-					e1.printStackTrace();
-				} catch (InvocationTargetException e1) {
-					e1.printStackTrace();
-				}
 			}
 			
 			
