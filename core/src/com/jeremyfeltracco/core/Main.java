@@ -23,6 +23,8 @@ public class Main extends ApplicationAdapter {
 	Skin skin;
 	Stage stage;
 	SpriteBatch batch;
+	
+	public static boolean runThreads = true;
 
 	@Override
 	public void create () {

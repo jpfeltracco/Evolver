@@ -6,6 +6,7 @@ import com.jeremyfeltracco.core.evolver.Element;
 public abstract class Simulation implements Runnable {
 	protected Controller[] controllers;
 	protected Element[] elements;
+	public static int simsRunning = 0;
 	
 	public abstract void run();
 	
@@ -25,7 +26,9 @@ public abstract class Simulation implements Runnable {
 		this.elements = elements;
 	}
 	
-	protected void cleanUp() {
+	protected synchronized void cleanUp() {
 		// Notify EvolutionAlgorithm that we have fitness ready
+		Simulation.simsRunning--;
+		notifyAll();
 	}
 }

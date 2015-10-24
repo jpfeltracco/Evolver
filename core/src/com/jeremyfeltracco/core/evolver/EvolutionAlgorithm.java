@@ -1,7 +1,11 @@
 package com.jeremyfeltracco.core.evolver;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import org.neuroph.util.random.GaussianRandomizer;
 
+import com.jeremyfeltracco.core.Main;
 import com.jeremyfeltracco.core.controllers.Controller;
 import com.jeremyfeltracco.core.simulations.Simulation;
 
@@ -23,6 +27,7 @@ public class EvolutionAlgorithm implements Runnable {
 	private int availableControllers;
 	private GaussianRandomizer r;
 	private Element[] elements;
+	private final int numThreads;
 
 	public EvolutionAlgorithm(Type t, int numPerGen, float mutationAmt, Class<Simulation> sim, Class<Controller> controller)
 			throws InstantiationException, IllegalAccessException {
@@ -41,6 +46,9 @@ public class EvolutionAlgorithm implements Runnable {
 		r = new GaussianRandomizer(0, 1); // Normal curve with mean 0 and std dev of 1
 		elements = new Element[numPerGen];
 		
+		numThreads = availableControllers / controlPerSim; 
+		numPerGen = 10 * (numThreads * controlPerSim);
+		
 	}
 
 	private Simulation makeNewSim() throws InstantiationException, IllegalAccessException {
@@ -49,7 +57,7 @@ public class EvolutionAlgorithm implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (Main.runThreads) {
 			// Setup simulations
 			for (Element e : elements) {
 				e = new Element();
@@ -58,9 +66,78 @@ public class EvolutionAlgorithm implements Runnable {
 					e.config[i] = r.getRandomGenerator().nextDouble();
 			}
 			
-			// Run simulations
-			// Interpret output
+			Controller[] controllers = new Controller[availableControllers];
+			for(int i = 0; i < availableControllers; i++){
+				Constructor<Controller> con = null;
+				try {
+					con = controller.getConstructor(int.class, int.class);
+				} catch (NoSuchMethodException e2) {
+					e2.printStackTrace();
+				} catch (SecurityException e2) {
+					e2.printStackTrace();
+				}
+				try {
+					controllers[i] = con.newInstance(controlInputs, controlOutputs);
+				} catch (InstantiationException e1) {
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					e1.printStackTrace();
+				} catch (IllegalArgumentException e1) {
+					e1.printStackTrace();
+				} catch (InvocationTargetException e1) {
+					e1.printStackTrace();
+				}
+			}
+			
+			
+			
+			
+			Simulation[] sims = new Simulation[numThreads];
+			for(int i = 0; i < numThreads; i++){
+				try {
+					sims[i] = sim.newInstance();
+				} catch (InstantiationException e1) {
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					e1.printStackTrace();
+				}
+				Controller[] appliedControllers = new Controller[controlPerSim];
+				for(int j = 0; j < controlPerSim; j++){
+					appliedControllers[j] = controllers[i*controlPerSim + j];
+				}
+				sims[i].setControllers(appliedControllers);
+				
+				Element[] appliedElements = generateElements(numPerGen);
+				sims[i].setElements(appliedElements);
+				
+				
+				Simulation.simsRunning ++;
+			}
+			
+			//ACTIVATE THREAD (finish this portion
+				//For Loop to do so (IE. run thread.start()
+			for(Simulation s : sims){
+				new Thread(s).start();
+			}
+			waitForThreads();
+			// Interpret output from elements
 			// Setup next generation
+		}
+	}
+	
+	
+	
+	private Element[] generateElements(int num) {
+		return null;
+	}
+
+	private synchronized void waitForThreads(){
+		while(Simulation.simsRunning != 0){
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
