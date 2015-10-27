@@ -98,7 +98,7 @@ public class EvolutionAlgorithm implements Runnable {
 			Simulation[] sims = new Simulation[numThreads];
 			for(int i = 0; i < numThreads; i++){
 				try {
-					sims[i] = sim.newInstance();
+					sims[i] = makeNewSim();
 				} catch (InstantiationException e1) {
 					e1.printStackTrace();
 				} catch (IllegalAccessException e1) {
@@ -114,7 +114,7 @@ public class EvolutionAlgorithm implements Runnable {
 				sims[i].setElements(appliedElements);
 				
 				
-				Simulation.simsRunning ++;
+				Simulation.simsRunning++;
 			}
 			
 			//ACTIVATE THREAD (finish this portion
