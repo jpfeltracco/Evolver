@@ -23,4 +23,5 @@ public abstract class Controller {
 	
 	public abstract Element generateRandomConfig();
 	
+	public abstract void mutateElement(Element e, int mutateAmt);
 }

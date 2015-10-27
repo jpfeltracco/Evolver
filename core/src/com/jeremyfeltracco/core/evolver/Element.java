@@ -4,7 +4,7 @@ public class Element implements Comparable<Element> {
 	public double config[];
 	private double fitness = 0;
 	private int gamesPlayed = 0;
-	private static int numElements = 0; 
+	public static int numElements = 0; 
 	public int id;
 	
 	public Element(){

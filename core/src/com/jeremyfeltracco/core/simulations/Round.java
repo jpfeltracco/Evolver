@@ -13,6 +13,7 @@ public class Round extends Simulation {
 				
 				float rand = MathUtils.random();
 				double out = controllers[0].calculate(rand)[0];
+				System.out.println(out);
 				double error = 0;
 				if (rand >= 0.5)
 					error = 1 - out;
