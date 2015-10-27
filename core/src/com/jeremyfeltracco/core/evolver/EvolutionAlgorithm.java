@@ -85,11 +85,11 @@ public class EvolutionAlgorithm implements Runnable {
 	public void run() {
 		while (Main.runThreads) {
 			// Setup simulations
-			for (Element e : elements) {
-				e = new Element();
-				e.config = new double[configSize];
-				for (int i = 0; i < configSize; i++)
-					e.config[i] = r.getRandomGenerator().nextDouble();
+			for (int i = 0; i < elements.length; i++) {
+				elements[i] = new Element();
+				elements[i].config = new double[configSize];
+				for (int j = 0; j < configSize; j++)
+					elements[i].config[i] = r.getRandomGenerator().nextDouble();
 			}
 			
 			
