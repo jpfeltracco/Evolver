@@ -3,6 +3,13 @@ package com.jeremyfeltracco.core.evolver;
 public class Element implements Comparable<Element> {
 	public double config[];
 	private double fitness = 0;
+	private int gamesPlayed = 0;
+	private static int numElements = 0; 
+	public int id;
+	
+	public Element(){
+		id = numElements++;
+	}
 	
 	@Override
 	public int compareTo(Element elem) {
@@ -18,5 +25,13 @@ public class Element implements Comparable<Element> {
 	
 	public double getFitness() {
 		return fitness;
+	}
+	
+	public int getGamesPlayed(){
+		return gamesPlayed;
+	}
+	
+	public int incrementGame(){
+		return gamesPlayed++;
 	}
 }

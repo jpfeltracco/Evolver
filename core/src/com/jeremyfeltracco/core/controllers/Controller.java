@@ -21,4 +21,6 @@ public abstract class Controller {
 	
 	public abstract int getConfigSize();
 	
+	public abstract Element generateRandomConfig();
+	
 }

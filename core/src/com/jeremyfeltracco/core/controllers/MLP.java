@@ -2,12 +2,13 @@ package com.jeremyfeltracco.core.controllers;
 
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.util.TransferFunctionType;
+import org.neuroph.util.random.GaussianRandomizer;
 
 import com.jeremyfeltracco.core.evolver.Element;
 
 public class MLP extends Controller {
 	MultiLayerPerceptron mlpNet;
-	
+	private static GaussianRandomizer r = new GaussianRandomizer(0, 1);
 	public MLP(int numIn, int numOut, TransferFunctionType f, int... netDim) {
 		super(numIn, numOut);
 		int[] dims = new int[netDim.length + 2];
@@ -38,6 +39,15 @@ public class MLP extends Controller {
 	@Override
 	public int getAvailableControllers() {
 		return 255;
+	}
+
+	@Override
+	public Element generateRandomConfig() {
+		Element e = new Element();
+		e.config = new double[getConfigSize()];
+		for (int j = 0; j < getConfigSize(); j++)
+			e.config[j] = r.getRandomGenerator().nextDouble();
+		return e;
 	}
 
 }

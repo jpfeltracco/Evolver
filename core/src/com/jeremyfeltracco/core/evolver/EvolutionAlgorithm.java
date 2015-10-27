@@ -2,9 +2,12 @@ package com.jeremyfeltracco.core.evolver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.neuroph.util.random.GaussianRandomizer;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.Main;
 import com.jeremyfeltracco.core.controllers.Controller;
 import com.jeremyfeltracco.core.simulations.Simulation;
@@ -75,6 +78,9 @@ public class EvolutionAlgorithm implements Runnable {
 			}
 		}
 		
+		for (int i = 0; i < elements.length; i++)
+			elements[i] = c.generateRandomConfig();
+		
 	}
 
 	private Simulation makeNewSim() throws InstantiationException, IllegalAccessException {
@@ -83,17 +89,22 @@ public class EvolutionAlgorithm implements Runnable {
 
 	@Override
 	public void run() {
+		
+		
+		
 		while (Main.runThreads) {
 			// Setup simulations
-			for (int i = 0; i < elements.length; i++) {
-				elements[i] = new Element();
-				elements[i].config = new double[configSize];
-				for (int j = 0; j < configSize; j++)
-					elements[i].config[i] = r.getRandomGenerator().nextDouble();
+			
+			int gamesPerElement = 5;
+			ArrayList<Element> elementHolder = new ArrayList<Element>(Arrays.asList(elements));
+			Element[] appliedElements = new Element[gamesPerElement * elements.length];
+			for(int i = 0; i < appliedElements.length; i++){
+				appliedElements[i] = elementHolder.get((int)(MathUtils.random() * elementHolder.size()));
+				
+				if(appliedElements[i].incrementGame() >= gamesPerElement)
+					elementHolder.remove(appliedElements[i]);
+				
 			}
-			
-			
-			
 			
 			Simulation[] sims = new Simulation[numThreads];
 			for(int i = 0; i < numThreads; i++){
@@ -105,23 +116,28 @@ public class EvolutionAlgorithm implements Runnable {
 					e1.printStackTrace();
 				}
 				Controller[] appliedControllers = new Controller[controlPerSim];
-				for(int j = 0; j < controlPerSim; j++){
+				for(int j = 0; j < controlPerSim; j++)
 					appliedControllers[j] = controllers[i*controlPerSim + j];
-				}
+				
 				sims[i].setControllers(appliedControllers);
 				
-				Element[] appliedElements = generateElements(numPerGen);
-				sims[i].setElements(appliedElements);
 				
+				int val = appliedElements.length / numThreads;
+				Element[] el = Arrays.copyOfRange(appliedElements, i*val, (i+1)*val);
+				for(Element e : el)
+					System.out.print(e.id + " ");
+				
+				System.out.println();
+				sims[i].setElements(el);
 				
 				Simulation.simsRunning++;
 			}
 			
 			//ACTIVATE THREAD (finish this portion
 				//For Loop to do so (IE. run thread.start()
-			for(Simulation s : sims){
+			for(Simulation s : sims)
 				new Thread(s).start();
-			}
+			
 			waitForThreads();
 			// Interpret output from elements
 			// Setup next generation
