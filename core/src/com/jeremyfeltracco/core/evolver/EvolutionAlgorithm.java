@@ -114,7 +114,7 @@ public class EvolutionAlgorithm implements Runnable {
 				sims[i].setElements(appliedElements);
 				
 				
-				Simulation.simsRunning ++;
+				Simulation.simsRunning++;
 			}
 			
 			//ACTIVATE THREAD (finish this portion
