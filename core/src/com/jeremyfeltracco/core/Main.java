@@ -19,9 +19,10 @@ public class Main extends ApplicationAdapter {
 	public void create () {
 		
 		Simulation s = new Round();
-		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.TANH, new int[] {3,3});
+		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.TANH, 3, 3);
 		
 		EvolutionAlgorithm ea = new EvolutionAlgorithm(Type.RANDOM, 10, 5, 0.05f, s, c);
+		s.setEvolutionAlgorithm(ea);
 		new Thread(ea).start();
 		
 		

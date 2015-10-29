@@ -80,6 +80,7 @@ public class EvolutionAlgorithm implements Runnable {
 			Simulation[] sims = new Simulation[numThreads];
 			for(int i = 0; i < numThreads; i++){
 				sims[i] = simType.clone();
+				sims[i].setEvolutionAlgorithm(this);
 				
 				Controller[] appliedControllers = new Controller[controlPerSim];
 				for(int j = 0; j < controlPerSim; j++)
@@ -119,8 +120,8 @@ public class EvolutionAlgorithm implements Runnable {
 			float x;
 			Element[] nextGen = new Element[elements.length];
 			//Elitism
-			nextGen[0] = elements[elements.length];
-			nextGen[1] = elements[elements.length-1];
+			nextGen[0] = elements[elements.length-1];
+			nextGen[1] = elements[elements.length-2];
 			//-------
 			for(int i = 2; i < elements.length; i++){
 				float a = (float)(1 / Math.log(curve + 1) * elements.length);
@@ -161,9 +162,12 @@ public class EvolutionAlgorithm implements Runnable {
 	}
 
 	private synchronized void waitForThreads(){
+		System.out.println(Simulation.simsRunning);
 		while(Simulation.simsRunning != 0){
 			try {
+//				synchronized(this) {
 				wait();
+				System.out.println(Simulation.simsRunning);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

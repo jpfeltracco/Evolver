@@ -2,8 +2,12 @@ package com.jeremyfeltracco.core.simulations;
 
 import com.jeremyfeltracco.core.controllers.Controller;
 import com.jeremyfeltracco.core.evolver.Element;
+import com.jeremyfeltracco.core.evolver.EvolutionAlgorithm;
 
 public abstract class Simulation implements Runnable {
+	
+	
+	protected EvolutionAlgorithm ea;
 	protected Controller[] controllers;
 	protected Element[] elements;
 	public static int simsRunning = 0;
@@ -27,9 +31,17 @@ public abstract class Simulation implements Runnable {
 		this.elements = elements;
 	}
 	
+	public void setEvolutionAlgorithm(EvolutionAlgorithm ea) {
+		this.ea = ea;
+	}
+	
 	protected synchronized void cleanUp() {
 		// Notify EvolutionAlgorithm that we have fitness ready
 		Simulation.simsRunning--;
-		notifyAll();
+		System.out.println("Sims: " + Simulation.simsRunning);
+		
+		synchronized(ea) {
+			ea.notify();
+		}
 	}
 }
