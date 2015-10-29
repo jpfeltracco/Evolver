@@ -38,8 +38,6 @@ public abstract class Simulation implements Runnable {
 	protected synchronized void cleanUp() {
 		// Notify EvolutionAlgorithm that we have fitness ready
 		Simulation.simsRunning--;
-		System.out.println("Sims: " + Simulation.simsRunning);
-		
 		synchronized(ea) {
 			ea.notify();
 		}

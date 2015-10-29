@@ -25,6 +25,8 @@ public class EvolutionAlgorithm implements Runnable {
 	private final int numThreads;
 	private Controller[] controllers;
 	private Controller controllerType;
+	
+	public int genNum = 0;
 
 	public EvolutionAlgorithm(Type t, int mult, int mutationAmt, float mutationRate, Simulation sim, Controller controller){
 		this.reproductionType = t;
@@ -66,6 +68,10 @@ public class EvolutionAlgorithm implements Runnable {
 		while (Main.runThreads) {
 			// Setup simulations
 			
+			for(int i = 0; i < elements.length; i++)
+				System.out.print(elements[i].id + ", ");
+			System.out.println();
+			
 			int gamesPerElement = 5 - 1;
 			ArrayList<Element> elementHolder = new ArrayList<Element>(Arrays.asList(elements));
 			Element[] appliedElements = new Element[gamesPerElement * elements.length];
@@ -90,17 +96,25 @@ public class EvolutionAlgorithm implements Runnable {
 				
 				
 				int val = appliedElements.length / numThreads;
-				Element[] el = Arrays.copyOfRange(appliedElements, i*val, (i+1)*val);
-				System.out.println("-----------------------------------------------");
-				for(Element e : el)
-					System.out.print(e.id + " ");
+				for(int j = 0; j < appliedElements.length; j++)
+					System.out.print(appliedElements[j].id + ", ");
 				System.out.println();
+				
+				Element[] el = Arrays.copyOfRange(appliedElements, i*val, (i+1)*val);
+				
+				for(int j = 0; j < appliedElements.length; j++)
+					System.out.print(appliedElements[j].id + ", ");
+				System.out.println();
+//				System.out.println("-----------------------------------------------");
+//				for(Element e : el)
+//					System.out.print(e.id + " ");
+//				System.out.println();
 				
 				sims[i].setElements(el);
 				
 				Simulation.simsRunning++;
 				try {
-					Thread.sleep(500);
+					Thread.sleep(1000);
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -109,21 +123,37 @@ public class EvolutionAlgorithm implements Runnable {
 			
 			//ACTIVATE THREAD (finish this portion
 				//For Loop to do so (IE. run thread.start()
+			
+			
+			
+//			for(int i = 0; i < elements.length; i++)
+//				if(elements[i].id == 1)
+//					System.out.println("Before: " + elements[i].getFitness());
+			
 			for(Simulation s : sims)
 				new Thread(s).start();
 			
 			waitForThreads();
 			
+			
+			
 			Arrays.sort(elements);
-			Element.numElements = 0;
+			
+			if(elements[elements.length-1].getFitness() > -0.1)
+				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+			
+			if(genNum%500==0)
+				System.out.println("Gen: " + genNum);
+			
 			float curve = 6.0f;
 			float x;
 			Element[] nextGen = new Element[elements.length];
+			Element.numElements = 0;
 			//Elitism
-			nextGen[0] = elements[elements.length-1];
-			nextGen[1] = elements[elements.length-2];
+			//nextGen[0] = elements[elements.length-1];
+			//nextGen[1] = elements[elements.length-2];
 			//-------
-			for(int i = 2; i < elements.length; i++){
+			for(int i = 0; i < elements.length; i++){
 				float a = (float)(1 / Math.log(curve + 1) * elements.length);
 				x = MathUtils.random();
 				Element e1 = elements[(int)(Math.log(curve * x + 1) * a)];
@@ -133,6 +163,7 @@ public class EvolutionAlgorithm implements Runnable {
 				nextGen[i] = reproduce(e1, e2);
 			}
 			
+			genNum++;
 			elements = nextGen;
 		}
 	}
@@ -162,12 +193,9 @@ public class EvolutionAlgorithm implements Runnable {
 	}
 
 	private synchronized void waitForThreads(){
-		System.out.println(Simulation.simsRunning);
 		while(Simulation.simsRunning != 0){
 			try {
-//				synchronized(this) {
 				wait();
-				System.out.println(Simulation.simsRunning);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
