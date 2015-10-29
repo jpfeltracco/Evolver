@@ -13,6 +13,7 @@ public abstract class Simulation implements Runnable {
 	public abstract int getNumInputs();
 	public abstract int getNumOutputs();
 	public abstract int getControlPerSim();
+	public abstract Simulation clone();
 	
 	public Controller[] getControllers() {
 		return controllers;

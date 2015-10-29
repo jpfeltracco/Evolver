@@ -8,11 +8,21 @@ import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.evolver.Element;
 
 public class MLP extends Controller {
+	private static final int MAXCONTROLLERS = 5;
+	
 	MultiLayerPerceptron mlpNet;
 	private static GaussianRandomizer r = new GaussianRandomizer(0, 1);
+	private final int numIn;
+	private final int numOut;
+	private final TransferFunctionType f;
+	private final int[] netDim;
 	
 	public MLP(int numIn, int numOut, TransferFunctionType f, int... netDim) {
 		super(numIn, numOut);
+		this.numIn = numIn;
+		this.numOut = numOut;
+		this.f = f;
+		this.netDim = netDim;
 		int[] dims = new int[netDim.length + 2];
 		dims[0] = numIn;
 		dims[dims.length - 1] = numOut;
@@ -40,7 +50,7 @@ public class MLP extends Controller {
 
 	@Override
 	public int getAvailableControllers() {
-		return 5;
+		return MAXCONTROLLERS;
 	}
 
 	@Override
@@ -57,6 +67,12 @@ public class MLP extends Controller {
 		for(int i = 0; i < mutateAmt; i++){
 			e.config[(int) (MathUtils.random() * e.config.length)] = r.getRandomGenerator().nextDouble();
 		}
+	}
+
+	@Override
+	public Controller clone() {
+		MLP c = new MLP(numIn, numOut, f, netDim);
+		return c;
 	}
 
 }

@@ -1,11 +1,7 @@
 package com.jeremyfeltracco.core.evolver;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.neuroph.util.TransferFunctionType;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.Main;
@@ -18,36 +14,27 @@ public class EvolutionAlgorithm implements Runnable {
 		HALF, RANDOM
 	}
 
-	private final Type t;
+	private final Type reproductionType;
 	private final int numPerGen;
 	private final int mutationAmt;
 	private final float mutationRate;
-	private final Class sim;
-	private final int controlInputs;
-	private final int controlOutputs;
+	private final Simulation simType;
 	private final int controlPerSim;
 	private int availableControllers;
 	private Element[] elements;
 	private final int numThreads;
 	private Controller[] controllers;
-	private Controller c;
+	private Controller controllerType;
 
-	@SuppressWarnings("unchecked")
-	public EvolutionAlgorithm(Type t, int mult, int mutationAmt, float mutationRate, Class sim, Class controller)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		this.t = t;
+	public EvolutionAlgorithm(Type t, int mult, int mutationAmt, float mutationRate, Simulation sim, Controller controller){
+		this.reproductionType = t;
 		this.mutationAmt = mutationAmt;
 		this.mutationRate = mutationRate;
-		this.sim = sim;
-		Simulation s = (Simulation)sim.newInstance();
+		this.simType = sim;
+		this.controllerType = controller;
 		
-		controlInputs = s.getNumInputs();
-		controlOutputs = s.getNumOutputs();
-		controlPerSim = s.getControlPerSim();
-		
-		Constructor<Controller> con = controller.getConstructor(int.class, int.class, TransferFunctionType.class, int[].class);
-		c = con.newInstance(controlInputs, controlOutputs, TransferFunctionType.TANH, new int[] {3,3});
-		availableControllers = c.getAvailableControllers();
+		controlPerSim = simType.getControlPerSim();
+		availableControllers = controllerType.getAvailableControllers();
 		
 		
 		numThreads = availableControllers / controlPerSim; 
@@ -59,22 +46,16 @@ public class EvolutionAlgorithm implements Runnable {
 		
 		elements = new Element[numPerGen];
 		
-		//public MLP(int numIn, int numOut, TransferFunctionType f, int... netDim) {
 		controllers = new Controller[availableControllers];
 		controllers[0] = null;
 		for(int i = 0; i < availableControllers; i++){
-			con = null;
-			try {
-				con = controller.getConstructor(int.class, int.class, TransferFunctionType.class, int[].class);
-				controllers[i] = con.newInstance(controlInputs, controlOutputs, TransferFunctionType.TANH, new int[] {3,3});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			controllers[i] = controllerType.clone();
+
 		}
 		
 		Element.numElements = 0;
 		for (int i = 0; i < elements.length; i++)
-			elements[i] = c.generateRandomConfig();
+			elements[i] = controllerType.generateRandomConfig();
 		
 	}
 
@@ -98,11 +79,8 @@ public class EvolutionAlgorithm implements Runnable {
 			
 			Simulation[] sims = new Simulation[numThreads];
 			for(int i = 0; i < numThreads; i++){
-				try {
-					sims[i] = (Simulation)sim.newInstance();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				sims[i] = simType.clone();
+				
 				Controller[] appliedControllers = new Controller[controlPerSim];
 				for(int j = 0; j < controlPerSim; j++)
 					appliedControllers[j] = controllers[i*controlPerSim + j];
@@ -140,7 +118,11 @@ public class EvolutionAlgorithm implements Runnable {
 			float curve = 6.0f;
 			float x;
 			Element[] nextGen = new Element[elements.length];
-			for(int i = 0; i < elements.length; i++){
+			//Elitism
+			nextGen[0] = elements[elements.length];
+			nextGen[1] = elements[elements.length-1];
+			//-------
+			for(int i = 2; i < elements.length; i++){
 				float a = (float)(1 / Math.log(curve + 1) * elements.length);
 				x = MathUtils.random();
 				Element e1 = elements[(int)(Math.log(curve * x + 1) * a)];
@@ -160,7 +142,7 @@ public class EvolutionAlgorithm implements Runnable {
 		double[] weights = new double[e1.config.length];
 		
 		int cut = e1.config.length/2;
-		switch(t){
+		switch(reproductionType){
 		case RANDOM:
 			cut = (int)(MathUtils.random() * e1.config.length);
 		case HALF:
@@ -173,7 +155,7 @@ public class EvolutionAlgorithm implements Runnable {
 		tmp.config = weights;
 		
 		if (MathUtils.random() < mutationRate)
-			c.mutateElement(tmp, mutationAmt);
+			controllerType.mutateElement(tmp, mutationAmt);
 		
 		return tmp;
 	}

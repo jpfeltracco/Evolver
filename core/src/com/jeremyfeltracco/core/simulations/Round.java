@@ -41,4 +41,9 @@ public class Round extends Simulation {
 		return 1;
 	}
 
+	@Override
+	public Simulation clone() {
+		return new Round();
+	}
+
 }

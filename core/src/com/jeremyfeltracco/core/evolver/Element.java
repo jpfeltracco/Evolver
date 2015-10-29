@@ -27,11 +27,22 @@ public class Element implements Comparable<Element> {
 		return fitness;
 	}
 	
+	public void setFitness(double val){
+		fitness = val;
+	}
+	
 	public int getGamesPlayed(){
 		return gamesPlayed;
 	}
 	
 	public int incrementGame(){
 		return gamesPlayed++;
+	}
+	
+	public Element clone(){
+		Element e = new Element();
+		e.setFitness(fitness);
+		e.config = this.config.clone();
+		return e;
 	}
 }
