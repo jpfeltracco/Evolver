@@ -37,7 +37,8 @@ public class Element implements Comparable<Element> {
 	}
 	
 	public int incrementGame(){
-		return gamesPlayed++;
+		gamesPlayed++;
+		return gamesPlayed;
 	}
 	
 	public Element clone(){

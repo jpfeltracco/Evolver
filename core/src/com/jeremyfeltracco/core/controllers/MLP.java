@@ -8,10 +8,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.evolver.Element;
 
 public class MLP extends Controller {
-	private static final int MAXCONTROLLERS = 1;
+	private static final int MAXCONTROLLERS = 9;
 	
 	MultiLayerPerceptron mlpNet;
-	private static GaussianRandomizer r = new GaussianRandomizer(0, 1);
+	private static GaussianRandomizer r = new GaussianRandomizer(0, 2);
 	private final int numIn;
 	private final int numOut;
 	private final TransferFunctionType f;
@@ -63,8 +63,8 @@ public class MLP extends Controller {
 	}
 
 	@Override
-	public void mutateElement(Element e, int mutateAmt) {
-		for(int i = 0; i < mutateAmt; i++){
+	public void mutateElement(Element e, float mutateAmt) {
+		for(int i = 0; i < mutateAmt * e.config.length; i++){
 			e.config[(int) (MathUtils.random() * e.config.length)] = r.getRandomGenerator().nextDouble();
 		}
 	}

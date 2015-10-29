@@ -1,0 +1,59 @@
+package com.jeremyfeltracco.core.simulations;
+
+import com.badlogic.gdx.math.MathUtils;
+import com.jeremyfeltracco.core.evolver.Element;
+
+public class XOR extends Simulation {
+	@Override
+	public void run() {
+		
+		int[] vals = {0, 1};
+		
+		for (Element e : elements){
+			controllers[0].setConfig(e);
+
+//			int rand1 = (int) (2 * MathUtils.random());
+//			int rand2 = (int) (2 * MathUtils.random());
+			
+			for (int i = 0; i < vals.length; i++) {
+				for (int j = 0; j < vals.length; j++) {
+					double out = controllers[0].calculate(vals[i], vals[j])[0];
+					if (vals[i] == 0 && vals[j] == 0) {
+						//System.out.println(out);
+					}
+					double error;
+					if ((vals[i] == 1 && vals[j] == 1) || (vals[i] == 0 && vals[j] == 0)) {
+						error = out;
+					} else {
+						error = 1 - out;
+					}
+					
+					e.addFitness(-error);
+				}
+			}
+			
+		}
+	}
+	
+	@Override
+	public int getNumInputs() {
+		return 2;
+	}
+
+	@Override
+	public int getNumOutputs() {
+		return 1;
+	}
+
+	@Override
+	public int getControlPerSim() {
+		return 1;
+	}
+
+	@Override
+	public Simulation clone() {
+		XOR r = new XOR();
+		return r;
+	}
+
+}

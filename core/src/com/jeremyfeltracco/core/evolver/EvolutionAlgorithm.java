@@ -2,6 +2,7 @@ package com.jeremyfeltracco.core.evolver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.Main;
@@ -16,7 +17,7 @@ public class EvolutionAlgorithm implements Runnable {
 
 	private final Type reproductionType;
 	private final int numPerGen;
-	private final int mutationAmt;
+	private final float mutationAmt;
 	private final float mutationRate;
 	private final Simulation simType;
 	private final int controlPerSim;
@@ -28,7 +29,7 @@ public class EvolutionAlgorithm implements Runnable {
 	
 	public int genNum = 0;
 
-	public EvolutionAlgorithm(Type t, int mult, int mutationAmt, float mutationRate, Simulation sim, Controller controller){
+	public EvolutionAlgorithm(Type t, int mult, float mutationAmt, float mutationRate, Simulation sim, Controller controller){
 		this.reproductionType = t;
 		this.mutationAmt = mutationAmt;
 		this.mutationRate = mutationRate;
@@ -68,20 +69,24 @@ public class EvolutionAlgorithm implements Runnable {
 		while (Main.runThreads) {
 			// Setup simulations
 			
-			for(int i = 0; i < elements.length; i++)
+			/*for(int i = 0; i < elements.length; i++)
 				System.out.print(elements[i].id + ", ");
-			System.out.println();
+			System.out.println();*/
 			
-			int gamesPerElement = 5 - 1;
-			ArrayList<Element> elementHolder = new ArrayList<Element>(Arrays.asList(elements));
+			int gamesPerElement = 1;
+			ArrayList<Element> elementHolder = new ArrayList<Element>();
+			for(int i = 0; i < elements.length; i++)
+				for(int j = 0; j < gamesPerElement; j++)
+					elementHolder.add(elements[i]);
+			
+			Collections.shuffle(elementHolder);
+			
 			Element[] appliedElements = new Element[gamesPerElement * elements.length];
-			for(int i = 0; i < appliedElements.length; i++){
-				appliedElements[i] = elementHolder.get((int)(MathUtils.random() * elementHolder.size()));
-				
-				if(appliedElements[i].incrementGame() >= gamesPerElement)
-					elementHolder.remove(appliedElements[i]);
-				
-			}
+			elementHolder.toArray(appliedElements);
+			
+			/*for(int i = 0; i < appliedElements.length; i++)
+				System.out.print(appliedElements[i].id + ", ");
+			System.out.println("\nLEN: " + appliedElements.length);*/
 			
 			Simulation[] sims = new Simulation[numThreads];
 			for(int i = 0; i < numThreads; i++){
@@ -96,62 +101,46 @@ public class EvolutionAlgorithm implements Runnable {
 				
 				
 				int val = appliedElements.length / numThreads;
-				for(int j = 0; j < appliedElements.length; j++)
-					System.out.print(appliedElements[j].id + ", ");
-				System.out.println();
 				
 				Element[] el = Arrays.copyOfRange(appliedElements, i*val, (i+1)*val);
 				
-				for(int j = 0; j < appliedElements.length; j++)
-					System.out.print(appliedElements[j].id + ", ");
-				System.out.println();
-//				System.out.println("-----------------------------------------------");
-//				for(Element e : el)
-//					System.out.print(e.id + " ");
-//				System.out.println();
-				
 				sims[i].setElements(el);
 				
-				Simulation.simsRunning++;
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			}
 			
-			//ACTIVATE THREAD (finish this portion
-				//For Loop to do so (IE. run thread.start()
 			
+			Thread[] threads = new Thread[numThreads];
+			for(int i = 0; i < numThreads; i++){
+				threads[i] = new Thread(sims[i]);
+				threads[i].start();
+			}
 			
+			try{
+				for(Thread t : threads)
+					t.join();
+			}catch(InterruptedException e){}
 			
-//			for(int i = 0; i < elements.length; i++)
-//				if(elements[i].id == 1)
-//					System.out.println("Before: " + elements[i].getFitness());
-			
-			for(Simulation s : sims)
-				new Thread(s).start();
-			
-			waitForThreads();
-			
-			
-			
-			Arrays.sort(elements);
 			
 			if(elements[elements.length-1].getFitness() > -0.1)
 				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
 			
-			if(genNum%500==0)
+			
+			Arrays.sort(elements);
+			
+			
+			if(genNum%500==0){
 				System.out.println("Gen: " + genNum);
+				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+			}
 			
 			float curve = 6.0f;
 			float x;
 			Element[] nextGen = new Element[elements.length];
-			Element.numElements = 0;
+			//Element.numElements = 0;
 			//Elitism
-			//nextGen[0] = elements[elements.length-1];
-			//nextGen[1] = elements[elements.length-2];
+			
+//			nextGen[0] = elements[elements.length-1];
+//			nextGen[1] = elements[elements.length-2];
 			//-------
 			for(int i = 0; i < elements.length; i++){
 				float a = (float)(1 / Math.log(curve + 1) * elements.length);
@@ -192,14 +181,6 @@ public class EvolutionAlgorithm implements Runnable {
 		return tmp;
 	}
 
-	private synchronized void waitForThreads(){
-		while(Simulation.simsRunning != 0){
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+
 
 }

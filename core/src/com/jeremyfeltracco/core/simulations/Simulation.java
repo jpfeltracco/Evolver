@@ -10,7 +10,6 @@ public abstract class Simulation implements Runnable {
 	protected EvolutionAlgorithm ea;
 	protected Controller[] controllers;
 	protected Element[] elements;
-	public static int simsRunning = 0;
 	
 	public abstract void run();
 	
@@ -33,13 +32,5 @@ public abstract class Simulation implements Runnable {
 	
 	public void setEvolutionAlgorithm(EvolutionAlgorithm ea) {
 		this.ea = ea;
-	}
-	
-	protected synchronized void cleanUp() {
-		// Notify EvolutionAlgorithm that we have fitness ready
-		Simulation.simsRunning--;
-		synchronized(ea) {
-			ea.notify();
-		}
 	}
 }
