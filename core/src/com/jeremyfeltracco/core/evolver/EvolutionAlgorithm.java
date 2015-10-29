@@ -50,11 +50,9 @@ public class EvolutionAlgorithm implements Runnable {
 		elements = new Element[numPerGen];
 		
 		controllers = new Controller[availableControllers];
-		controllers[0] = null;
-		for(int i = 0; i < availableControllers; i++){
-			controllers[i] = controllerType.clone();
 
-		}
+		for(int i = 0; i < availableControllers; i++)
+			controllers[i] = controllerType.clone();
 		
 		Element.numElements = 0;
 		for (int i = 0; i < elements.length; i++)
@@ -64,8 +62,6 @@ public class EvolutionAlgorithm implements Runnable {
 
 	@Override
 	public void run() {
-		
-		
 		while (Main.runThreads) {
 			// Setup simulations
 			
@@ -73,16 +69,17 @@ public class EvolutionAlgorithm implements Runnable {
 				System.out.print(elements[i].id + ", ");
 			System.out.println();*/
 			
-			int gamesPerElement = 1;
+			int gamesPerElement = 2;
 			ArrayList<Element> elementHolder = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)
 				for(int j = 0; j < gamesPerElement; j++)
 					elementHolder.add(elements[i]);
 			
 			Collections.shuffle(elementHolder);
+
 			
 			Element[] appliedElements = new Element[gamesPerElement * elements.length];
-			elementHolder.toArray(appliedElements);
+			appliedElements = elementHolder.toArray(appliedElements);
 			
 			/*for(int i = 0; i < appliedElements.length; i++)
 				System.out.print(appliedElements[i].id + ", ");
@@ -119,41 +116,61 @@ public class EvolutionAlgorithm implements Runnable {
 				for(Thread t : threads)
 					t.join();
 			}catch(InterruptedException e){}
-			
-			
-			if(elements[elements.length-1].getFitness() > -0.1)
-				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+				
 			
 			
 			Arrays.sort(elements);
-			
-			
-			if(genNum%500==0){
-				System.out.println("Gen: " + genNum);
+			//for(Element e : elements)
+				//System.out.print(e.id + "\t");
+			//System.out.println();
+
+			if(elements[elements.length-1].getFitness() > -0.1)
 				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
-			}
+			
+//			if(genNum%500==0){
+//				System.out.println("Gen: " + genNum);
+//				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+//			}
 			
 			float curve = 6.0f;
 			float x;
 			Element[] nextGen = new Element[elements.length];
-			//Element.numElements = 0;
+			Element.numElements = 0;
 			//Elitism
 			
-//			nextGen[0] = elements[elements.length-1];
-//			nextGen[1] = elements[elements.length-2];
+			//nextGen[0] = elements[elements.length-1];
+			//nextGen[1] = elements[elements.length-2];
 			//-------
 			for(int i = 0; i < elements.length; i++){
 				float a = (float)(1 / Math.log(curve + 1) * elements.length);
 				x = MathUtils.random();
 				Element e1 = elements[(int)(Math.log(curve * x + 1) * a)];
+				//System.out.print("e1: " + (int)(Math.log(curve * x + 1) * a));
 				x = MathUtils.random();
 				Element e2 = elements[(int)(Math.log(curve * x + 1) * a)];
-				
+				//System.out.println(", e2: " + (int)(Math.log(curve * x + 1) * a));
 				nextGen[i] = reproduce(e1, e2);
 			}
 			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			genNum++;
 			elements = nextGen;
+			ArrayList<Element> elementHolder2 = new ArrayList<Element>();
+			for(int i = 0; i < elements.length; i++)
+				for(int j = 0; j < gamesPerElement; j++)
+					elementHolder2.add(elements[i]);
+			
+			Collections.shuffle(elementHolder2);
+			
+			elements = elementHolder2.toArray(elements);
+			for(Element e : elements)
+				System.out.print(e.id + "\t");
+			System.out.println();
 		}
 	}
 	
