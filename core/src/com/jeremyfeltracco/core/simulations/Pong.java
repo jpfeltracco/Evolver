@@ -47,5 +47,10 @@ public class Pong extends Simulation {
 		}
 		
 	}
+	
+	@Override
+	public String toString() {
+		return "Pong Simulation";
+	}
 
 }

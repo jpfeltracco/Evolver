@@ -59,6 +59,12 @@ public abstract class Simulation implements Runnable {
 	 */
 	public abstract Simulation clone();
 	
+	/**
+	 * Produce a string that tells some general information about this Simulation.
+	 * @return a String about this Simulation
+	 */
+	public abstract String toString();
+	
 	public Controller[] getControllers() {
 		return controllers;
 	}

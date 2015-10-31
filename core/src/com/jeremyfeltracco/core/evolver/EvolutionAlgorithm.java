@@ -125,6 +125,8 @@ public class EvolutionAlgorithm implements Runnable {
 			
 			Arrays.sort(elements);
 			
+			//InsertionSort(elements);
+			
 			int numRepeat = 0;
 			int split = elements.length - 1;
 			while (controllerType.isSame(elements[elements.length - 1], elements[split]) && split >= 1) {
@@ -243,6 +245,26 @@ public class EvolutionAlgorithm implements Runnable {
 			controllerType.mutateElement(tmp, mutationAmt);
 		
 		return tmp;
+	}
+	
+	
+	public static void InsertionSort(Element[] e){
+	     boolean notDone = true;
+	     while(notDone){
+	    	 notDone = false;
+	    	 //for(Element el : e){
+	    		// System.out.print(el.id + ", ");
+	    	 //}
+	    	 //System.out.println();
+		     for(int i = 0; i < e.length-1; i++){
+		    	 if(e[i].getFitness() - 0.01 > e[i+1].getFitness()){
+		    		 notDone = true;
+		    		 Element tmp = e[i+1];
+		    		 e[i+1]=e[i];
+		    		 e[i] = tmp;
+		    	 }
+		     }
+	     }
 	}
 
 

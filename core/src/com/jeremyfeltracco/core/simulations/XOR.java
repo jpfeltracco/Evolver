@@ -9,8 +9,8 @@ public class XOR extends Simulation {
 			//for (int i = 0; i < 10; i++) {
 			//int rand1 = (int) (2 * MathUtils.random());
 			//int rand2 = (int) (2 * MathUtils.random());
-			
-//			System.out.println(rand2);
+			if (x++ > 10000000)
+				System.out.println("-------");
 			
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
@@ -20,11 +20,6 @@ public class XOR extends Simulation {
 					
 					double out = c[0].calculate(rand1, rand2)[0];
 					
-					if (x++ > 10000000) {
-						if (rand1 == 1 && rand2 == 1) {
-							System.out.println(out);
-						}
-					}
 //					if (rand1 == 1 && rand2 == 1) {
 //						System.out.println(out);
 //					}
@@ -37,6 +32,10 @@ public class XOR extends Simulation {
 					}
 					error = Math.abs(expected - out);
 					
+					if (x++ > 10000000) {
+						System.out.println(rand1 + " " + rand2 + "\t" + out);
+					}
+
 					c[0].addFitness(-error);
 				}
 			}
@@ -62,6 +61,11 @@ public class XOR extends Simulation {
 	public Simulation clone() {
 		XOR r = new XOR();
 		return r;
+	}
+	
+	@Override
+	public String toString() {
+		return "XOR Simulation";
 	}
 
 }

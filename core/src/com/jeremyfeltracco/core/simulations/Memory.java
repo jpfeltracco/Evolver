@@ -8,7 +8,7 @@ public class Memory extends Simulation {
 	public void simulate(Controller[] c) {
 //		float[] d = {0.7f,0.1f,0.22f,0.43f,0.4f,0.51f,0.62f,0.99f};
 		float original = MathUtils.random();
-		double out = c[0].calculate(rand)[0];
+		double out = c[0].calculate(original)[0];
 		
 		float rand = MathUtils.random();
 		out = c[0].calculate(rand)[0];
@@ -42,6 +42,12 @@ public class Memory extends Simulation {
 	public Simulation clone() {
 		Memory r = new Memory();
 		return r;
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
