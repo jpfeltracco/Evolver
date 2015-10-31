@@ -7,7 +7,6 @@ public class Through extends Simulation {
 	static int x = 0;
 	@Override
 	public void simulate(Controller[] c) {
-		
 		if (x++ > 50000000)
 			System.out.println("--");
 		
@@ -18,7 +17,6 @@ public class Through extends Simulation {
 			double error = Math.abs(out - in);
 			if (x++ > 50000000)
 				System.out.println(in + "\t" + out);
-						
 			c[0].addFitness(-error);
 		//}
 		//System.out.println();

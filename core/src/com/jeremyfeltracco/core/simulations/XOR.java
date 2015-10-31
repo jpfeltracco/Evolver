@@ -27,7 +27,7 @@ public class XOR extends Simulation {
 					double error;
 					if ((i == 1 && j == 1) || (i == 0 && j == 0)) {
 						expected = 0;
-					} else {
+					} else if ((i == 0 && j == 1) || (i == 1 && j == 0)) {
 						expected = 1;
 					}
 					error = Math.abs(expected - out);
@@ -35,6 +35,7 @@ public class XOR extends Simulation {
 					if (x++ > 10000000) {
 						System.out.println(rand1 + " " + rand2 + "\t" + out);
 					}
+
 					c[0].addFitness(-error);
 				}
 			}
