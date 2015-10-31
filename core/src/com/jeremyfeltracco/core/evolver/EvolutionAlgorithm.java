@@ -202,12 +202,13 @@ public class EvolutionAlgorithm implements Runnable {
 	}
 	
 	private Element reproduceFromArray(Element[] els) {
-		float curve = 5f;
+		float curve = 1f;
 		float x;
 		
 		float a = (float)(1 / Math.log(curve + 1) * elements.length);
 		x = MathUtils.random();
 		int e1Ind = (int)(Math.log(curve * x + 1) * a);
+//		System.out.println(e1Ind);
 		if (e1Ind == elements.length) e1Ind--;
 		Element e1 = elements[e1Ind];
 		int e2Ind;
