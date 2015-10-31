@@ -16,6 +16,7 @@ public class MLP extends Controller {
 	private final int numOut;
 	private final TransferFunctionType f;
 	private final int[] netDim;
+	private Element element;
 	
 	public MLP(int numIn, int numOut, TransferFunctionType f, int... netDim) {
 		super(numIn, numOut);
@@ -45,6 +46,7 @@ public class MLP extends Controller {
 
 	@Override
 	public void setConfig(Element e) {
+		element = e;
 		mlpNet.setWeights(e.config);
 	}
 
@@ -73,6 +75,11 @@ public class MLP extends Controller {
 	public Controller clone() {
 		MLP c = new MLP(numIn, numOut, f, netDim);
 		return c;
+	}
+
+	@Override
+	public void addFitness(double amt) {
+		element.addFitness(amt);
 	}
 
 }

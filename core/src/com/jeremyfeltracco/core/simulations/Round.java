@@ -1,27 +1,25 @@
 package com.jeremyfeltracco.core.simulations;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.jeremyfeltracco.core.evolver.Element;
+import com.jeremyfeltracco.core.controllers.Controller;
 
 public class Round extends Simulation {
 	@Override
-	public void run() {
+	public void simulate(Controller[] c) {
 //		float[] d = {0.7f,0.1f,0.22f,0.43f,0.4f,0.51f,0.62f,0.99f};
-		for (Element e : elements){
-			controllers[0].setConfig(e);
-			for (int i = 0; i < 5; i++) {
-				float rand = MathUtils.random();
-				double out = controllers[0].calculate(rand)[0];
-				//System.out.println(out);
-				double error = 0;
-				if (rand >= 0.5)
-					error = 1 - out;
-				else
-					error = out;
-				
-				e.addFitness(-error*10);
-			}
+		for (int i = 0; i < 5; i++) {
+			float rand = MathUtils.random();
+			double out = c[0].calculate(rand)[0];
+			//System.out.println(out);
+			double error = 0;
+			if (rand >= 0.5)
+				error = 1 - out;
+			else
+				error = out;
+			
+			c[0].addFitness(-error*10);
 		}
+		
 	}
 	
 	@Override

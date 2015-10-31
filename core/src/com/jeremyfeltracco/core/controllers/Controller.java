@@ -17,6 +17,8 @@ public abstract class Controller {
 	
 	public abstract void setConfig(Element e);
 	
+	public abstract void addFitness(double amt);
+	
 	public abstract int getAvailableControllers();
 	
 	public abstract int getConfigSize();
