@@ -15,10 +15,14 @@ public class EvolutionAlgorithm implements Runnable {
 		HALF, RANDOM
 	}
 
-	private final Type reproductionType;
+	private Type reproductionType = Type.HALF;
+	private float mutationAmt = 0.13f;
+	private float mutationRate = 0.15f;
+	private float foundersPercent = 0.5f;
+	private int mult = 10;
+	private int gamesPerElement = 5;
+	
 	private final int numPerGen;
-	private final float mutationAmt;
-	private final float mutationRate;
 	private final Simulation simType;
 	private final int controlPerSim;
 	private int availableControllers;
@@ -26,15 +30,34 @@ public class EvolutionAlgorithm implements Runnable {
 	private final int numThreads;
 	private Controller[] controllers;
 	private Controller controllerType;
-	private final float foundersPercent;
 	
 	public int genNum = 0;
-
-	public EvolutionAlgorithm(Type t, int mult, float mutationAmt, float mutationRate, float foundersPercent, Simulation sim, Controller controller){
+	
+	public void setReproductionType(Type t){
 		this.reproductionType = t;
+	}
+	
+	public void setMutationAmt(float mutationAmt){
 		this.mutationAmt = mutationAmt;
+	}
+	
+	public void setMutationRate(float mutationRate){
 		this.mutationRate = mutationRate;
+	}
+	
+	public void setFoundersPercent(float foundersPercent){
 		this.foundersPercent = foundersPercent;
+	}
+	
+	public void setGenerationMultiplier(int mult){
+		this.mult = mult;
+	}
+	
+	public void setGamesPerElement(int gamesPerElement){
+		this.gamesPerElement = gamesPerElement;
+	}
+
+	public EvolutionAlgorithm(Simulation sim, Controller controller){
 		this.simType = sim;
 		this.controllerType = controller;
 		
@@ -70,7 +93,6 @@ public class EvolutionAlgorithm implements Runnable {
 			/*for(int i = 0; i < elements.length; i++)
 				System.out.print(elements[i].id + ", ");
 			System.out.println();*/
-			int gamesPerElement = 15;
 
 			ArrayList<Element> elementHolder = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)
