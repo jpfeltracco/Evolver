@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.evolver.Element;
 
 public class MLP extends Controller {
-	private static final int MAXCONTROLLERS = 5;
+	private static final int MAXCONTROLLERS = 1;
 	
 	MultiLayerPerceptron mlpNet;
 	private static GaussianRandomizer r = new GaussianRandomizer(0, 1);

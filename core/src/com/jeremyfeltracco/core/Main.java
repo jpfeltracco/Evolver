@@ -22,7 +22,7 @@ public class Main extends ApplicationAdapter {
 		Simulation s = new XOR();
 		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.TANH, 3, 3, 3);
 		
-		EvolutionAlgorithm ea = new EvolutionAlgorithm(Type.RANDOM, 1, .13f, 1f, s, c);
+		EvolutionAlgorithm ea = new EvolutionAlgorithm(Type.RANDOM, 10, .13f, 1f, s, c);
 		s.setEvolutionAlgorithm(ea);
 		new Thread(ea).start();
 		
