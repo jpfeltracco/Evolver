@@ -21,9 +21,16 @@ public class Main extends ApplicationAdapter {
 
 		Simulation s = new XOR();
 		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.SIN, 4, 4);
-		EvolutionAlgorithm ea = new EvolutionAlgorithm(Type.RANDOM, 10, .13f, .15f, 0.5f, s, c);
-
+		EvolutionAlgorithm ea = new EvolutionAlgorithm(s, c);
 		s.setEvolutionAlgorithm(ea);
+		ea.setReproductionType(Type.RANDOM);
+		ea.setGenerationMultiplier(10);
+		ea.setMutationAmt(0.13f);
+		ea.setMutationRate(0.15f);
+		ea.setFoundersPercent(0.5f);
+		ea.setGamesPerElement(5);
+
+		
 		
 		System.out.println("Starting Simulation: " + s);
 		new Thread(ea).start();
