@@ -4,33 +4,35 @@ import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.controllers.Controller;
 
 public class Memory extends Simulation {
+	static int x = 0;
 	@Override
 	public void simulate(Controller[] c) {
-//		float[] d = {0.7f,0.1f,0.22f,0.43f,0.4f,0.51f,0.62f,0.99f};
-		float original = MathUtils.random();
-		double out = c[0].calculate(original)[0];
+		float testerVal = MathUtils.random(); // some new original value
+		float mem = MathUtils.random(); // some random old value
 		
-		float rand = MathUtils.random();
-		out = c[0].calculate(rand)[0];
-		//System.out.println(out);
-		double error = 0;
-		if (rand >= 0.5)
-			error = 1 - out;
-		else
-			error = out;
+		// First input is next val, second is mem val
+		double[] outputs = c[0].calculate(testerVal, mem); // only use this to get a new mem
 		
-		c[0].addFitness(-error*10);
+		float rand = MathUtils.random(); // New val to put in
+		double[] newOutputs = c[0].calculate(rand, outputs[1]); // put in new val and mem from prev
 		
+		double error = Math.abs(testerVal - newOutputs[0]);
+		
+		if (verbose) {
+			System.out.println(testerVal + "\t" + newOutputs[0]);
+		} else {
+			c[0].addFitness(-error);
+		}
 	}
 	
 	@Override
 	public int getNumInputs() {
-		return 1;
+		return 2;
 	}
 
 	@Override
 	public int getNumOutputs() {
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -46,8 +48,7 @@ public class Memory extends Simulation {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Memory thing.";
 	}
 
 }

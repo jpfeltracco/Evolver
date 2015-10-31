@@ -70,7 +70,7 @@ public class EvolutionAlgorithm implements Runnable {
 			/*for(int i = 0; i < elements.length; i++)
 				System.out.print(elements[i].id + ", ");
 			System.out.println();*/
-			int gamesPerElement = 5;
+			int gamesPerElement = 15;
 
 			ArrayList<Element> elementHolder = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)
@@ -124,6 +124,18 @@ public class EvolutionAlgorithm implements Runnable {
 			
 			
 			Arrays.sort(elements);
+			
+			if (elements[elements.length - 1].getFitness() > -1f) {
+				System.out.println("----");
+				for(int i = 0; i < 3; i++){
+					Simulation s = simType.clone();
+					s.setControllers(new Controller[] {controllers[0]});
+					s.setElements(new Element[] {elements[elements.length - 1]});
+					s.verbose = true;
+					new Thread(s).start();
+				}
+			}
+			
 			
 			//InsertionSort(elements);
 			

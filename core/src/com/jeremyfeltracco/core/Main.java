@@ -17,8 +17,8 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		Simulation s = new XOR();
-		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.SIN, 4, 4);
+		Simulation s = new Memory();
+		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.TANH, 6, 6);
 		EvolutionAlgorithm ea = new EvolutionAlgorithm(Type.RANDOM, 10, .13f, .15f, 0.5f, s, c);
 
 		s.setEvolutionAlgorithm(ea);

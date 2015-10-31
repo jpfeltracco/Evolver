@@ -6,7 +6,7 @@ import com.jeremyfeltracco.core.evolver.EvolutionAlgorithm;
 
 public abstract class Simulation implements Runnable {
 	
-	
+	public boolean verbose = false;
 	protected EvolutionAlgorithm ea;
 	protected Controller[] controllers;
 	protected Element[] elements;
