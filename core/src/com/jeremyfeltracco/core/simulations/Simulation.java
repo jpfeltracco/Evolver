@@ -52,7 +52,7 @@ public abstract class Simulation implements Runnable {
 	public abstract int getControlPerSim();
 	
 	/**
-	 * Return a simulation that operates in the exact same manor as this simulation. This is used
+	 * Return a Simulation that operates in the exact same manor as this Simulation. This is used
 	 * to make all of the simulations in this whole program, so ensure that all the proper variables
 	 * are passed. NOTE: No need to pass variables that you didn't add. 
 	 * @return A Simulation of this type that is identical but not the same instance
