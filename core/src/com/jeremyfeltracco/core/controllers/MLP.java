@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.evolver.Element;
 
 public class MLP extends Controller {
-	private static final int MAXCONTROLLERS = 5;
+	private static final int MAXCONTROLLERS = 10;
 	
 	MultiLayerPerceptron mlpNet;
 	private static GaussianRandomizer r = new GaussianRandomizer(0, 1);
@@ -73,6 +73,16 @@ public class MLP extends Controller {
 	public Controller clone() {
 		MLP c = new MLP(numIn, numOut, f, netDim);
 		return c;
+	}
+	
+	@Override
+	public boolean isSame(Element e1, Element e2) {
+		double totalDist = 0;
+		for (int i = 0; i < e1.config.length; i++)
+			totalDist += Math.abs(e1.config[i] - e2.config[i]);
+		totalDist /= e1.config.length;
+//		System.out.println(totalDist);
+		return totalDist < .33f;
 	}
 
 }

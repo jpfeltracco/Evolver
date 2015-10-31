@@ -12,20 +12,22 @@ public class XOR extends Simulation {
 		for (Element e : elements){
 			controllers[0].setConfig(e);
 
-			for (int i = 0; i < 10; i++) {
-			int rand1 = (int) (2 * MathUtils.random());
-			int rand2 = (int) (2 * MathUtils.random());
+//			for (int i = 0; i < 10; i++) {
+//			int rand1 = (int) (2 * MathUtils.random());
+//			int rand2 = (int) (2 * MathUtils.random());
 			
 //			System.out.println(rand2);
 			
-//			for (int i = 0; i < vals.length; i++) {
-//				for (int j = 0; j < vals.length; j++) {
-					double out = controllers[0].calculate(rand1, rand2)[0];
-					if (rand1 == 1 && rand2 == 1) {
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+//					double out = controllers[0].calculate(rand1, rand2)[0];
+					double out = controllers[0].calculate(i, j)[0];
+
+					if (i == 1 && j == 1) {
 //						System.out.println(out);
 					}
 					double error;
-					if ((rand1 == 1 && rand2 == 1) || (rand1 == 0 && rand2 == 0)) {
+					if ((i == 1 && j == 1) || (i == 0 && j == 0)) {
 						error = out;
 					} else {
 						error = 1 - out;
@@ -33,10 +35,12 @@ public class XOR extends Simulation {
 					
 					e.addFitness(-error);
 				}
+			}
+		}
 //			}
 //			}
 			
-		}
+//		}
 	}
 	
 	@Override

@@ -26,4 +26,6 @@ public abstract class Controller {
 	public abstract void mutateElement(Element e, float mutateAmt);
 	
 	public abstract Controller clone();
+	
+	public abstract boolean isSame(Element e1, Element e2);
 }

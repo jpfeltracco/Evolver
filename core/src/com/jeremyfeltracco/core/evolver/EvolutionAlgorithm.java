@@ -26,13 +26,15 @@ public class EvolutionAlgorithm implements Runnable {
 	private final int numThreads;
 	private Controller[] controllers;
 	private Controller controllerType;
+	private final float foundersPercent;
 	
 	public int genNum = 0;
 
-	public EvolutionAlgorithm(Type t, int mult, float mutationAmt, float mutationRate, Simulation sim, Controller controller){
+	public EvolutionAlgorithm(Type t, int mult, float mutationAmt, float mutationRate, float foundersPercent, Simulation sim, Controller controller){
 		this.reproductionType = t;
 		this.mutationAmt = mutationAmt;
 		this.mutationRate = mutationRate;
+		this.foundersPercent = foundersPercent;
 		this.simType = sim;
 		this.controllerType = controller;
 		
@@ -69,7 +71,7 @@ public class EvolutionAlgorithm implements Runnable {
 				System.out.print(elements[i].id + ", ");
 			System.out.println();*/
 			
-			int gamesPerElement = 1;
+			int gamesPerElement = 5;
 			ArrayList<Element> elementHolder = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)
 				for(int j = 0; j < gamesPerElement; j++)
@@ -122,6 +124,25 @@ public class EvolutionAlgorithm implements Runnable {
 			
 			
 			Arrays.sort(elements);
+			
+//			int numRepeat = 0;
+//			int split = elements.length - 1;
+//			while (controllerType.isSame(elements[elements.length - 1], elements[split]) && split >= 1) {
+//				numRepeat++;
+//				split--;
+//			}
+//			
+//			for (int j = split; j < controllers.length - 1; j++) {
+//				if (numRepeat / elements.length > foundersPercent) {
+//					elements[j] = controllerType.generateRandomConfig();
+//					System.out.println("ahhhhhh");
+//				}
+//				else {
+//					elements[j] = reproduceFromArray(Arrays.copyOfRange(elements, 0, split));
+//					System.out.println("reproduce from arr");
+//				}
+//			}
+			
 			/*for(Element e : elements)
 				System.out.print(e.id + "\t");
 			System.out.println();
@@ -143,41 +164,47 @@ public class EvolutionAlgorithm implements Runnable {
 			Element[] nextGen = new Element[elements.length];
 			
 			//Elitism
-			//nextGen[0] = elements[elements.length-1];
+//			nextGen[0] = elements[elements.length-1];
+//			nextGen[0].setFitness(0);
 			//nextGen[1] = elements[elements.length-2];
 			//-------
-			for(int i = 0; i < elements.length; i++){
-				float a = (float)(1 / Math.log(curve + 1) * elements.length);
-				x = MathUtils.random();
-				int e1Ind = (int)(Math.log(curve * x + 1) * a);
-				Element e1 = elements[e1Ind];
-				//System.out.print("e1: " + (int)(Math.log(curve * x + 1) * a));
-				int e2Ind;
-				do{
-					x = MathUtils.random();
-					e2Ind = (int)(Math.log(curve * x + 1) * a);
-				}while(e1Ind == e2Ind);
-				Element e2 = elements[e2Ind];
-				//System.out.println(", e2: " + (int)(Math.log(curve * x + 1) * a));
-				nextGen[i] = reproduce(e1, e2);
-			}
+			for(int i = 0; i < elements.length; i++)
+				nextGen[i] = reproduceFromArray(elements);
 			genNum++;
+			
 			elements = nextGen;
-			ArrayList<Element> elementHolder2 = new ArrayList<Element>();
-			for(int i = 0; i < elements.length; i++)
-				for(int j = 0; j < gamesPerElement; j++)
-					elementHolder2.add(elements[i]);
-			
-			Collections.shuffle(elementHolder2);
-			
-			for(int i = 0; i < elements.length; i++)
-				elements[i] = elementHolder2.get(i);
+//			ArrayList<Element> elementHolder2 = new ArrayList<Element>();
+//			for(int i = 0; i < elements.length; i++)
+//				for(int j = 0; j < gamesPerElement; j++)
+//					elementHolder2.add(elements[i]);
+//			
+//			Collections.shuffle(elementHolder2);
+//			
+//			for(int i = 0; i < elements.length; i++)
+//				elements[i] = elementHolder2.get(i);
 			
 			
 			//for(Element e : elements)
 				//System.out.print(e.id + "\t");
 			//System.out.println();
 		}
+	}
+	
+	private Element reproduceFromArray(Element[] els) {
+		float curve = 2.0f;
+		float x;
+		
+		float a = (float)(1 / Math.log(curve + 1) * elements.length);
+		x = MathUtils.random();
+		int e1Ind = (int)(Math.log(curve * x + 1) * a);
+		Element e1 = elements[e1Ind];
+		int e2Ind;
+		do{
+			x = MathUtils.random();
+			e2Ind = (int)(Math.log(curve * x + 1) * a);
+		}while(e1Ind == e2Ind);
+		Element e2 = elements[e2Ind];
+		return reproduce(e1, e2);
 	}
 	
 	
