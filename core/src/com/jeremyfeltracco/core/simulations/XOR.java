@@ -23,14 +23,15 @@ public class XOR extends Simulation {
 //					if (rand1 == 1 && rand2 == 1) {
 //						System.out.println(out);
 //					}
+					double expected = 0;
 					double error;
 					if ((i == 1 && j == 1) || (i == 0 && j == 0)) {
-						error = out;
+						expected = 0;
 					} else {
-						error = 1 - out;
+						expected = 1;
 					}
 					
-					c[0].addFitness(-error);
+					c[0].addFitness(-Math.abs(expected - out));
 				}
 			}
 	}

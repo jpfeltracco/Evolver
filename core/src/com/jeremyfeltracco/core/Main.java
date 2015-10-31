@@ -9,7 +9,7 @@ import com.jeremyfeltracco.core.controllers.MLP;
 import com.jeremyfeltracco.core.evolver.EvolutionAlgorithm;
 import com.jeremyfeltracco.core.evolver.EvolutionAlgorithm.Type;
 import com.jeremyfeltracco.core.simulations.Simulation;
-import com.jeremyfeltracco.core.simulations.XOR;
+import com.jeremyfeltracco.core.simulations.Through;
 
 public class Main extends ApplicationAdapter {
 
@@ -18,8 +18,8 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create () {
 		
-		Simulation s = new XOR();
-		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.TANH, 10, 10);
+		Simulation s = new Through();
+		Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.TANH, 3, 3);
 		EvolutionAlgorithm ea = new EvolutionAlgorithm(Type.RANDOM, 10, .13f, .15f, 0.5f, s, c);
 		s.setEvolutionAlgorithm(ea);
 		new Thread(ea).start();
