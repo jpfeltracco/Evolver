@@ -1,31 +1,28 @@
 package com.jeremyfeltracco.core.simulations;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.jeremyfeltracco.core.evolver.Element;
+import com.jeremyfeltracco.core.controllers.Controller;
 
 public class XOR extends Simulation {
 	@Override
-	public void run() {
-		
-		int[] vals = {0, 1};
-		
-		for (Element e : elements){
-			controllers[0].setConfig(e);
-
-//			for (int i = 0; i < 10; i++) {
-//			int rand1 = (int) (2 * MathUtils.random());
-//			int rand2 = (int) (2 * MathUtils.random());
+	public void simulate(Controller[] c) {
+			//for (int i = 0; i < 10; i++) {
+			//int rand1 = (int) (2 * MathUtils.random());
+			//int rand2 = (int) (2 * MathUtils.random());
 			
 //			System.out.println(rand2);
 			
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
-//					double out = controllers[0].calculate(rand1, rand2)[0];
-					double out = controllers[0].calculate(i, j)[0];
+					int rand1 = i;
+					int rand2 = j;
+					
+					
+					double out = c[0].calculate(rand1, rand2)[0];
+					
 
-					if (i == 1 && j == 1) {
+//					if (rand1 == 1 && rand2 == 1) {
 //						System.out.println(out);
-					}
+//					}
 					double error;
 					if ((i == 1 && j == 1) || (i == 0 && j == 0)) {
 						error = out;
@@ -33,15 +30,11 @@ public class XOR extends Simulation {
 						error = 1 - out;
 					}
 					
-					e.addFitness(-error);
+					c[0].addFitness(-error);
 				}
 			}
-		}
-//			}
-//			}
-			
-//		}
 	}
+			
 	
 	@Override
 	public int getNumInputs() {

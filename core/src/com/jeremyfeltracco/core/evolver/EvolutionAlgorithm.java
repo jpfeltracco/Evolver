@@ -70,8 +70,8 @@ public class EvolutionAlgorithm implements Runnable {
 			/*for(int i = 0; i < elements.length; i++)
 				System.out.print(elements[i].id + ", ");
 			System.out.println();*/
-			
 			int gamesPerElement = 5;
+
 			ArrayList<Element> elementHolder = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)
 				for(int j = 0; j < gamesPerElement; j++)
@@ -125,23 +125,26 @@ public class EvolutionAlgorithm implements Runnable {
 			
 			Arrays.sort(elements);
 			
-//			int numRepeat = 0;
-//			int split = elements.length - 1;
-//			while (controllerType.isSame(elements[elements.length - 1], elements[split]) && split >= 1) {
-//				numRepeat++;
-//				split--;
-//			}
-//			
-//			for (int j = split; j < controllers.length - 1; j++) {
-//				if (numRepeat / elements.length > foundersPercent) {
-//					elements[j] = controllerType.generateRandomConfig();
-//					System.out.println("ahhhhhh");
-//				}
-//				else {
-//					elements[j] = reproduceFromArray(Arrays.copyOfRange(elements, 0, split));
+			int numRepeat = 0;
+			int split = elements.length - 1;
+			while (controllerType.isSame(elements[elements.length - 1], elements[split]) && split >= 1) {
+//				System.out.print("IsSame");
+				numRepeat++;
+				split--;
+			}
+//			System.out.println();
+//			System.out.println(split);
+			for (int j = split; j < elements.length - 1; j++) {
+			
+				if (numRepeat / (float) elements.length > foundersPercent) {
+					elements[j] = controllerType.generateRandomConfig();
+//					System.out.println("randomized");
+				}
+				else {
+					elements[j] = reproduceFromArray(Arrays.copyOfRange(elements, 0, split));
 //					System.out.println("reproduce from arr");
-//				}
-//			}
+				}
+			}
 			
 			/*for(Element e : elements)
 				System.out.print(e.id + "\t");
@@ -149,13 +152,14 @@ public class EvolutionAlgorithm implements Runnable {
 			for(Element e : elements)
 				System.out.print(e.getFitness() + "\t");
 			System.out.println();*/
+			
 
 			if(Math.abs(elements[elements.length-1].getFitness()) < 0.1)
 				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
 			
 			if(genNum%500==0){
-				System.out.println("Gen: " + genNum);
 				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+				System.out.println(genNum);
 			}
 			
 			float curve = 2.0f;
@@ -163,45 +167,54 @@ public class EvolutionAlgorithm implements Runnable {
 			Element.numElements = 0;
 			Element[] nextGen = new Element[elements.length];
 			
+//			try {
+//				Thread.sleep(500);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+//			System.out.println("1Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
 			//Elitism
-//			nextGen[0] = elements[elements.length-1];
-//			nextGen[0].setFitness(0);
-			//nextGen[1] = elements[elements.length-2];
-			//-------
-			for(int i = 0; i < elements.length; i++)
+			nextGen[0] = elements[elements.length-1];
+			nextGen[0].setFitness(0);
+
+			for(int i = 1; i < elements.length; i++)
 				nextGen[i] = reproduceFromArray(elements);
+			
 			genNum++;
-			
 			elements = nextGen;
-//			ArrayList<Element> elementHolder2 = new ArrayList<Element>();
-//			for(int i = 0; i < elements.length; i++)
-//				for(int j = 0; j < gamesPerElement; j++)
-//					elementHolder2.add(elements[i]);
-//			
-//			Collections.shuffle(elementHolder2);
-//			
-//			for(int i = 0; i < elements.length; i++)
-//				elements[i] = elementHolder2.get(i);
 			
-			
+			//System.out.println("2Element: " + elements[0].id + "\t Fitness: " + elements[0].getFitness());
 			//for(Element e : elements)
 				//System.out.print(e.id + "\t");
 			//System.out.println();
+			
+			/*for(Element e : elements)
+				System.out.print(e.id + "\t");
+			System.out.println();
+			for(Element e : elements)
+				System.out.print(e.getFitness() + "\t");
+			System.out.println();*/
+			
 		}
+		
 	}
 	
 	private Element reproduceFromArray(Element[] els) {
-		float curve = 2.0f;
+		float curve = 5f;
 		float x;
 		
 		float a = (float)(1 / Math.log(curve + 1) * elements.length);
 		x = MathUtils.random();
 		int e1Ind = (int)(Math.log(curve * x + 1) * a);
+		if (e1Ind == elements.length) e1Ind--;
 		Element e1 = elements[e1Ind];
 		int e2Ind;
 		do{
 			x = MathUtils.random();
 			e2Ind = (int)(Math.log(curve * x + 1) * a);
+			if (e2Ind == elements.length) e2Ind--;
 		}while(e1Ind == e2Ind);
 		Element e2 = elements[e2Ind];
 		return reproduce(e1, e2);

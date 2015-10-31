@@ -45,6 +45,7 @@ public class MLP extends Controller {
 
 	@Override
 	public void setConfig(Element e) {
+		element = e;
 		mlpNet.setWeights(e.config);
 	}
 
@@ -82,7 +83,10 @@ public class MLP extends Controller {
 			totalDist += Math.abs(e1.config[i] - e2.config[i]);
 		totalDist /= e1.config.length;
 //		System.out.println(totalDist);
-		return totalDist < .33f;
+		return totalDist < .20f;
+		
 	}
+
+	
 
 }
