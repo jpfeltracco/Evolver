@@ -69,7 +69,7 @@ public class EvolutionAlgorithm implements Runnable {
 				System.out.print(elements[i].id + ", ");
 			System.out.println();*/
 			
-			int gamesPerElement = 2;
+			int gamesPerElement = 1;
 			ArrayList<Element> elementHolder = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)
 				for(int j = 0; j < gamesPerElement; j++)
@@ -129,7 +129,7 @@ public class EvolutionAlgorithm implements Runnable {
 				System.out.print(e.getFitness() + "\t");
 			System.out.println();*/
 
-			if(elements[elements.length-1].getFitness() > -0.1)
+			if(Math.abs(elements[elements.length-1].getFitness()) < 0.1)
 				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
 			
 			if(genNum%500==0){
@@ -161,16 +161,9 @@ public class EvolutionAlgorithm implements Runnable {
 				//System.out.println(", e2: " + (int)(Math.log(curve * x + 1) * a));
 				nextGen[i] = reproduce(e1, e2);
 			}
-			
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			genNum++;
 			elements = nextGen;
-			/*ArrayList<Element> elementHolder2 = new ArrayList<Element>();
+			ArrayList<Element> elementHolder2 = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)
 				for(int j = 0; j < gamesPerElement; j++)
 					elementHolder2.add(elements[i]);
@@ -178,7 +171,7 @@ public class EvolutionAlgorithm implements Runnable {
 			Collections.shuffle(elementHolder2);
 			
 			for(int i = 0; i < elements.length; i++)
-				elements[i] = elementHolder2.get(i);*/
+				elements[i] = elementHolder2.get(i);
 			
 			
 			//for(Element e : elements)

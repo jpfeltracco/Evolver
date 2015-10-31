@@ -3,7 +3,7 @@ package com.jeremyfeltracco.core.simulations;
 import com.badlogic.gdx.math.MathUtils;
 import com.jeremyfeltracco.core.evolver.Element;
 
-public class XOR extends Simulation {
+public class Pong extends Simulation {
 	@Override
 	public void run() {
 		
@@ -13,28 +13,19 @@ public class XOR extends Simulation {
 			controllers[0].setConfig(e);
 
 			for (int i = 0; i < 10; i++) {
-			int rand1 = (int) (2 * MathUtils.random());
-			int rand2 = (int) (2 * MathUtils.random());
-			
-//			System.out.println(rand2);
-			
-//			for (int i = 0; i < vals.length; i++) {
-//				for (int j = 0; j < vals.length; j++) {
-					double out = controllers[0].calculate(rand1, rand2)[0];
-					if (rand1 == 1 && rand2 == 1) {
-//						System.out.println(out);
-					}
-					double error;
-					if ((rand1 == 1 && rand2 == 1) || (rand1 == 0 && rand2 == 0)) {
-						error = out;
+			float ball = MathUtils.random();
+			float pad = MathUtils.random();
+					double out = controllers[0].calculate(ball, pad)[0];
+					double error = 0;
+					if (out > 0.5) {
+						if (ball > pad) error = 0;
+						else if (ball < pad) error = 10;
 					} else {
-						error = 1 - out;
+						if (ball > pad) error = 10;
+						else if (ball < pad) error = 0;
 					}
-					
 					e.addFitness(-error);
-				}
-//			}
-//			}
+			}
 			
 		}
 	}
@@ -56,7 +47,7 @@ public class XOR extends Simulation {
 
 	@Override
 	public Simulation clone() {
-		XOR r = new XOR();
+		Pong r = new Pong();
 		return r;
 	}
 
