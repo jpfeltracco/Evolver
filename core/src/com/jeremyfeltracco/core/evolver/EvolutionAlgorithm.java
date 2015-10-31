@@ -70,7 +70,7 @@ public class EvolutionAlgorithm implements Runnable {
 			/*for(int i = 0; i < elements.length; i++)
 				System.out.print(elements[i].id + ", ");
 			System.out.println();*/
-			int gamesPerElement = 7;
+			int gamesPerElement = 5;
 
 			ArrayList<Element> elementHolder = new ArrayList<Element>();
 			for(int i = 0; i < elements.length; i++)

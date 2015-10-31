@@ -43,4 +43,9 @@ public class Round extends Simulation {
 		return r;
 	}
 
+	@Override
+	public String toString() {
+		return "Rounding Simulation";
+	}
+
 }

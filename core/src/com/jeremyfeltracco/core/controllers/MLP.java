@@ -11,7 +11,7 @@ public class MLP extends Controller {
 	private static final int MAXCONTROLLERS = 1;
 	
 	MultiLayerPerceptron mlpNet;
-	private static GaussianRandomizer r = new GaussianRandomizer(0, 1);
+	private static GaussianRandomizer r = new GaussianRandomizer(0, 3);
 	private final int numIn;
 	private final int numOut;
 	private final TransferFunctionType f;
@@ -83,7 +83,7 @@ public class MLP extends Controller {
 			totalDist += Math.abs(e1.config[i] - e2.config[i]);
 		totalDist /= e1.config.length;
 //		System.out.println(totalDist);
-		return totalDist < .20f;
+		return totalDist < .10f;
 		
 	}
 
