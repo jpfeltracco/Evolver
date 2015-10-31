@@ -3,6 +3,7 @@ package com.jeremyfeltracco.core.simulations;
 import com.jeremyfeltracco.core.controllers.Controller;
 
 public class XOR extends Simulation {
+	static int x = 0;
 	@Override
 	public void simulate(Controller[] c) {
 			//for (int i = 0; i < 10; i++) {
@@ -19,7 +20,11 @@ public class XOR extends Simulation {
 					
 					double out = c[0].calculate(rand1, rand2)[0];
 					
-
+					if (x++ > 10000000) {
+						if (rand1 == 1 && rand2 == 1) {
+							System.out.println(out);
+						}
+					}
 //					if (rand1 == 1 && rand2 == 1) {
 //						System.out.println(out);
 //					}

@@ -16,7 +16,7 @@ public class Through extends Simulation {
 			if (x++ > 1000000)
 			System.out.println(out);
 						
-			c[0].addFitness(-out);
+			c[0].addFitness(-error);
 //		}
 	}
 			
