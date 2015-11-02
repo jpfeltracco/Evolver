@@ -1,13 +1,14 @@
-package com.jeremyfeltracco.core.evolver;
+package evolver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.jeremyfeltracco.core.Main;
-import com.jeremyfeltracco.core.controllers.Controller;
-import com.jeremyfeltracco.core.simulations.Simulation;
+
+import controllers.Controller;
+import core.Main;
+import simulations.Simulation;
 
 public class EvolutionAlgorithm implements Runnable {
 
@@ -148,7 +149,7 @@ public class EvolutionAlgorithm implements Runnable {
 			Arrays.sort(elements);
 			
 			if (elements[elements.length - 1].getFitness() > -1f) {
-				System.out.println("----");
+//				System.out.println("----");
 				for(int i = 0; i < 3; i++){
 					Simulation s = simType.clone();
 					s.setControllers(new Controller[] {controllers[0]});
@@ -190,13 +191,13 @@ public class EvolutionAlgorithm implements Runnable {
 			System.out.println();*/
 			
 
-			if(Math.abs(elements[elements.length-1].getFitness()) < 0.1)
-				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
-			
-			if(genNum%500==0){
-				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
-				System.out.println(genNum);
-			}
+//			if(Math.abs(elements[elements.length-1].getFitness()) < 0.1)
+//				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+//			
+//			if(genNum%500==0){
+//				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+//				System.out.println(genNum);
+//			}
 			
 			float curve = 2.0f;
 			float x;

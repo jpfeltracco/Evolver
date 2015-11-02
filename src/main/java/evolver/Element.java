@@ -1,4 +1,4 @@
-package com.jeremyfeltracco.core.evolver;
+package evolver;
 
 public class Element implements Comparable<Element> {
 	public double config[];

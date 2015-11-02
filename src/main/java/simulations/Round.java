@@ -1,7 +1,8 @@
-package com.jeremyfeltracco.core.simulations;
+package simulations;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.jeremyfeltracco.core.controllers.Controller;
+
+import controllers.Controller;
 
 public class Round extends Simulation {
 	@Override

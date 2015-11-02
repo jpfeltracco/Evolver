@@ -1,4 +1,4 @@
-package com.jeremyfeltracco.core.simulations;
+package simulations;
 
 public class Interrupter implements Runnable{
 

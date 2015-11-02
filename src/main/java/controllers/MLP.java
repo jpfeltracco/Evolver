@@ -1,11 +1,12 @@
-package com.jeremyfeltracco.core.controllers;
+package controllers;
 
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.util.TransferFunctionType;
 import org.neuroph.util.random.GaussianRandomizer;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.jeremyfeltracco.core.evolver.Element;
+
+import evolver.Element;
 
 public class MLP extends Controller {
 	private static final int MAXCONTROLLERS = 1;
