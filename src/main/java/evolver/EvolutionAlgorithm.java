@@ -7,7 +7,7 @@ import java.util.Collections;
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
-import main.Main;
+import core.Main;
 import simulations.Simulation;
 
 public class EvolutionAlgorithm implements Runnable {
