@@ -1,6 +1,6 @@
-package com.jeremyfeltracco.core.simulations;
+package simulations;
 
-import com.jeremyfeltracco.core.controllers.Controller;
+import controllers.Controller;
 
 public class XOR extends Simulation {
 	static int x = 0;
@@ -9,8 +9,8 @@ public class XOR extends Simulation {
 			//for (int i = 0; i < 10; i++) {
 			//int rand1 = (int) (2 * MathUtils.random());
 			//int rand2 = (int) (2 * MathUtils.random());
-			if (x++ > 10000000)
-				System.out.println("-------");
+//			if (x++ > 10000000)
+//				System.out.println("-------");
 			
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
@@ -32,9 +32,9 @@ public class XOR extends Simulation {
 					}
 					error = Math.abs(expected - out);
 					
-					if (x++ > 10000000) {
-						System.out.println(rand1 + " " + rand2 + "\t" + out);
-					}
+//					if (x++ > 10000000) {
+//						System.out.println(rand1 + " " + rand2 + "\t" + out);
+//					}
 
 					c[0].addFitness(-error);
 				}

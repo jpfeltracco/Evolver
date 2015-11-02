@@ -1,6 +1,6 @@
-package com.jeremyfeltracco.core.controllers;
+package controllers;
 
-import com.jeremyfeltracco.core.evolver.Element;
+import evolver.Element;
 
 public abstract class Controller {
 	int numIn;

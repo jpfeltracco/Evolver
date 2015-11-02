@@ -1,8 +1,8 @@
-package com.jeremyfeltracco.core.simulations;
+package simulations;
 
-import com.jeremyfeltracco.core.controllers.Controller;
-import com.jeremyfeltracco.core.evolver.Element;
-import com.jeremyfeltracco.core.evolver.EvolutionAlgorithm;
+import controllers.Controller;
+import evolver.Element;
+import evolver.EvolutionAlgorithm;
 
 public abstract class Simulation implements Runnable {
 	
