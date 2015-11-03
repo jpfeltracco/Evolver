@@ -40,31 +40,31 @@ public class FXController implements Initializable {
 		System.setProperty("glass.accessible.force", "false"); // Windows 10 crashes unless this is here :(
 		
 		// Demo of way to populate combo box programmatically
-		ObservableList<String> options = 
-			    FXCollections.observableArrayList(
-			        "MLP 3x3",
-			        "FPGA",
-			        "Norris's brain"
-			    );
-		controllerCombo.setItems(options);
-		
-		// Demo of way to populate graph programmatically
-		XYChart.Series<Number, Number> series = new Series<Number, Number>();
-        //populating the series with data
-        series.getData().add(new XYChart.Data<Number, Number>(1, 23));
-        series.getData().add(new XYChart.Data<Number, Number>(2, 14));
-        series.getData().add(new XYChart.Data<Number, Number>(3, 15));
-        series.getData().add(new XYChart.Data<Number, Number>(4, 24));
-        series.getData().add(new XYChart.Data<Number, Number>(5, 34));
-        series.getData().add(new XYChart.Data<Number, Number>(6, 36));
-        series.getData().add(new XYChart.Data<Number, Number>(7, 22));
-        series.getData().add(new XYChart.Data<Number, Number>(8, 45));
-        series.getData().add(new XYChart.Data<Number, Number>(9, 43));
-        series.getData().add(new XYChart.Data<Number, Number>(10, 17));
-        series.getData().add(new XYChart.Data<Number, Number>(11, 29));
-        series.getData().add(new XYChart.Data<Number, Number>(12, 25));
-        
-        fitnessGraph.getData().add(series);
+//		ObservableList<String> options = 
+//			    FXCollections.observableArrayList(
+//			        "MLP 3x3",
+//			        "FPGA",
+//			        "Norris's brain"
+//			    );
+//		controllerCombo.setItems(options);
+//		
+//		// Demo of way to populate graph programmatically
+//		XYChart.Series<Number, Number> series = new Series<Number, Number>();
+//        //populating the series with data
+//        series.getData().add(new XYChart.Data<Number, Number>(1, 23));
+//        series.getData().add(new XYChart.Data<Number, Number>(2, 14));
+//        series.getData().add(new XYChart.Data<Number, Number>(3, 15));
+//        series.getData().add(new XYChart.Data<Number, Number>(4, 24));
+//        series.getData().add(new XYChart.Data<Number, Number>(5, 34));
+//        series.getData().add(new XYChart.Data<Number, Number>(6, 36));
+//        series.getData().add(new XYChart.Data<Number, Number>(7, 22));
+//        series.getData().add(new XYChart.Data<Number, Number>(8, 45));
+//        series.getData().add(new XYChart.Data<Number, Number>(9, 43));
+//        series.getData().add(new XYChart.Data<Number, Number>(10, 17));
+//        series.getData().add(new XYChart.Data<Number, Number>(11, 29));
+//        series.getData().add(new XYChart.Data<Number, Number>(12, 25));
+//        
+//        fitnessGraph.getData().add(series);
 	}
 
 }

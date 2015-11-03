@@ -8,7 +8,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXController">
    <children>
       <MenuBar prefWidth="968.0">
         <menus>
@@ -38,9 +38,9 @@
             </Tab>
           <Tab closable="false" text="EA 1  X">
                <content>
-                  <SplitPane dividerPositions="0.31784841075794623" prefHeight="160.0" prefWidth="200.0">
+                  <SplitPane dividerPositions="0.23828125" prefHeight="160.0" prefWidth="200.0">
                     <items>
-                        <VBox maxWidth="250.0" prefWidth="240.0" spacing="10.0">
+                        <VBox maxWidth="300.0" prefWidth="240.0" spacing="10.0">
                            <children>
                               <ToolBar prefHeight="40.0">
                                 <items>
@@ -60,7 +60,7 @@
                               </StackPane>
                               <Accordion VBox.vgrow="ALWAYS">
                                 <panes>
-                                  <TitledPane alignment="CENTER_RIGHT" animated="false" text="Simulation">
+                                  <TitledPane alignment="CENTER_RIGHT" text="Simulation">
                                     <content>
                                           <GridPane hgap="2.0" vgap="10.0">
                                             <columnConstraints>
@@ -76,7 +76,11 @@
                                             </rowConstraints>
                                              <children>
                                                 <Label text="Type:" />
-                                                <ComboBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                                                <StackPane GridPane.columnIndex="1">
+                                                   <children>
+                                                      <ComboBox promptText="Click Here" />
+                                                   </children>
+                                                </StackPane>
                                                 <Label text="Players:" GridPane.rowIndex="1" />
                                                 <Label text="Accelerate:" GridPane.rowIndex="2" />
                                                 <Label text="Is Cool:" GridPane.rowIndex="3" />
@@ -98,7 +102,7 @@
                                           </GridPane>
                                     </content>
                                   </TitledPane>
-                                  <TitledPane alignment="BOTTOM_RIGHT" animated="false" prefWidth="377.0" text="Controller">
+                                  <TitledPane alignment="BOTTOM_RIGHT" prefWidth="377.0" text="Controller">
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>
