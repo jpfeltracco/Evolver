@@ -36,21 +36,6 @@ public class GUI extends Application {
         primaryStage.show();
     }
     
-    private void startGA() {
-    	Simulation s = new XOR();
-        Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.SIN, 4, 4);
-        EvolutionAlgorithm ea = new EvolutionAlgorithm(s, c);
-        s.setEvolutionAlgorithm(ea);
-        ea.setReproductionType(Type.RANDOM);
-        ea.setGenerationMultiplier(10);
-        ea.setMutationAmt(0.13f);
-        ea.setMutationRate(0.15f);
-        ea.setFoundersPercent(0.5f);
-        ea.setGamesPerElement(5);
-        eaThread = new Thread(ea);
-        eaThread.start();
-    }
-    
     @Override
     public void stop() {
     	

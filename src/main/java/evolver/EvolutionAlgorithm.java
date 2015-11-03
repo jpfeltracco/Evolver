@@ -3,14 +3,15 @@ package evolver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Vector;
 
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
-import core.Main;
 import simulations.Simulation;
 
 public class EvolutionAlgorithm implements Runnable {
+	public boolean running = true;
 
 	public enum Type {
 		HALF, RANDOM
@@ -32,7 +33,13 @@ public class EvolutionAlgorithm implements Runnable {
 	private Controller[] controllers;
 	private Controller controllerType;
 	
+	private Vector<Float> avgFit = new Vector<Float>();
+	
 	public int genNum = 0;
+	
+	public synchronized void setRunning(boolean running) {
+		this.running = running;
+	}
 	
 	public void setReproductionType(Type t){
 		this.reproductionType = t;
@@ -56,6 +63,10 @@ public class EvolutionAlgorithm implements Runnable {
 	
 	public void setGamesPerElement(int gamesPerElement){
 		this.gamesPerElement = gamesPerElement;
+	}
+	
+	public synchronized Vector<Float> getAvgFit() {
+		return avgFit;
 	}
 
 	public EvolutionAlgorithm(Simulation sim, Controller controller){
@@ -88,7 +99,8 @@ public class EvolutionAlgorithm implements Runnable {
 
 	@Override
 	public void run() {
-		while (Main.runThreads) {
+		System.out.println("EA started");
+		while (running) {
 			// Setup simulations
 			
 			/*for(int i = 0; i < elements.length; i++)
@@ -219,6 +231,13 @@ public class EvolutionAlgorithm implements Runnable {
 			for(int i = 1; i < elements.length; i++)
 				nextGen[i] = reproduceFromArray(elements);
 			
+			float totalFitness = 0;
+			for (Element e : elements) {
+				totalFitness += e.getFitness();
+			}
+			
+			avgFit.add(totalFitness / elements.length);
+			
 			genNum++;
 			elements = nextGen;
 			
@@ -235,6 +254,8 @@ public class EvolutionAlgorithm implements Runnable {
 			System.out.println();*/
 			
 		}
+		
+		System.out.println("EA stopped");
 		
 	}
 	

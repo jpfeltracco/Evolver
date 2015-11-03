@@ -46,7 +46,7 @@
                                 <items>
                                     <HBox spacing="10.0">
                                        <children>
-                                          <Button fx:id="start_button" mnemonicParsing="false" text="Start" />
+                                          <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
                                         <Button mnemonicParsing="false" text="Pause" />
                                           <Button fx:id="render_button" mnemonicParsing="false" text="Render" />
                                        </children>
@@ -78,7 +78,7 @@
                                                 <Label text="Type:" />
                                                 <StackPane GridPane.columnIndex="1">
                                                    <children>
-                                                      <ComboBox promptText="Click Here" />
+                                                      <ComboBox fx:id="simType" onAction="#onSimTypeChanged" promptText="Click Here" />
                                                    </children>
                                                 </StackPane>
                                                 <Label text="Players:" GridPane.rowIndex="1" />
