@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -15,6 +16,7 @@ import ui.controllers.TabController;
 import util.BooleanHolder;
 import util.DoubleHolder;
 import util.IntegerHolder;
+import util.StringHolder;
 
 public class SimBuilder {
 	private final TabController tc;
@@ -50,6 +52,7 @@ public class SimBuilder {
 				hb.setSpacing(5);
 				Slider s = new Slider();
 				Label l = new Label();
+				TextField tf = new TextField();
 				Constraint c = inputF.getConstraint(i);
 				int digits = 0;
 				if(c.getDigitType() == Constraint.Type.DOUBLE){
@@ -65,36 +68,59 @@ public class SimBuilder {
 					s.setBlockIncrement(dInc);
 					String dString = "" + c.getDigitCount();
 					digits = String.valueOf(String.format("%."+dString+"f",  c.getMaxDouble())).length();
+					tf.setText(String.format("%."+dString+"f", s.valueProperty().floatValue()));
 					s.valueProperty().addListener((observable, oldValue, newValue) -> {
-					    l.setText(String.format("%."+dString+"f", newValue.floatValue()));
+					    tf.setText(String.format("%."+dString+"f", newValue.floatValue()));
 					    output.setValue(Math.round(newValue.floatValue() * (1/dInc) ) / (1/dInc));
 					    sim.check();
 					});
-					l.setText(String.format("%.2f", s.valueProperty().floatValue()));
+					tf.setOnAction((event) -> {
+						double in = Double.parseDouble(tf.getText());
+						s.setValue(in);
+						output.setValue(Math.round(in * (1/dInc) ) / (1/dInc));
+					    sim.check();
+					});
+					
 				}else{
 					IntegerHolder output = (IntegerHolder)inputF.getVariable(i);
 					s.setMin(c.getMinInt());
 					s.setMax(c.getMaxInt());
 					s.setBlockIncrement(1);
 					digits = String.valueOf(c.getMaxInt()).length();
+					tf.setText("" + s.valueProperty().intValue());
 					s.valueProperty().addListener((observable, oldValue, newValue) -> {
-					    l.setText("" + newValue.intValue());
+					    tf.setText("" + newValue.intValue());
 					    output.setValue(newValue.intValue());
 					    sim.check();
 					});
-					l.setText("" + s.valueProperty().intValue());
+					tf.setOnAction((event) -> {
+						int in = Integer.parseInt(tf.getText());
+						s.setValue(in);
+						output.setValue(in);
+					    sim.check();
+					});
+					
 				}
 				s.setMajorTickUnit((int)((c.getMaxDouble() - c.getMinDouble())) / 2);
 				s.setMinorTickCount(2);
 				s.setShowTickMarks(true);
 				s.setShowTickLabels(true);
-				l.setMinWidth(digits * 9);
+				tf.setMinWidth(digits * 9);
+				tf.setMaxWidth(digits * 12);
+				
 				hb.getChildren().add(s);
-				hb.getChildren().add(l);
+				hb.getChildren().add(tf);
 				grid.add(hb, 1, i + 1);
 				break;
 			case TEXT:
-				//grid.getRowConstraints().add(r);
+				TextField textfield = new TextField();
+				StringHolder output = (StringHolder)inputF.getVariable(i);
+				textfield.textProperty().addListener((observable, oldValue, newValue) -> {
+				    System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+				    output.setValue(newValue);
+				    sim.check();
+				});
+				grid.add(textfield,  1,  i + 1);
 				break;
 			case LABEL:
 				Label lab = new Label();

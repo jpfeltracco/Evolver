@@ -54,7 +54,6 @@
                                     <Label minWidth="-Infinity" text="30" />
                                  </children>
                               </HBox>
-                              <ToggleButton mnemonicParsing="false" text="Yes" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
                               <Label text="Sim Info:" GridPane.rowIndex="4" />
                               <Label maxWidth="198.0" text="This is some information about the simulation! Look how cool it is! Wow!" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="4" GridPane.vgrow="NEVER" />
                               <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
@@ -62,6 +61,7 @@
                                     <Insets right="-5.0" />
                                  </padding>
                               </CheckBox>
+                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
                            </children>
                         </GridPane>
                   </content>
