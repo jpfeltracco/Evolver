@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
 import simulations.Simulation;
+import ui.GUI;
 
 public class EvolutionAlgorithm implements Runnable {
 	public boolean running = true;
@@ -100,7 +101,7 @@ public class EvolutionAlgorithm implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("EA started");
-		while (running) {
+		while (GUI.running) {
 			// Setup simulations
 			
 			/*for(int i = 0; i < elements.length; i++)

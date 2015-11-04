@@ -20,6 +20,7 @@ import simulations.XOR;
 public class GUI extends Application {
 	
 	Thread eaThread;
+	public static boolean running = true;
 
     public static void run() {
         launch();
@@ -29,15 +30,17 @@ public class GUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 750, 600);
 
         primaryStage.setTitle("Genetic Algorithm Framework");
         primaryStage.setScene(scene);
         primaryStage.show();
+        //addEA();
     }
     
     @Override
     public void stop() {
-    	
+    	System.out.println("GUI Stop");
+    	running = false;
     }
 }

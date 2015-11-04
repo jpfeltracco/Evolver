@@ -8,7 +8,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXController">
    <children>
       <MenuBar prefWidth="968.0">
         <menus>
@@ -29,160 +29,14 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" VBox.vgrow="ALWAYS">
+      <TabPane fx:id="EATabs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" VBox.vgrow="ALWAYS">
         <tabs>
             <Tab closable="false" text="System">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>
             </Tab>
-          <Tab closable="false" text="EA 1  X">
-               <content>
-                  <SplitPane dividerPositions="0.23828125" prefHeight="160.0" prefWidth="200.0">
-                    <items>
-                        <VBox maxWidth="300.0" prefWidth="240.0" spacing="10.0">
-                           <children>
-                              <ToolBar prefHeight="40.0">
-                                <items>
-                                    <HBox spacing="10.0">
-                                       <children>
-                                          <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
-                                        <Button mnemonicParsing="false" text="Pause" />
-                                          <Button fx:id="render_button" mnemonicParsing="false" text="Render" />
-                                       </children>
-                                    </HBox>
-                                </items>
-                              </ToolBar>
-                              <StackPane prefWidth="379.0">
-                                 <children>
-                                    <Label text="Properties" />
-                                 </children>
-                              </StackPane>
-                              <Accordion VBox.vgrow="ALWAYS">
-                                <panes>
-                                  <TitledPane alignment="CENTER_RIGHT" text="Simulation">
-                                    <content>
-                                          <GridPane hgap="2.0" vgap="10.0">
-                                            <columnConstraints>
-                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="124.0" />
-                                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
-                                            </columnConstraints>
-                                            <rowConstraints>
-                                              <RowConstraints vgrow="NEVER" />
-                                              <RowConstraints vgrow="NEVER" />
-                                              <RowConstraints vgrow="NEVER" />
-                                                <RowConstraints minHeight="10.0" vgrow="NEVER" />
-                                                <RowConstraints minHeight="10.0" vgrow="NEVER" />
-                                            </rowConstraints>
-                                             <children>
-                                                <Label text="Type:" />
-                                                <StackPane GridPane.columnIndex="1">
-                                                   <children>
-                                                      <ComboBox fx:id="simType" onAction="#onSimTypeChanged" promptText="Click Here" />
-                                                   </children>
-                                                </StackPane>
-                                                <Label text="Players:" GridPane.rowIndex="1" />
-                                                <Label text="Accelerate:" GridPane.rowIndex="2" />
-                                                <Label text="Is Cool:" GridPane.rowIndex="3" />
-                                                <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                                   <children>
-                                                      <Slider showTickMarks="true" />
-                                                      <Label minWidth="-Infinity" text="30" />
-                                                   </children>
-                                                </HBox>
-                                                <CheckBox alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
-                                                   <padding>
-                                                      <Insets right="-3.0" />
-                                                   </padding>
-                                                </CheckBox>
-                                                <ToggleButton mnemonicParsing="false" text="Yes" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                                                <Label text="Sim Info:" GridPane.rowIndex="4" />
-                                                <Label maxWidth="198.0" text="This is some information about the simulation! Look how cool it is! Wow!" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="4" GridPane.vgrow="NEVER" />
-                                             </children>
-                                          </GridPane>
-                                    </content>
-                                  </TitledPane>
-                                  <TitledPane alignment="BOTTOM_RIGHT" prefWidth="377.0" text="Controller">
-                                    <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                    </content>
-                                  </TitledPane>
-                                  <TitledPane alignment="CENTER_RIGHT" text="Evolution">
-                                    <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                    </content>
-                                  </TitledPane>
-                                </panes>
-                              </Accordion>
-                           </children>
-                        </VBox>
-                        <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="15.0" tabMaxWidth="50.0" tabMinWidth="10.0">
-                          <tabs>
-                            <Tab text="1">
-                                 <content>
-                                    <VBox prefHeight="200.0" prefWidth="100.0">
-                                       <children>
-                                          <LineChart fx:id="fitnessGraph" legendVisible="false" prefHeight="434.0" prefWidth="417.0" title="Fitness" VBox.vgrow="ALWAYS">
-                                            <xAxis>
-                                              <NumberAxis side="BOTTOM" />
-                                            </xAxis>
-                                            <yAxis>
-                                              <NumberAxis side="LEFT" />
-                                            </yAxis>
-                                          </LineChart>
-                                          <HBox prefWidth="200.0" spacing="5.0">
-                                             <children>
-                                                <ComboBox promptText="Graph Type">
-                                                   <HBox.margin>
-                                                      <Insets />
-                                                   </HBox.margin>
-                                                </ComboBox>
-                                                <Pane HBox.hgrow="ALWAYS" />
-                                                <StackPane>
-                                                   <children>
-                                                      <Label text="Generation: 5720" />
-                                                   </children>
-                                                   <HBox.margin>
-                                                      <Insets />
-                                                   </HBox.margin>
-                                                </StackPane>
-                                                <Pane HBox.hgrow="ALWAYS" />
-                                                <MenuButton mnemonicParsing="false" text="Save">
-                                                  <items>
-                                                    <MenuItem mnemonicParsing="false" text="Graph Data" />
-                                                    <MenuItem mnemonicParsing="false" text="Graph Image" />
-                                                  </items>
-                                                   <HBox.margin>
-                                                      <Insets />
-                                                   </HBox.margin>
-                                                </MenuButton>
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                 </content>
-                            </Tab>
-                            <Tab text="2">
-                              <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                              </content>
-                            </Tab>
-                          </tabs>
-                           <padding>
-                              <Insets right="-8.0" />
-                           </padding>
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </TabPane>
-                    </items>
-                  </SplitPane>
-               </content>
-          </Tab>
-            <Tab closable="false" text="+">
+            <Tab fx:id="addEAButton" closable="false" onSelectionChanged="#addTab" text="+">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>
