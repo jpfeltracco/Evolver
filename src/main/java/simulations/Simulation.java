@@ -3,6 +3,7 @@ package simulations;
 import controllers.Controller;
 import evolver.Element;
 import evolver.EvolutionAlgorithm;
+import ui.Builder.InputFramework;
 
 public abstract class Simulation implements Runnable {
 	
@@ -65,6 +66,13 @@ public abstract class Simulation implements Runnable {
 	 */
 	public abstract String toString();
 	
+	
+	public InputFramework getFramework(){
+		return null;
+	}
+	
+	public void check(){}
+	
 	public Controller[] getControllers() {
 		return controllers;
 	}
@@ -79,5 +87,28 @@ public abstract class Simulation implements Runnable {
 	
 	public void setEvolutionAlgorithm(EvolutionAlgorithm ea) {
 		this.ea = ea;
+	}
+	
+	
+	
+	//-------------------------------------------------------------------
+	public static String[] getTypeOfSimulations(){
+		return new String[] {"Memory","Pong","Round","Through","XOR"};
+	}
+	
+	public static Simulation getSimulation(String sim){
+		switch(sim){
+		case "Memory":
+			return (Simulation)(new Memory());
+		case "Pong":
+			return (Simulation)(new Pong());
+		case "Round":
+			return (Simulation)(new Round());
+		case "Through":
+			return (Simulation)(new Through());
+		case "XOR":
+			return (Simulation)(new XOR());
+		}
+		return null;
 	}
 }

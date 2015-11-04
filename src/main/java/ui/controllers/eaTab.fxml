@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane dividerPositions="0.5083612040133779" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.TabController">
+<SplitPane dividerPositions="0.5083612040133779" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
   <items>
       <VBox maxWidth="300.0" prefWidth="240.0" spacing="10.0">
          <children>
@@ -16,7 +16,7 @@
                      <children>
                         <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
                       <Button mnemonicParsing="false" text="Pause" />
-                        <Button fx:id="render_button" mnemonicParsing="false" text="Render" />
+                        <Button fx:id="renderbutton" mnemonicParsing="false" text="Render" />
                      </children>
                   </HBox>
               </items>
@@ -28,7 +28,7 @@
             </StackPane>
             <Accordion VBox.vgrow="ALWAYS">
               <panes>
-                <TitledPane alignment="CENTER_RIGHT" text="Simulation">
+                <TitledPane fx:id="simPane" alignment="CENTER_RIGHT" text="Simulation">
                   <content>
                         <GridPane hgap="2.0" vgap="10.0">
                           <columnConstraints>
@@ -44,17 +44,13 @@
                           </rowConstraints>
                            <children>
                               <Label text="Type:" />
-                              <StackPane GridPane.columnIndex="1">
-                                 <children>
-                                    <ComboBox fx:id="simType" onAction="#onSimTypeChanged" promptText="Click Here" />
-                                 </children>
-                              </StackPane>
+                              <ComboBox fx:id="simType" onAction="#onSimTypeChanged" promptText="Click Here" GridPane.columnIndex="1" />
                               <Label text="Players:" GridPane.rowIndex="1" />
                               <Label text="Accelerate:" GridPane.rowIndex="2" />
                               <Label text="Is Cool:" GridPane.rowIndex="3" />
                               <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <children>
-                                    <Slider showTickMarks="true" />
+                                    <Slider blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" showTickMarks="true" snapToTicks="true" />
                                     <Label minWidth="-Infinity" text="30" />
                                  </children>
                               </HBox>

@@ -1,6 +1,6 @@
 package core;
 
-import ui.GUI;
+import ui.controllers.GUI;
 
 public class Main {
 	public static void main(String[] args) {

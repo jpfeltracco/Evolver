@@ -1,6 +1,8 @@
-package ui;
+package ui.controllers;
 
 import org.neuroph.util.TransferFunctionType;
+
+import com.badlogic.gdx.Gdx;
 
 import controllers.Controller;
 import controllers.MLP;

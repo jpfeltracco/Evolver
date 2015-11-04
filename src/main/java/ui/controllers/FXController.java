@@ -1,43 +1,24 @@
-package ui;
+package ui.controllers;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.ResourceBundle;
-import java.util.Vector;
-
-import org.neuroph.util.TransferFunctionType;
-
-import controllers.Controller;
-import controllers.MLP;
-import evolver.EvolutionAlgorithm;
-import evolver.EvolutionAlgorithm.Type;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import simulations.Simulation;
-import simulations.XOR;
 
 public class FXController implements Initializable {
 	boolean startClicked;
 
 	// ArrayList<EvolutionAlgorithm> eas = new ArrayList<EvolutionAlgorithm>();
-	ArrayList<Bridge> bridges = new ArrayList<Bridge>();
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
+	ArrayList<TabController> tabControllers = new ArrayList<TabController>();
 	
 	int eaCount = 0;
 
 	@FXML
-	private TabPane EATabs;
+	public TabPane EATabs;
 
 	// Tab that adds an EA to the list
 	@FXML
@@ -46,13 +27,14 @@ public class FXController implements Initializable {
 	@FXML
 	private void addTab() {
 		if (addEAButton.isSelected()) {
-			addEA();
+			addNewEATab();
 		}
 	}
 
-	public void addEA() {
-		boolean set = false;
+	public void addNewEATab() {
+		//Set up Tab ID
 		Tab t = null;
+		boolean set = false;
 		int tabID = 0;
 		for (int i = 0; i < EATabsArray.size(); i++) {
 			if (EATabsArray.get(i) == null) {
@@ -68,31 +50,16 @@ public class FXController implements Initializable {
 			EATabsArray.add(t);
 			tabID = eaCount + 1;
 			eaCount++;
-			
 		}
 		t.setId("" + tabID);
+		
+		//Add Tab Pane
+		TabController tc = new TabController(t.getId(), this, t);
+		tabControllers.add(tc);
+		
+		//Show Tab
 		EATabs.getTabs().add(t);
 		EATabs.getTabs().sort(new TabOrder());
-		bridges.add(new Bridge(t.getId(),this));
-		
-		t.setOnCloseRequest(new EventHandler<Event>() {
-			@Override
-			public void handle(Event t) {
-				for(int i = 0; i < bridges.size(); i++){
-					if(bridges.get(i).getTabID().equals(((Tab)t.getSource()).getId())){
-						if(bridges.get(i).close()){
-							EATabsArray.set(EATabsArray.indexOf(t.getSource()), null);
-							bridges.remove(i);
-						}else
-							t.consume();
-						break;
-					}
-				}
-			}
-		});
-
-		
-
 		EATabs.getSelectionModel().select(t);
 
 	}
@@ -107,8 +74,6 @@ public class FXController implements Initializable {
 				return 0;
 		}
 	}
-
-	//private FXMLLoader fXMLLoader = new FXMLLoader();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -144,35 +109,9 @@ public class FXController implements Initializable {
 		//
 		// EATabs.getSelectionModel().clearSelection();
 
-		EATabs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-			@Override
-			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-				// System.out.println("Tab selected: " + newValue.getText());
-				if (newValue == null)
-					return;
-				if (newValue.getContent() == null) {
-
-					FXMLLoader fxmlLoader = new FXMLLoader();
-					//fxmlLoader.setController(this);
-					try {
-						
-						Parent root = (Parent) fxmlLoader.load(this.getClass().getResource("eaTab.fxml").openStream());
-						
-						newValue.setContent(root);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				} else {
-					// Content is already loaded. Update it if necessary.
-					// Parent root = (Parent) newValue.getContent();
-					// Optionally get the controller from Map and manipulate the
-					// content
-					// via its controller.
-				}
-			}
-		});
+		
+		
+		
 		// By default, select 1st tab and load its content.
 		EATabs.getSelectionModel().selectFirst();
 

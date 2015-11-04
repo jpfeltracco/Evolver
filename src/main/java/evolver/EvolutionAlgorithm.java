@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
 import simulations.Simulation;
-import ui.GUI;
+import ui.controllers.GUI;
 
 public class EvolutionAlgorithm implements Runnable {
 	public boolean running = true;
