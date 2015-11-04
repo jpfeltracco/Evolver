@@ -64,7 +64,7 @@ public class TabController {
 		
 		simType.getItems().addAll(Simulation.getTypeOfSimulations());
 		
-		startButton.setDisable(true);
+		//startButton.setDisable(true);
 		
 		System.out.println("Created a new Tab Controller: " + tabID);
 		System.out.println("\tFXController: " + fxController);
