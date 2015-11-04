@@ -53,30 +53,45 @@ public class FXController implements Initializable {
 	public void addEA() {
 		boolean set = false;
 		Tab t = null;
+		int tabID = 0;
 		for (int i = 0; i < EATabsArray.size(); i++) {
 			if (EATabsArray.get(i) == null) {
 				t = new Tab("EA " + (i + 1));
 				EATabsArray.set(i, t);
 				set = true;
+				tabID = i + 1;
 				break;
 			}
 		}
 		if (!set) {
 			t = new Tab("EA " + (eaCount + 1));
 			EATabsArray.add(t);
+			tabID = eaCount + 1;
 			eaCount++;
+			
 		}
+		t.setId("" + tabID);
 		EATabs.getTabs().add(t);
 		EATabs.getTabs().sort(new TabOrder());
-
+		bridges.add(new Bridge(t.getId(),this));
+		
 		t.setOnCloseRequest(new EventHandler<Event>() {
 			@Override
 			public void handle(Event t) {
-				EATabsArray.set(EATabsArray.indexOf(t.getSource()), null);
+				for(int i = 0; i < bridges.size(); i++){
+					if(bridges.get(i).getTabID().equals(((Tab)t.getSource()).getId())){
+						if(bridges.get(i).close()){
+							EATabsArray.set(EATabsArray.indexOf(t.getSource()), null);
+							bridges.remove(i);
+						}else
+							t.consume();
+						break;
+					}
+				}
 			}
 		});
 
-		bridges.add(new Bridge(this));
+		
 
 		EATabs.getSelectionModel().select(t);
 
