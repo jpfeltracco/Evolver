@@ -1,36 +1,68 @@
 package ui.Builder;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
+import java.util.ArrayList;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
-import simulations.Simulation;
+import javafx.stage.Popup;
+import ui.controllers.GUI;
 import ui.controllers.TabController;
 import util.BooleanHolder;
+import util.ComboHolder;
 import util.DoubleHolder;
 import util.IntegerHolder;
 import util.StringHolder;
 
-public class SimBuilder {
-	private final TabController tc;
-	private RowConstraints r;
-	public SimBuilder(TabController tc){
-		this.tc = tc;
+public class Builder {
+	
+	private final TabController tabController;
+	private static ArrayList<Control> constants = new ArrayList<Control>();
+	
+	public Builder(TabController tabController){
+		this.tabController = tabController;
 	}
 	
-	public GridPane build(Simulation sim, GridPane grid, RowConstraints r){
-		InputFramework inputF = sim.getFramework();
+	public GridPane build(Object sIn, GridPane grid){
+		if(!(sIn instanceof HasMenu)){
+			System.out.println("ERROR: Builder tried to build an object that cannot be made into a menu: " + sIn);
+			return grid;
+		}
+			
+		HasMenu client = ((HasMenu)sIn);
+		InputFramework inputF = client.getFramework();
 		if(inputF == null)
 			return grid;
 		for(int i = 0; i < inputF.size(); i++){
-			grid.add(new Label(inputF.getTitle(i)), 0, i + 1);
+			Label label = new Label(inputF.getTitle(i));
+			String message = inputF.getTitle(i);
+			Popup popup = new Popup();
+			Label popupMessage = new Label(message);
+			popupMessage.getStylesheets().add("./ui/css/style.css");
+			popupMessage.getStyleClass().add("popup");
+			
+			label.setOnMouseEntered(event -> {
+				popup.setAnchorX(event.getScreenX() + 20);
+				popup.setAnchorY(event.getScreenY());
+				popup.setAutoFix(true);
+			    popup.setHideOnEscape(true);
+				popup.getContent().clear();
+				popup.getContent().add(popupMessage);
+				popup.show(GUI.stage);
+			});
+			
+			label.setOnMouseExited(event -> {
+				popup.hide();
+			});
+			
+			grid.add(label, 0, i + 1);
+			
 			switch(inputF.getType(i)){
 			case CHECKBOX:
 				//grid.getRowConstraints().add(r);
@@ -42,8 +74,11 @@ public class SimBuilder {
 				BooleanHolder bol = (BooleanHolder)inputF.getVariable(i);
 				cb.setOnAction((event) -> {
 					bol.setValue(cb.isSelected());
-					sim.check();
+					tabController.setValidity(client.check(), sIn);
 				});
+				if(!inputF.getChangable(i)){
+					constants.add((Control)cb);
+				}
 				grid.add(gp, 1, i + 1);
 				break;
 			case SLIDER:
@@ -51,7 +86,6 @@ public class SimBuilder {
 				HBox hb = new HBox();
 				hb.setSpacing(5);
 				Slider s = new Slider();
-				Label l = new Label();
 				TextField tf = new TextField();
 				Constraint c = inputF.getConstraint(i);
 				int digits = 0;
@@ -59,6 +93,11 @@ public class SimBuilder {
 					DoubleHolder output = (DoubleHolder)inputF.getVariable(i);
 					s.setMin(c.getMinDouble());
 					s.setMax(c.getMaxDouble());
+					if(output.getValue() > c.getMinDouble() && output.getValue() < c.getMaxDouble()){
+						s.setValue(output.getValue());
+					}else{
+						output.setValue(c.getMinDouble());
+					}
 					String doubleIncrement = "0.";
 					for(int j = 0; j < c.getDigitCount()-1; j++){
 						doubleIncrement += "0";
@@ -72,54 +111,80 @@ public class SimBuilder {
 					s.valueProperty().addListener((observable, oldValue, newValue) -> {
 					    tf.setText(String.format("%."+dString+"f", newValue.floatValue()));
 					    output.setValue(Math.round(newValue.floatValue() * (1/dInc) ) / (1/dInc));
-					    sim.check();
+					    
+					    tabController.setValidity(client.check(), sIn);
 					});
 					tf.setOnAction((event) -> {
 						double in = Double.parseDouble(tf.getText());
+						if(in < c.getMinDouble())
+							in = c.getMinDouble();
+						else if(in > c.getMaxDouble())
+							in = c.getMaxDouble();
+						tf.setText("" + in);
 						s.setValue(in);
 						output.setValue(Math.round(in * (1/dInc) ) / (1/dInc));
-					    sim.check();
+						tabController.setValidity(client.check(), sIn);
 					});
 					
 				}else{
 					IntegerHolder output = (IntegerHolder)inputF.getVariable(i);
 					s.setMin(c.getMinInt());
 					s.setMax(c.getMaxInt());
+					if(output.getValue() > c.getMinInt() && output.getValue() < c.getMaxInt()){
+						s.setValue(output.getValue());
+					}else{
+						output.setValue(c.getMinInt());
+					}
 					s.setBlockIncrement(1);
 					digits = String.valueOf(c.getMaxInt()).length();
 					tf.setText("" + s.valueProperty().intValue());
 					s.valueProperty().addListener((observable, oldValue, newValue) -> {
 					    tf.setText("" + newValue.intValue());
 					    output.setValue(newValue.intValue());
-					    sim.check();
+					    tabController.setValidity(client.check(), sIn);
 					});
 					tf.setOnAction((event) -> {
 						int in = Integer.parseInt(tf.getText());
+						if(in < c.getMinInt())
+							in = c.getMinInt();
+						else if(in > c.getMaxInt())
+							in = c.getMaxInt();
+						tf.setText("" + in);
 						s.setValue(in);
 						output.setValue(in);
-					    sim.check();
+						tabController.setValidity(client.check(), sIn);
 					});
 					
 				}
-				s.setMajorTickUnit((int)((c.getMaxDouble() - c.getMinDouble())) / 2);
+				
+				
+				s.setMajorTickUnit((int)  (((c.getMaxDouble() - c.getMinDouble())) / 2 + 1) );
 				s.setMinorTickCount(2);
 				s.setShowTickMarks(true);
 				s.setShowTickLabels(true);
-				tf.setMinWidth(digits * 9);
-				tf.setMaxWidth(digits * 12);
-				
+				tf.setMinWidth(16 + digits * 8);
+				tf.setMaxWidth(16 + digits * 8);
 				hb.getChildren().add(s);
 				hb.getChildren().add(tf);
+				if(!inputF.getChangable(i)){
+					constants.add((Control)s);
+					constants.add((Control)tf);
+				}
 				grid.add(hb, 1, i + 1);
 				break;
 			case TEXT:
 				TextField textfield = new TextField();
 				StringHolder output = (StringHolder)inputF.getVariable(i);
+				if(output.initialized()){
+					textfield.setText(output.getValue());
+				}
 				textfield.textProperty().addListener((observable, oldValue, newValue) -> {
-				    System.out.println("TextField Text Changed (newValue: " + newValue + ")");
 				    output.setValue(newValue);
-				    sim.check();
+				    tabController.setValidity(client.check(), sIn);
 				});
+				if(!inputF.getChangable(i)){
+					constants.add((Control)textfield);
+				}
 				grid.add(textfield,  1,  i + 1);
 				break;
 			case LABEL:
@@ -133,28 +198,34 @@ public class SimBuilder {
 				lab.setText(inputF.getVariable(i).toString());
 				grid.add(lab, 1, i + 1);
 				break;
+			case COMBOBOX:
+				ComboBox<Object> comboB = new ComboBox<Object>();
+				comboB.setPromptText("Select a Value");
+				ComboHolder ch = ((ComboHolder)inputF.getVariable(i));
+				comboB.getItems().addAll(ch.getTitles());
+				if(ch.getFocusObject() != null){
+					comboB.getSelectionModel().select(ch.getFocusObject());
+				}
+				comboB.setOnAction((event) -> {
+					ch.setFocus(comboB.getValue());
+					tabController.setValidity(client.check(), sIn);
+				});
+				if(!inputF.getChangable(i)){
+					constants.add((Control)comboB);
+				}
+				grid.add(comboB, 1, i + 1);
+				break;
 			}
 		}
+		tabController.setValidity(client.check(), sIn);
 		return grid;
 	}
 	
-	private Object add(String t){
-		return null;
-		/*switch(t.toLowerCase().trim()){
-		case "checkbox":
-			CheckBox cb = new CheckBox();
-			cb.
-			return ;
-		case "slider":
-			return null;
-		case "text":
-			return null;
-		}*/
+	public void setChangable(boolean val){
+		for(Control c : constants){
+			System.out.println(c);
+			c.setDisable(!val);
+		}
 	}
+	
 }
-
-/*	Types of Possible elements
- * 		Check Box
- * 		Slider
- * 		Text Input
- */

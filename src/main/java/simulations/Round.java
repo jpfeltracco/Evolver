@@ -3,12 +3,20 @@ package simulations;
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
+import ui.Builder.Constraint;
+import ui.Builder.HasMenu;
+import ui.Builder.InputFramework;
+import ui.Builder.InputFramework.EntryType;
+import util.*;
 
-public class Round extends Simulation {
+public class Round extends Simulation implements HasMenu {
+	int trialCount;
+	
 	@Override
 	public void simulate(Controller[] c) {
 //		float[] d = {0.7f,0.1f,0.22f,0.43f,0.4f,0.51f,0.62f,0.99f};
-		for (int i = 0; i < 5; i++) {
+		System.out.println(trialCount);
+		for (int i = 0; i < trialCount; i++) {
 			float rand = MathUtils.random();
 			double out = c[0].calculate(rand)[0];
 			//System.out.println(out);
@@ -41,12 +49,40 @@ public class Round extends Simulation {
 	@Override
 	public Simulation clone() {
 		Round r = new Round();
+		r.setNumTrials(trialCount);
 		return r;
 	}
 
 	@Override
 	public String toString() {
 		return "Rounding Simulation";
+	}
+
+	
+	
+	InputFramework inputF = new InputFramework();
+	IntegerHolder numTrials = new IntegerHolder(5);
+	@Override
+	public void frameworkInit() {
+		inputF.addEntry("Trial Count", EntryType.SLIDER, numTrials, new Constraint(1,20) ,true);
+	}
+
+	@Override
+	public InputFramework getFramework() {
+		return inputF;
+	}
+
+	@Override
+	public boolean check() {
+		setNumTrials(numTrials.getValue());
+		return true;
+	}
+
+	@Override
+	public void confirmMenu() { }
+	
+	public void setNumTrials(int t){
+		trialCount = t;
 	}
 
 }

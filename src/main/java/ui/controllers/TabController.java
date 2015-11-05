@@ -3,6 +3,7 @@ package ui.controllers;
 import java.io.IOException;
 import java.util.Vector;
 
+import controllers.Controller;
 import evolver.EvolutionAlgorithm;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -11,7 +12,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -22,23 +25,31 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import simulations.Simulation;
-import ui.Builder.SimBuilder;
+import ui.Builder.Builder;
+import ui.Builder.HasMenu;
+import ui.Builder.InputFramework;
 
 public class TabController {
 	boolean startClicked;
-	EvolutionAlgorithm ea;
+	boolean pauseClicked;
+	boolean status[] = new boolean[3];
+	EvolutionAlgorithm ea = new EvolutionAlgorithm();
+	Simulation simulation;
+	Controller controller;
 	Vector<Float> avgFit;
 	final String tabID;
 	final FXController fxController;
 	final Tab tab;
 	FXMLLoader fxmlLoader = new FXMLLoader();
-	SimBuilder sb = new SimBuilder(this);
+	Builder builder = new Builder(this);
 	
 	
 	public TabController(String tabID, FXController fxController, Tab tab){
 		this.tabID = tabID;
 		this.fxController = fxController;
 		this.tab = tab;
+		
+		ea.frameworkInit();
 		
 		tab.setOnCloseRequest(new EventHandler<Event>() {
 			@Override
@@ -63,11 +74,23 @@ public class TabController {
 		}
 		
 		simType.getItems().addAll(Simulation.getTypeOfSimulations());
+		controllerType.getItems().addAll(Controller.getTypeOfControllers());
 		
-		//startButton.setDisable(true);
+		startButtonEnable(false);
+		pauseButton.setDisable(true);
 		
 		System.out.println("Created a new Tab Controller: " + tabID);
 		System.out.println("\tFXController: " + fxController);
+		
+		
+		GridPane grid = getNewGrid();
+		
+		evolutionPane.setContent(builder.build(ea, grid));
+		simType.getSelectionModel().select(Simulation.getTypeOfSimulations()[0]);
+		controllerType.getSelectionModel().select(Controller.getTypeOfControllers()[0]);
+		
+		accordion.setExpandedPane(evolutionPane);
+		simPane.requestFocus();
 	}
 	
 	public String getTabID(){
@@ -85,13 +108,16 @@ public class TabController {
 	private Button startButton;
 	
 	@FXML
+	private Button pauseButton;
+	
+	@FXML
 	private Button renderButton;
 
 	@FXML
 	private ComboBox<String> simType;
-
+	
 	@FXML
-	private ComboBox<String> controllerCombo;
+	private ComboBox<String> controllerType;
 
 	@FXML
 	private LineChart<Number, Number> fitnessGraph;
@@ -100,15 +126,174 @@ public class TabController {
 	private TitledPane simPane;
 	
 	@FXML
+	private TitledPane controllerPane;
+	
+	@FXML
+	private TitledPane evolutionPane;
+	
+	@FXML
+	public CheckBox simulationValid;
+	
+	@FXML
+	public CheckBox controllerValid;
+	
+	@FXML
+	public CheckBox evolutionValid;
+	
+	@FXML
+	public Label simLabel;
+	
+	@FXML
+	public Label controlLabel;
+	
+	@FXML
+	public Accordion accordion;
+	
+	
+	
+	@FXML
 	private StackPane SimComboBox;
+	
+	@FXML
+	private void onControllerTypeChanged(Event t){
+		String val = (String)((ComboBox)t.getSource()).getValue();
+		controller = (Controller) Controller.getController(val);
+		//System.out.println(s.getSettings());
+		
+		controlLabel.setText(val);
+		
+		GridPane grid = getNewGrid();
+		
+        grid.add(controllerType, 1, 0);
+        grid.add(new Label("Type:"), 0, 0);
+        
+        
+        if(controller instanceof HasMenu){
+        	((HasMenu)controller).frameworkInit();
+        	controllerPane.setContent(builder.build(controller, grid));
+        }else{
+        	controllerValid.setSelected(true);
+        	status[1] = true;
+        	controllerPane.setContent(grid);
+        	checkValidity();
+        }
+        
+        controllerPane.requestFocus();
+	}
 	
 	@FXML
 	private void onSimTypeChanged(Event t) {
 		String val = (String)((ComboBox)t.getSource()).getValue();
-		System.out.println("Sim changed: " + val);
-		Simulation s = (Simulation) Simulation.getSimulation(val);
-		//System.out.println(s.getSettings());
+		simulation = (Simulation) Simulation.getSimulation(val);
 		
+		simLabel.setText(val);
+		
+		GridPane grid = getNewGrid();
+		
+        grid.add(simType, 1, 0);
+        grid.add(new Label("Type:"), 0, 0);
+        
+        if(simulation instanceof HasMenu){
+        	((HasMenu)simulation).frameworkInit();
+        	simPane.setContent(builder.build(simulation, grid));
+        }else{
+        	simulationValid.setSelected(true);
+        	status[0] = true;
+        	simPane.setContent(grid);
+        	checkValidity();
+        }
+		simPane.requestFocus();
+	}
+	
+	public void startButtonEnable(boolean val){
+		startButton.setDisable(!val);
+	}
+	
+	@FXML
+	private void onStartClicked() {
+		
+		// addEA();
+		if (startClicked = !startClicked) {
+			ea.setRunning(true);
+			builder.setChangable(false);
+			System.out.println("STARTING SIMULATION");
+			System.out.println("SIM NUM IN: " + simulation.getNumInputs() + "\tNUM OUT: " + simulation.getNumOutputs());
+			controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
+			if(simulation instanceof HasMenu)
+				((HasMenu)simulation).confirmMenu();
+			if(controller instanceof HasMenu)
+				((HasMenu)controller).confirmMenu();
+			ea.setSimAndController(simulation,controller);
+			((HasMenu)ea).confirmMenu();
+			(new Thread(ea)).start();
+			pauseButton.setDisable(false);
+			startButton.setText("Stop");
+		} else {
+			ea.setRunning(false);
+			builder.setChangable(true);
+			InputFramework defaults = ea.getFramework();
+			ea = new EvolutionAlgorithm();
+			ea.frameworkInit();
+			ea.setDefaults(defaults);
+			GridPane grid = getNewGrid();
+			evolutionPane.setContent(builder.build(ea, grid));
+			pauseButton.setDisable(true);
+			startButton.setText("Start");
+			pause = false;
+			pauseButton.setText("Pause");
+		}
+	}
+	
+	boolean pause = false;
+	@FXML
+	private void onPauseClicked() {
+		if (pause == false) {
+			pause = true;
+			ea.setRunning(false);
+			
+			pauseButton.setText("Resume");
+		}else{
+			pause = false;
+			ea.setRunning(true);
+			pauseButton.setText("Pause");
+			(new Thread(ea)).start();
+			
+		}
+	}
+	
+	
+	public void setValidity(boolean val, Object section){
+		
+		if(section instanceof Simulation){
+			simulationValid.setSelected(val);
+			status[0] = val;
+		}else if(section instanceof Controller){
+			controllerValid.setSelected(val);
+			status[1] = val;
+		}else if(section instanceof EvolutionAlgorithm){
+			evolutionValid.setSelected(val);
+			status[2] = val;
+		}
+		
+		
+		checkValidity();
+	}
+	
+	public void checkValidity(){
+		boolean ready = true;
+		for(boolean b : status){
+			if(!b){
+				ready = false;
+				break;
+			}
+		}
+		
+		
+		//System.out.println("READY: " + ready);
+		startButtonEnable(ready);
+	}
+	
+	private GridPane getNewGrid(){
 		GridPane grid = new GridPane();
 		grid.setVgap(10);
 		grid.setHgap(2);
@@ -129,47 +314,7 @@ public class TabController {
 		r.setVgrow(Priority.NEVER);
 		grid.getRowConstraints().add(r);
 		
-        grid.add(simType, 1, 0);
-        grid.add(new Label("Type:"), 0, 0);
-        
-        
-		simPane.setContent(sb.build(s, grid, r));
-		simPane.requestFocus();
+		return grid;
 	}
-	
-	public void simulationEnable(boolean val){
-		startButton.setDisable(!val);
-	}
-	
-	@FXML
-	private void onStartClicked() {
-		// addEA();
-		/*if (startClicked = !startClicked) {
-			if (ea != null) {
-				ea.setRunning(true);
-				new Thread(ea).start();
-			} else {
-				Simulation s = new XOR();
-				Controller c = new MLP(s.getNumInputs(), s.getNumOutputs(), TransferFunctionType.SIN, 4, 4);
-				ea = new EvolutionAlgorithm(s, c);
-				s.setEvolutionAlgorithm(ea);
-				ea.setReproductionType(Type.RANDOM);
-				ea.setGenerationMultiplier(10);
-				ea.setMutationAmt(0.13f);
-				ea.setMutationRate(0.15f);
-				ea.setFoundersPercent(0.5f);
-				ea.setGamesPerElement(5);
-				avgFit = ea.getAvgFit();
-				new Thread(ea).start();
-			}
-			startButton.setText("Stop");
 
-			// Do stuff assuming we are running and configured.
-		} else {
-			startButton.setText("Start");
-			ea.setRunning(false);
-		}*/
-		System.out.println(tabID + "\t" + this + "\t" + fxController);
-		fxController.EATabs.getSelectionModel().selectLast();
-	}
 }

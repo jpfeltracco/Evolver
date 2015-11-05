@@ -1,6 +1,6 @@
 package ui.Builder;
 
-public class Constraint {
+public class Constraint{
 	private final double min;
 	private final double max;
 	private Type type;
@@ -26,12 +26,12 @@ public class Constraint {
 		return min;
 	}
 	
-	public double getMaxInt(){
-		return max;
+	public int getMaxInt(){
+		return (int)max;
 	}
 	
-	public double getMinInt(){
-		return min;
+	public int getMinInt(){
+		return (int)min;
 	}
 	
 	public Type getDigitType(){

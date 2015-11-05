@@ -1,17 +1,28 @@
 package evolver;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ResourceBundle;
 import java.util.Vector;
+
+import org.neuroph.util.TransferFunctionType;
 
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
+import controllers.LimitedControllers;
+import javafx.fxml.Initializable;
 import simulations.Simulation;
+import ui.Builder.Constraint;
+import ui.Builder.HasMenu;
+import ui.Builder.InputFramework;
+import ui.Builder.InputFramework.EntryType;
 import ui.controllers.GUI;
+import util.*;
 
-public class EvolutionAlgorithm implements Runnable {
+public class EvolutionAlgorithm implements HasMenu, Runnable {
 	public boolean running = true;
 
 	public enum Type {
@@ -24,15 +35,19 @@ public class EvolutionAlgorithm implements Runnable {
 	private float foundersPercent = 0.5f;
 	private int mult = 10;
 	private int gamesPerElement = 5;
+	private int numControllers = 5;
 	
-	private final int numPerGen;
-	private final Simulation simType;
-	private final int controlPerSim;
+	private  int numPerGen;
+	private  Simulation simType;
+	private  int controlPerSim;
+	private  int numThreads;
+	
 	private int availableControllers;
 	private Element[] elements;
-	private final int numThreads;
+	
 	private Controller[] controllers;
 	private Controller controllerType;
+	private InputFramework inputF;
 	
 	private Vector<Float> avgFit = new Vector<Float>();
 	
@@ -66,42 +81,86 @@ public class EvolutionAlgorithm implements Runnable {
 		this.gamesPerElement = gamesPerElement;
 	}
 	
+	public void setPreferedNumberOfControllers(int i){
+		numControllers = i;
+	}
+	
 	public synchronized Vector<Float> getAvgFit() {
 		return avgFit;
 	}
 
-	public EvolutionAlgorithm(Simulation sim, Controller controller){
-		this.simType = sim;
-		this.controllerType = controller;
+	//public EvolutionAlgorithm(Simulation sim, Controller controller){
+		//this.simType = sim;
+		//this.controllerType = controller;
 		
-		controlPerSim = simType.getControlPerSim();
-		availableControllers = controllerType.getAvailableControllers();
+		//controlPerSim = simType.getControlPerSim();
+		//availableControllers = controllerType.getAvailableControllers();
 		
 		
-		numThreads = availableControllers / controlPerSim; 
-		numPerGen = mult * (numThreads * controlPerSim);
+//		numThreads = availableControllers / controlPerSim; 
+//		numPerGen = mult * (numThreads * controlPerSim);
+//		
+//		System.out.println("numThreads: " + numThreads);
+//		System.out.println("controlPerSim: " + controlPerSim);
+//		System.out.println("NumPerGen: " + numPerGen);
+//		
+//		elements = new Element[numPerGen];
+//		
+//		controllers = new Controller[availableControllers];
+//
+//		for(int i = 0; i < availableControllers; i++)
+//			controllers[i] = controllerType.clone();
+//		
+//		Element.numElements = 0;
+//		for (int i = 0; i < elements.length; i++)
+//			elements[i] = controllerType.generateRandomConfig();
 		
-		System.out.println("numThreads: " + numThreads);
-		System.out.println("controlPerSim: " + controlPerSim);
-		System.out.println("NumPerGen: " + numPerGen);
-		
-		elements = new Element[numPerGen];
-		
-		controllers = new Controller[availableControllers];
-
-		for(int i = 0; i < availableControllers; i++)
-			controllers[i] = controllerType.clone();
-		
-		Element.numElements = 0;
-		for (int i = 0; i < elements.length; i++)
-			elements[i] = controllerType.generateRandomConfig();
-		
-	}
+	//}
+	
+	/*private Type reproductionType = Type.HALF;
+	private float mutationAmt = 0.13f;
+	private float mutationRate = 0.15f;
+	private float foundersPercent = 0.5f;
+	private int mult = 10;
+	private int gamesPerElement = 5;
+	private int numControllers = 5;
+	
+	private  int numPerGen;
+	private  Simulation simType;
+	private  int controlPerSim;
+	private  int numThreads;
+	
+	private int availableControllers;
+	private Element[] elements;
+	
+	private Controller[] controllers;
+	private Controller controllerType;
+	private InputFramework inputF;
+	 */
+	
 
 	@Override
 	public void run() {
 		System.out.println("EA started");
-		while (GUI.running) {
+		System.out.println("Variable List:");
+		System.out.println("\treproductionType: " + reproductionType);
+		System.out.println("\tmutationAmt: " + mutationAmt);
+		System.out.println("\tmutationRate: " + mutationRate);
+		System.out.println("\tfoundersPercent: " + foundersPercent);
+		System.out.println("\tmult: " + mult);
+		System.out.println("\tgamesPerElement: " + gamesPerElement);
+		System.out.println("\tnumControllers: " + numControllers);
+		System.out.println("\tnumPerGen: " + numPerGen);
+		System.out.println("\tsimType: " + simType);
+		System.out.println("\tcontrollerType: " + controllerType);
+		System.out.println("\tcontrolPerSim: " + controlPerSim);
+		System.out.println("\tnumThreads: " + numThreads);
+		System.out.println("\tavailableControllers: " + availableControllers);
+		
+		
+		this.running = false;
+		
+		while (GUI.running && this.running) {
 			// Setup simulations
 			
 			/*for(int i = 0; i < elements.length; i++)
@@ -167,7 +226,7 @@ public class EvolutionAlgorithm implements Runnable {
 					Simulation s = simType.clone();
 					s.setControllers(new Controller[] {controllers[0]});
 					s.setElements(new Element[] {elements[elements.length - 1]});
-					s.verbose = true;
+					s.verbose = false;
 					new Thread(s).start();
 				}
 			}
@@ -224,7 +283,9 @@ public class EvolutionAlgorithm implements Runnable {
 //				e.printStackTrace();
 //			}
 			
-//			System.out.println("1Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
+			if(genNum%500 == 0){
+				System.out.println("Gen: " + genNum + "\tElement: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness() + "\tReproduction: " + reproductionType);
+			}
 			//Elitism
 			nextGen[0] = elements[elements.length-1];
 			nextGen[0].setFitness(0);
@@ -322,6 +383,104 @@ public class EvolutionAlgorithm implements Runnable {
 		    	 }
 		     }
 	     }
+	}
+
+	
+	/*private Type reproductionType = Type.HALF;
+	private float mutationAmt = 0.13f;
+	private float mutationRate = 0.15f;
+	private float foundersPercent = 0.5f;
+	private int mult = 10;
+	private int gamesPerElement = 5;*/
+	
+	
+	
+	public void setDefaults(InputFramework def){
+		inputF.setDefaults(def);
+	}
+	
+	@Override
+	public InputFramework getFramework() {
+		return inputF;
+	}
+
+	@Override
+	public boolean check() {
+		if(!inputF.checkAllInit())
+			return false;
+		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
+		System.out.println("M Rate:\t" + menuMutationRate.getValue());
+		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
+		System.out.println("Mutiplier:\t" + menuMult.getValue());
+		System.out.println("Games Per:\t" + menuGamePerElement.getValue());
+		return true;
+	}
+
+	@Override
+	public void confirmMenu() {
+		setReproductionType((Type)menuReproductionType.getFocusObject());
+		setMutationAmt((float)menuMutationAmt.getValue());
+		setMutationRate((float)menuMutationRate.getValue());
+		setFoundersPercent((float)menuFoundersPercent.getValue());
+		setGenerationMultiplier(menuMult.getValue());
+		setGamesPerElement(menuGamePerElement.getValue());
+		setPreferedNumberOfControllers(preferedControllers.getValue());
+		
+		controlPerSim = simType.getControlPerSim();
+		
+		if(controllerType instanceof LimitedControllers){
+			((LimitedControllers)controllerType).initializeControllerType();
+			controllers = ((LimitedControllers)controllerType).checkout(numControllers);
+		}else{
+			availableControllers = numControllers;//controllerType.getAvailableControllers();
+		}
+		
+		numThreads = availableControllers / controlPerSim; 
+		numPerGen = mult * (numThreads * controlPerSim);
+		
+		//System.out.println("numThreads: " + numThreads);
+		//System.out.println("controlPerSim: " + controlPerSim);
+		//System.out.println("NumPerGen: " + numPerGen);
+		
+		elements = new Element[numPerGen];
+		
+		controllers = new Controller[availableControllers];
+
+		for(int i = 0; i < availableControllers; i++)
+			controllers[i] = controllerType.clone();
+		
+		Element.numElements = 0;
+		for (int i = 0; i < elements.length; i++)
+			elements[i] = controllerType.generateRandomConfig();
+		
+	}
+	
+	public void setSimAndController(Simulation sim, Controller controller){
+		this.simType = sim;
+		this.controllerType = controller;
+		controlPerSim = sim.getControlPerSim();
+	}
+	
+	ComboHolder menuReproductionType = new ComboHolder(Type.values(),Type.HALF);
+	DoubleHolder menuMutationAmt = new DoubleHolder(0.13);
+	DoubleHolder menuMutationRate = new DoubleHolder(0.15);
+	DoubleHolder menuFoundersPercent = new DoubleHolder(0.5);
+	IntegerHolder menuMult = new IntegerHolder(10);
+	IntegerHolder menuGamePerElement = new IntegerHolder(5);
+	IntegerHolder preferedControllers = new IntegerHolder(5);
+
+	@Override
+	public void frameworkInit() {
+		System.out.println("Initialize!!");
+		inputF = new InputFramework();
+		inputF.addEntry("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
+		inputF.addEntry("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
+		inputF.addEntry("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
+		inputF.addEntry("Founders %", EntryType.SLIDER, menuFoundersPercent, new Constraint(0,1,4),true);
+		inputF.addEntry("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
+		inputF.addEntry("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
+		inputF.addEntry("Controler #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
 	}
 
 

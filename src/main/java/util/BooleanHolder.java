@@ -1,21 +1,35 @@
 package util;
 
-public class BooleanHolder {
-	boolean bol = false;
+public class BooleanHolder implements Holder{
+	private boolean val;
 	
-	public BooleanHolder(boolean bol){
-		this.bol = bol;
+	public BooleanHolder(){
+		val = false;
+	}
+	
+	public BooleanHolder(boolean b){
+		val = b;
 	}
 	
 	public void setValue(boolean bol){
-		this.bol = bol;
+		this.val = bol;
 	}
 	
 	public boolean getValue(){
-		return this.bol;
+		return this.val;
 	}
 	
 	public String toString(){
-		return ((bol)?"true":"false");
+		return ((val)?"true":"false");
+	}
+
+	@Override
+	public void setRawVariable(Object o) {
+		val = (Boolean)o;	
+	}
+
+	@Override
+	public Object getRawVariable() {
+		return new Boolean(val);
 	}
 }

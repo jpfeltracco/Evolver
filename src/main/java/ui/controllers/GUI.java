@@ -22,6 +22,7 @@ import simulations.XOR;
 public class GUI extends Application {
 	
 	Thread eaThread;
+	public static Stage stage;
 	public static boolean running = true;
 
     public static void run() {
@@ -33,7 +34,7 @@ public class GUI extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
 
         Scene scene = new Scene(root, 750, 600);
-
+        stage = primaryStage;
         primaryStage.setTitle("Genetic Algorithm Framework");
         primaryStage.setScene(scene);
         primaryStage.show();

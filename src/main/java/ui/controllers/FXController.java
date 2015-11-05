@@ -113,7 +113,9 @@ public class FXController implements Initializable {
 		
 		
 		// By default, select 1st tab and load its content.
-		EATabs.getSelectionModel().selectFirst();
+		//EATabs.getSelectionModel().selectLast();
+		addNewEATab();
+		EATabs.getSelectionModel().select(1);
 
 	}
 

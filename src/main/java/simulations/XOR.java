@@ -2,6 +2,7 @@ package simulations;
 
 import controllers.Controller;
 import ui.Builder.Constraint;
+import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 import ui.Builder.InputFramework.EntryType;
 import util.BooleanHolder;
@@ -9,13 +10,13 @@ import util.DoubleHolder;
 import util.IntegerHolder;
 import util.StringHolder;
 
-public class XOR extends Simulation {
-	BooleanHolder setting1 = new BooleanHolder(false);
-	BooleanHolder setting4 = new BooleanHolder(false);
-	DoubleHolder setting2 = new DoubleHolder(0);
-	IntegerHolder setting5 = new IntegerHolder(0);
+public class XOR extends Simulation{
+	BooleanHolder setting1 = new BooleanHolder();
+	BooleanHolder setting4 = new BooleanHolder();
+	DoubleHolder setting2 = new DoubleHolder();
+	IntegerHolder setting5 = new IntegerHolder();
 	StringHolder setting3 = new StringHolder();
-	
+	InputFramework inputF;
 	
 	static int x = 0;
 	@Override
@@ -30,6 +31,8 @@ public class XOR extends Simulation {
 				for (int j = 0; j < 2; j++) {
 					int rand1 = i;
 					int rand2 = j;
+					
+					//c[0].printInOut();
 					
 					
 					double out = c[0].calculate(rand1, rand2)[0];
@@ -54,25 +57,7 @@ public class XOR extends Simulation {
 				}
 			}
 	}
-		
-	public void check(){
-		System.out.println("\n1: " + setting1);
-		System.out.println("2: " + setting2);
-		System.out.println("3: " + setting3);
-		System.out.println("4: " + setting4);
-		System.out.println("5: " + setting5);
-	}
 	
-	public InputFramework getFramework(){
-		InputFramework inputF = new InputFramework();
-		inputF.addEntry("Check", EntryType.CHECKBOX, setting1);
-		inputF.addEntry("Setting2", EntryType.SLIDER, setting2, new Constraint(0,8.5,3));
-		inputF.addEntry("Setting3", EntryType.TEXT, setting3);
-		inputF.addEntry("Check 2", EntryType.CHECKBOX, setting4);
-		inputF.addEntry("Int", EntryType.SLIDER, setting5, new Constraint(3,17));
-		inputF.addEntry("Info", EntryType.LABEL, "This is some system info! Way cool! Lol!");
-		return inputF;
-	}
 	
 	@Override
 	public int getNumInputs() {

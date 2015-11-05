@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
@@ -15,7 +16,7 @@
                   <HBox spacing="10.0">
                      <children>
                         <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
-                      <Button mnemonicParsing="false" text="Pause" />
+                      <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#onPauseClicked" text="Pause" />
                         <Button fx:id="renderbutton" mnemonicParsing="false" text="Render" />
                      </children>
                   </HBox>
@@ -23,12 +24,43 @@
             </ToolBar>
             <StackPane prefWidth="379.0">
                <children>
-                  <Label text="Properties" />
+                  <HBox>
+                     <children>
+                        <StackPane HBox.hgrow="SOMETIMES">
+                           <children>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label text="Simulation:">
+                                       <HBox.margin>
+                                          <Insets right="7.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="simLabel" text="Value" textFill="#73b3d8" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </StackPane>
+                        <StackPane HBox.hgrow="SOMETIMES">
+                           <children>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label text="Controller:">
+                                       <HBox.margin>
+                                          <Insets right="7.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="controlLabel" text="Value" textFill="#73b3d8" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </HBox>
                </children>
             </StackPane>
-            <Accordion VBox.vgrow="ALWAYS">
+            <Accordion fx:id="accordion" VBox.vgrow="ALWAYS">
               <panes>
-                <TitledPane fx:id="simPane" alignment="CENTER_RIGHT" text="Simulation">
+                <TitledPane fx:id="simPane" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" text="Simulation">
                   <content>
                         <GridPane hgap="2.0" vgap="10.0">
                           <columnConstraints>
@@ -39,42 +71,66 @@
                             <RowConstraints vgrow="NEVER" />
                             <RowConstraints vgrow="NEVER" />
                             <RowConstraints vgrow="NEVER" />
-                              <RowConstraints minHeight="10.0" vgrow="NEVER" />
-                              <RowConstraints minHeight="10.0" vgrow="NEVER" />
                           </rowConstraints>
                            <children>
                               <Label text="Type:" />
                               <ComboBox fx:id="simType" onAction="#onSimTypeChanged" promptText="Click Here" GridPane.columnIndex="1" />
-                              <Label text="Players:" GridPane.rowIndex="1" />
-                              <Label text="Accelerate:" GridPane.rowIndex="2" />
-                              <Label text="Is Cool:" GridPane.rowIndex="3" />
-                              <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                 <children>
-                                    <Slider blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" showTickMarks="true" snapToTicks="true" />
-                                    <Label minWidth="-Infinity" text="30" />
-                                 </children>
-                              </HBox>
-                              <Label text="Sim Info:" GridPane.rowIndex="4" />
-                              <Label maxWidth="198.0" text="This is some information about the simulation! Look how cool it is! Wow!" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="4" GridPane.vgrow="NEVER" />
-                              <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
-                                 <padding>
-                                    <Insets right="-5.0" />
-                                 </padding>
-                              </CheckBox>
-                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
                            </children>
                         </GridPane>
                   </content>
+                     <graphic>
+                        <CheckBox fx:id="simulationValid" disable="true" mnemonicParsing="false">
+                           <padding>
+                              <Insets right="-3.0" />
+                           </padding>
+                        </CheckBox>
+                     </graphic>
                 </TitledPane>
-                <TitledPane alignment="BOTTOM_RIGHT" prefWidth="377.0" text="Controller">
+                <TitledPane fx:id="controllerPane" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" prefWidth="377.0" text="Controller">
                   <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <GridPane hgap="2.0" vgap="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="124.0" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints vgrow="NEVER" />
+                           </rowConstraints>
+                           <children>
+                              <Label text="Type:" />
+                              <ComboBox fx:id="controllerType" onAction="#onControllerTypeChanged" promptText="Click Here" GridPane.columnIndex="1" />
+                           </children>
+                        </GridPane>
                   </content>
+                     <graphic>
+                        <CheckBox fx:id="controllerValid" disable="true" mnemonicParsing="false">
+                           <padding>
+                              <Insets right="-3.0" />
+                           </padding>
+                        </CheckBox>
+                     </graphic>
                 </TitledPane>
-                <TitledPane alignment="CENTER_RIGHT" text="Evolution">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
+                <TitledPane fx:id="evolutionPane" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" text="Evolution">
+                     <content>
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                        </GridPane>
+                     </content>
+                     <graphic>
+                        <CheckBox fx:id="evolutionValid" disable="true" mnemonicParsing="false">
+                           <padding>
+                              <Insets right="-3.0" />
+                           </padding>
+                        </CheckBox>
+                     </graphic>
                 </TitledPane>
               </panes>
             </Accordion>

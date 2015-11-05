@@ -66,13 +66,6 @@ public abstract class Simulation implements Runnable {
 	 */
 	public abstract String toString();
 	
-	
-	public InputFramework getFramework(){
-		return null;
-	}
-	
-	public void check(){}
-	
 	public Controller[] getControllers() {
 		return controllers;
 	}

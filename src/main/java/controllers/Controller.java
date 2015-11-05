@@ -1,17 +1,24 @@
 package controllers;
 
 import evolver.Element;
+import simulations.Memory;
+import simulations.Pong;
+import simulations.Round;
+import simulations.Simulation;
+import simulations.Through;
+import simulations.XOR;
 
 public abstract class Controller {
-	int numIn;
-	int numOut;
+	protected int numIn;
+	protected int numOut;
 	double[] output;
 	Element element;
 	
-	public Controller(int numIn, int numOut) {
+	public void setInOut(int numIn, int numOut){
 		this.numIn = numIn;
 		this.numOut = numOut;
 		output = new double[numOut];
+		//System.out.println("Setting In Out: " + numIn + "\t" + numOut);
 	}
 	
 	/**
@@ -35,12 +42,6 @@ public abstract class Controller {
 	public void addFitness(double amt) {
 		element.addFitness(amt);
 	}
-	
-	/**
-	 * Gets the number of total controllers allowed by this Controller type.
-	 * @return the max number of controllers that can be used
-	 */
-	public abstract int getAvailableControllers();
 	
 	/**
 	 * Gets the size of the config array needed.
@@ -71,5 +72,21 @@ public abstract class Controller {
 	 */
 	public abstract Controller clone();
 	
+	
 	public abstract boolean isSame(Element e1, Element e2);
+	
+	//-------------------------------------------------------------------
+	public static String[] getTypeOfControllers(){
+		return new String[] {"MLP","FPGA"};
+	}
+	
+	public static Controller getController(String sim){
+		switch(sim){
+		case "MLP":
+			return (Controller)(new MLP());
+		case "FPGA":
+			return (Controller)(new FPGA());
+		}
+		return null;
+	}
 }
