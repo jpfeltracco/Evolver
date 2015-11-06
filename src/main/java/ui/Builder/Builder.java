@@ -25,10 +25,22 @@ public class Builder {
 	private final TabController tabController;
 	private static ArrayList<Control> constants = new ArrayList<Control>();
 	
+	/**
+	 * Makes a new Builder for this controller.
+	 * @param tabController the Controller that made this Builder
+	 */
 	public Builder(TabController tabController){
 		this.tabController = tabController;
 	}
 	
+	/**
+	 * Builds a GridPane from the inputed object's InputFramework. The inputed object MUST implement
+	 * HasMenu.
+	 * 
+	 * @param sIn the Object from which to populate a GridPane
+	 * @param grid the GridPane that all of this will be added to
+	 * @return the new GridPane
+	 */
 	public GridPane build(Object sIn, GridPane grid){
 		if(!(sIn instanceof HasMenu)){
 			System.out.println("ERROR: Builder tried to build an object that cannot be made into a menu: " + sIn);
@@ -221,11 +233,24 @@ public class Builder {
 		return grid;
 	}
 	
+	/**
+	 * Sets the Changable object's enable function to the inputed value
+	 * @param val the value to set the Changable object's enable function to
+	 */
 	public void setChangable(boolean val){
 		for(Control c : constants){
 			System.out.println(c);
 			c.setDisable(!val);
 		}
+	}
+	
+	/**
+	 * Adds a Control to the list of Controls that are not able to be changed during
+	 * runtime.
+	 * @param c the Control to add to the list
+	 */
+	public void addNonChangable(Control c){
+		constants.add(c);
 	}
 	
 }

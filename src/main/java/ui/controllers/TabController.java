@@ -49,6 +49,7 @@ public class TabController {
 		this.fxController = fxController;
 		this.tab = tab;
 		
+		//((HasMenu)ea).clearFramework();
 		ea.frameworkInit();
 		
 		tab.setOnCloseRequest(new EventHandler<Event>() {
@@ -88,6 +89,9 @@ public class TabController {
 		evolutionPane.setContent(builder.build(ea, grid));
 		simType.getSelectionModel().select(Simulation.getTypeOfSimulations()[0]);
 		controllerType.getSelectionModel().select(Controller.getTypeOfControllers()[0]);
+		
+		builder.addNonChangable(simType);
+		builder.addNonChangable(controllerType);
 		
 		accordion.setExpandedPane(evolutionPane);
 		simPane.requestFocus();
@@ -169,6 +173,7 @@ public class TabController {
         
         
         if(controller instanceof HasMenu){
+        	//((HasMenu)controller).clearFramework();
         	((HasMenu)controller).frameworkInit();
         	controllerPane.setContent(builder.build(controller, grid));
         }else{
@@ -194,6 +199,7 @@ public class TabController {
         grid.add(new Label("Type:"), 0, 0);
         
         if(simulation instanceof HasMenu){
+        	//((HasMenu)simulation).clearFramework();
         	((HasMenu)simulation).frameworkInit();
         	simPane.setContent(builder.build(simulation, grid));
         }else{
@@ -231,10 +237,10 @@ public class TabController {
 		} else {
 			ea.setRunning(false);
 			builder.setChangable(true);
-			InputFramework defaults = ea.getFramework();
+			InputFramework def = ea.getFramework();
 			ea = new EvolutionAlgorithm();
 			ea.frameworkInit();
-			ea.setDefaults(defaults);
+			ea.getFramework().setDefaults(def);
 			GridPane grid = getNewGrid();
 			evolutionPane.setContent(builder.build(ea, grid));
 			pauseButton.setDisable(true);

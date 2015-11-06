@@ -14,11 +14,15 @@ public abstract class Controller {
 	double[] output;
 	Element element;
 	
+	/**
+	 * Sets the number of inputs and outputs for this controller in this context.
+	 * @param numIn the number of inputs
+	 * @param numOut the number of outputs
+	 */
 	public void setInOut(int numIn, int numOut){
 		this.numIn = numIn;
 		this.numOut = numOut;
 		output = new double[numOut];
-		//System.out.println("Setting In Out: " + numIn + "\t" + numOut);
 	}
 	
 	/**
@@ -39,6 +43,10 @@ public abstract class Controller {
 	 */
 	public abstract void setConfig(Element e);
 	
+	/**
+	 * Passes the fitness on to the element that this controller currently owns.
+	 * @param amt the fitness to be added
+	 */
 	public void addFitness(double amt) {
 		element.addFitness(amt);
 	}
@@ -72,9 +80,18 @@ public abstract class Controller {
 	 */
 	public abstract Controller clone();
 	
-	
+	/**
+	 * Determine if these two Elements are the same by this controller's standards. This can be
+	 * via fitness values, but it should be based on actual element configuration.
+	 * @param e1 the first Element to be compared
+	 * @param e2 the second Element to be compared
+	 * @return whether these two Elements are the same
+	 */
 	public abstract boolean isSame(Element e1, Element e2);
 	
+
+	//-------------------------------------------------------------------
+	// TODO Create a better way of doing this!
 	//-------------------------------------------------------------------
 	public static String[] getTypeOfControllers(){
 		return new String[] {"MLP","FPGA"};

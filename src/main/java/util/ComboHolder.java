@@ -44,4 +44,16 @@ public class ComboHolder implements Holder{
 	public Object getRawVariable() {
 		return focus;
 	}
+	
+	@Override
+	public void setToHolder(Holder h) {
+		setFocus(h.getRawVariable());
+	}
+	
+	@Override
+	public Holder clone() {
+		ComboHolder out = new ComboHolder(objects);
+		out.setFocus(focus);
+		return out;
+	}
 }

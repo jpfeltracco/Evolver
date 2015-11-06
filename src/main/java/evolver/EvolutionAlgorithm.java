@@ -1,19 +1,14 @@
 package evolver;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.ResourceBundle;
 import java.util.Vector;
-
-import org.neuroph.util.TransferFunctionType;
 
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
 import controllers.LimitedControllers;
-import javafx.fxml.Initializable;
 import simulations.Simulation;
 import ui.Builder.Constraint;
 import ui.Builder.HasMenu;
@@ -47,7 +42,6 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	
 	private Controller[] controllers;
 	private Controller controllerType;
-	private InputFramework inputF;
 	
 	private Vector<Float> avgFit = new Vector<Float>();
 	
@@ -158,7 +152,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		System.out.println("\tavailableControllers: " + availableControllers);
 		
 		
-		this.running = false;
+		//this.running = false;
 		
 		while (GUI.running && this.running) {
 			// Setup simulations
@@ -386,24 +380,8 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	}
 
 	
-	/*private Type reproductionType = Type.HALF;
-	private float mutationAmt = 0.13f;
-	private float mutationRate = 0.15f;
-	private float foundersPercent = 0.5f;
-	private int mult = 10;
-	private int gamesPerElement = 5;*/
+	InputFramework inputF = new InputFramework();
 	
-	
-	
-	public void setDefaults(InputFramework def){
-		inputF.setDefaults(def);
-	}
-	
-	@Override
-	public InputFramework getFramework() {
-		return inputF;
-	}
-
 	@Override
 	public boolean check() {
 		if(!inputF.checkAllInit())
@@ -472,8 +450,6 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 
 	@Override
 	public void frameworkInit() {
-		System.out.println("Initialize!!");
-		inputF = new InputFramework();
 		inputF.addEntry("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
 		inputF.addEntry("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
 		inputF.addEntry("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
@@ -481,6 +457,11 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		inputF.addEntry("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
 		inputF.addEntry("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
 		inputF.addEntry("Controler #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
+	}
+
+	@Override
+	public InputFramework getFramework() {
+		return inputF;
 	}
 
 

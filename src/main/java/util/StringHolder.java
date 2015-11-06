@@ -35,4 +35,16 @@ public class StringHolder implements Holder{
 	public Object getRawVariable() {
 		return val;
 	}
+	
+	@Override
+	public void setToHolder(Holder h) {
+		if(!(h instanceof StringHolder))
+			throw new RuntimeException("A StringHolder can only be set to values of other StringHolders.");
+		setValue((String)h.getRawVariable());
+	}
+	
+	@Override
+	public Holder clone() {
+		return new StringHolder(val);
+	}
 }

@@ -32,4 +32,20 @@ public class DoubleHolder implements Holder{
 	public Object getRawVariable() {
 		return new Double(val);
 	}
+	
+	@Override
+	public void setToHolder(Holder h) {
+		if(!(h instanceof DoubleHolder))
+			throw new RuntimeException("A DoubleHolder can only be set to values of other DoubleHolders.");
+		System.out.println("BEFORE:\t" + getValue());
+		System.out.println("SET:\t" + (Double)h.getRawVariable());
+		setValue((Double)h.getRawVariable());
+		System.out.println("AFTER:\t" + getValue());
+		
+	}
+	
+	@Override
+	public Holder clone() {
+		return new DoubleHolder(val);
+	}
 }

@@ -42,6 +42,13 @@ public class Constraint{
 		return digits;
 	}
 	
+	public Constraint clone(){
+		if(type == Type.DOUBLE)
+			return new Constraint(min, max, digits);
+		else
+			return new Constraint((int)min, (int)max);
+	}
+	
 	public enum Type{
 		INT, DOUBLE
 	}

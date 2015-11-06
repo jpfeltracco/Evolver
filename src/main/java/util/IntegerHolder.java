@@ -33,4 +33,16 @@ public class IntegerHolder implements Holder{
 	public Object getRawVariable() {
 		return new Integer(val);
 	}
+	
+	@Override
+	public void setToHolder(Holder h) {
+		if(!(h instanceof IntegerHolder))
+			throw new RuntimeException("A IntegerHolder can only be set to values of other IntegerHolders.");
+		setValue((Integer)h.getRawVariable());
+	}
+	
+	@Override
+	public Holder clone() {
+		return new IntegerHolder(val);
+	}
 }

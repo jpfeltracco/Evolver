@@ -1,10 +1,6 @@
 package controllers;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ResourceBundle;
-
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.util.TransferFunctionType;
 import org.neuroph.util.random.GaussianRandomizer;
@@ -23,7 +19,7 @@ public class MLP extends Controller implements HasMenu{
 	private TransferFunctionType f;
 	private int[] netDim;
 	private int[] dims;
-	private InputFramework inputF;
+	//private InputFramework inputF;
 	/*public MLP(TransferFunctionType f, int... netDim) {
 		this.f = f;
 		this.netDim = netDim;
@@ -73,6 +69,7 @@ public class MLP extends Controller implements HasMenu{
 	@Override
 	public Controller clone() {
 		MLP c = new MLP();
+		//HasMenu.migrate(inputF, c);
 		//System.out.println("Current In Out: " + this.numIn + "\t" + this.numOut);
 		//System.out.println(f);
 		c.setInOut(this.numIn, this.numOut);
@@ -98,19 +95,21 @@ public class MLP extends Controller implements HasMenu{
 	}
 
 	
+	InputFramework inputF = new InputFramework();
+	
 	@Override
 	public InputFramework getFramework() {
-		
 		return inputF;
 	}
 
+	ArrayList<Integer> internalSizeArray;
 	@Override
 	public boolean check() {
 		if(!inputF.checkAllInit())
 			return false;
 		
 		String[] arr = internalSize.getValue().split(",");
-		ArrayList<Integer> internalSizeArray = new ArrayList<Integer>(arr.length);
+		internalSizeArray = new ArrayList<Integer>(arr.length);
 		for(int i = 0; i < arr.length; i++){
 			if(arr[i].trim().length() > 0){
 				try{
@@ -129,8 +128,8 @@ public class MLP extends Controller implements HasMenu{
 		for(int i = 0; i < internalSizeArray.size(); i++){
 			this.netDim[i] = internalSizeArray.get(i);
 		}
-			
-		f = ((TransferFunctionType)transferType.getFocusObject());
+		
+		
 
 		
 		return true;
@@ -139,6 +138,8 @@ public class MLP extends Controller implements HasMenu{
 	@Override
 	public void confirmMenu() {
 		dims = calculateDimArray();
+		f = ((TransferFunctionType)transferType.getFocusObject());
+		
 		mlpNet = new MultiLayerPerceptron(f, dims);
 	}
 	
@@ -162,14 +163,14 @@ public class MLP extends Controller implements HasMenu{
 	}
 
 	
-	StringHolder internalSize = new StringHolder("2,2");
+	StringHolder internalSize = new StringHolder("2, 2");
 	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.TANH);
 	@Override
 	public void frameworkInit() {
-		inputF = new InputFramework();
 		inputF.addEntry("Net Dim", EntryType.TEXT, internalSize, false);
 		inputF.addEntry("TransType", EntryType.COMBOBOX, transferType, false);
 	}
+
 
 
 	

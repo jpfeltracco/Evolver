@@ -32,4 +32,16 @@ public class BooleanHolder implements Holder{
 	public Object getRawVariable() {
 		return new Boolean(val);
 	}
+
+	@Override
+	public void setToHolder(Holder h) {
+		if(!(h instanceof BooleanHolder))
+			throw new RuntimeException("A BooleanHolder can only be set to values of other BooleanHolders.");
+		setValue((Boolean)h.getRawVariable());
+	}
+	
+	@Override
+	public Holder clone() {
+		return new BooleanHolder(val);
+	}
 }

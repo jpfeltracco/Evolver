@@ -3,8 +3,13 @@ package simulations;
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
+import ui.Builder.Constraint;
+import ui.Builder.HasMenu;
+import ui.Builder.InputFramework;
+import ui.Builder.InputFramework.EntryType;
+import util.IntegerHolder;
 
-public class Through extends Simulation {
+public class Through extends Simulation{
 	static int x = 0;
 	@Override
 	public void simulate(Controller[] c) {
@@ -21,6 +26,7 @@ public class Through extends Simulation {
 			c[0].addFitness(-error);
 		//}
 		//System.out.println();
+			
 	}
 			
 	
