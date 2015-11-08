@@ -48,7 +48,7 @@ public class EaTabController {
 		this.tabID = tabID;
 		this.fxController = fxController;
 		this.tab = tab;
-		
+		//TEST
 		//((HasMenu)ea).clearFramework();
 		ea.frameworkInit();
 		
