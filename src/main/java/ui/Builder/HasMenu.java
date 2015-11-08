@@ -39,14 +39,13 @@ public interface HasMenu {
 	 */
 	public InputFramework getFramework();
 	
-	/*public default void claimVariables(ArrayList<Holder> vals){
-		inputF.setVariablesFromList(vals);
-	}
-	
-	public default ArrayList<Holder> prepCloneMenuItems(){
-		return inputF.getVariableClones();
-	}*/
-	
+	/**
+	 * Migrates one object's variables to another instance of the same object. Useful for cloning and 
+	 * other transfer methods. After this method is called, every variable that is dependent on menu
+	 * choices should be initialized in the new object.
+	 * @param inputF the InputFramework of the original object.
+	 * @param in the object to migrate this InputFramework to
+	 */
 	public static void migrate(InputFramework inputF, Object in){
 		if(!(in instanceof HasMenu))
 			throw new RuntimeException("Migration can only be applied to objects that implement HasMenu.");

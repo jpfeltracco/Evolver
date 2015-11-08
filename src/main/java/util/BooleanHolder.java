@@ -1,20 +1,40 @@
 package util;
-
+/**
+ * BooleanHolder holds a boolean value and has some methods that are used with InputFramework, Builder,
+ * and other menu-related classes.
+ * @author Keenan Nicholson
+ *
+ */
 public class BooleanHolder implements Holder{
 	private boolean val;
 	
+	/**
+	 * Create a new BooleanHolder with the default value of false.
+	 */
 	public BooleanHolder(){
 		val = false;
 	}
 	
+	/**
+	 * Create a new BooleanHolder with the default value of b.
+	 * @param b the initial value
+	 */
 	public BooleanHolder(boolean b){
 		val = b;
 	}
 	
+	/**
+	 * Sets this BooleanHolder to a value of b
+	 * @param b the value to set this BooleanHolder to
+	 */
 	public void setValue(boolean bol){
 		this.val = bol;
 	}
 	
+	/**
+	 * Gets this BooleanHolder value
+	 * @return this BooleanHolder value
+	 */
 	public boolean getValue(){
 		return this.val;
 	}

@@ -29,7 +29,7 @@ import ui.Builder.Builder;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 
-public class TabController {
+public class EaTabController {
 	boolean startClicked;
 	boolean pauseClicked;
 	boolean status[] = new boolean[3];
@@ -44,7 +44,7 @@ public class TabController {
 	Builder builder = new Builder(this);
 	
 	
-	public TabController(String tabID, FXController fxController, Tab tab){
+	public EaTabController(String tabID, FXController fxController, Tab tab){
 		this.tabID = tabID;
 		this.fxController = fxController;
 		this.tab = tab;
@@ -103,6 +103,7 @@ public class TabController {
 	
 	public boolean close(){
 		System.out.println("Closing tabID: " + tabID);
+		ea.setRunning(false);
 		return true;
 	}
 	

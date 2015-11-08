@@ -138,14 +138,6 @@ public class InputFramework {
 	}
 	
 	/**
-	 * Enum for telling the Builder which type of menu item to use
-	 * @author Keenan Nicholson
-	 */
-	public static enum EntryType{
-		CHECKBOX, SLIDER, TEXT, LABEL, COMBOBOX
-	}
-	
-	/**
 	 * Checks to see if all of the variables associated with this InputFramework are initialized.
 	 * This is useful for making sure that all ComboBoxes and Strings have been inputed.
 	 * Recommended: Use in check() to ensure that your variables are valid from the user.
@@ -209,18 +201,6 @@ public class InputFramework {
 		changableElements.clear();
 	}
 	
-	public void setVariablesFromList(ArrayList<Holder> input){
-		System.out.println("Setting Variables from Holder -------------------");
-		//clear();
-		if(variables.size() != input.size())
-			throw new RuntimeException("Variable array sizes do not match.");
-		for(int i = 0; i < variables.size(); i++){
-			System.out.println(input.get(i));
-			variables.get(i).setToHolder(input.get(i));
-		}
-		System.out.println("Done");
-	}
-	
 	/**
 	 * Sets the default variables in this InputFramework to the variables of the inputed InputFramework. Note:
 	 * Ensure that these InputFrameworks both describe the same object! The menus MUST match, as this
@@ -235,5 +215,13 @@ public class InputFramework {
 		for(int i = 0; i < defVariables.size(); i++){
 			variables.get(i).setRawVariable(defVariables.get(i).getRawVariable());
 		}
+	}
+	
+	/**
+	 * Enum for telling the Builder which type of menu item to use
+	 * @author Keenan Nicholson
+	 */
+	public static enum EntryType{
+		CHECKBOX, SLIDER, TEXT, LABEL, COMBOBOX
 	}
 }

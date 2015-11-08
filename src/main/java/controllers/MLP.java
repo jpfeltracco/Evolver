@@ -16,21 +16,7 @@ import util.*;
 public class MLP extends Controller implements HasMenu{
 	MultiLayerPerceptron mlpNet;
 	private static GaussianRandomizer r = new GaussianRandomizer(0, 3);
-	private TransferFunctionType f;
-	private int[] netDim;
-	private int[] dims;
-	//private InputFramework inputF;
-	/*public MLP(TransferFunctionType f, int... netDim) {
-		this.f = f;
-		this.netDim = netDim;
-		int[] dims = new int[netDim.length + 2];
-		dims[0] = numIn;
-		dims[dims.length - 1] = numOut;
-		for (int i = 1; i < dims.length - 1; i++)
-			dims[i] = netDim[i - 1];
-		mlpNet = new MultiLayerPerceptron(f, dims);
-	}*/
-
+	
 	@Override
 	public double[] calculate(double... in) {
 		mlpNet.setInput(in);
@@ -69,17 +55,8 @@ public class MLP extends Controller implements HasMenu{
 	@Override
 	public Controller clone() {
 		MLP c = new MLP();
-		//HasMenu.migrate(inputF, c);
-		//System.out.println("Current In Out: " + this.numIn + "\t" + this.numOut);
-		//System.out.println(f);
 		c.setInOut(this.numIn, this.numOut);
-		//System.out.println();
-		//printInOut();
-		//c.printInOut();
-		//System.out.println();
-		c.setNetworkDim(netDim);
-		c.setTransferFunctionType(f);
-		c.confirmMenu();
+		HasMenu.migrate(inputF, c);
 		return c;
 	}
 	
@@ -89,19 +66,35 @@ public class MLP extends Controller implements HasMenu{
 		for (int i = 0; i < e1.config.length; i++)
 			totalDist += Math.abs(e1.config[i] - e2.config[i]);
 		totalDist /= e1.config.length;
-//		System.out.println(totalDist);
 		return totalDist < .10f;
 		
 	}
-
 	
+	//------------------------------------------------------------------------------------------
+	//----------------------------------------MENU----------------------------------------------
+	//------------------------------------------------------------------------------------------
+	
+	//Initializations:
 	InputFramework inputF = new InputFramework();
+	StringHolder internalSize = new StringHolder("2, 2");
+	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.TANH);
 	
+	private TransferFunctionType f;
+	private int[] netDim;
+	private int[] dims;
+
+
+	@Override
+	public void frameworkInit() {
+		inputF.addEntry("Net Dim", EntryType.TEXT, internalSize, false);
+		inputF.addEntry("TransType", EntryType.COMBOBOX, transferType, false);
+	}
+
 	@Override
 	public InputFramework getFramework() {
 		return inputF;
 	}
-
+	
 	ArrayList<Integer> internalSizeArray;
 	@Override
 	public boolean check() {
@@ -129,50 +122,36 @@ public class MLP extends Controller implements HasMenu{
 			this.netDim[i] = internalSizeArray.get(i);
 		}
 		
-		
-
-		
 		return true;
 	}
 
 	@Override
 	public void confirmMenu() {
+		System.out.println("\n--------------NEW MLP--------------");
 		dims = calculateDimArray();
 		f = ((TransferFunctionType)transferType.getFocusObject());
-		
+		System.out.print("Dim Array:\t");
+		for(int s : dims){
+			System.out.print("" + s + " ");
+		}
+		System.out.println("\nTransferType:\t" + f);
 		mlpNet = new MultiLayerPerceptron(f, dims);
+		System.out.println("-----------------------------------\n");
 	}
 	
-	public void setTransferFunctionType(TransferFunctionType t){
-		f = t;
-	}
-	
-	public void setNetworkDim(int[] netDim){
-		this.netDim = netDim;
-	}
-	
+	//Helper Methods:
 	private int[] calculateDimArray(){
 		int[] dims = new int[netDim.length + 2];
 		dims[0] = numIn;
 		dims[dims.length - 1] = numOut;
 		for (int i = 1; i < dims.length - 1; i++)
 			dims[i] = netDim[i - 1];
-		
 		return dims;
-		
 	}
 
-	
-	StringHolder internalSize = new StringHolder("2, 2");
-	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.TANH);
-	@Override
-	public void frameworkInit() {
-		inputF.addEntry("Net Dim", EntryType.TEXT, internalSize, false);
-		inputF.addEntry("TransType", EntryType.COMBOBOX, transferType, false);
-	}
-
-
-
+	//------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------
 	
 
 }

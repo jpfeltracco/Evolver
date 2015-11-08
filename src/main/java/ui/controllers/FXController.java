@@ -13,7 +13,7 @@ public class FXController implements Initializable {
 
 	// ArrayList<EvolutionAlgorithm> eas = new ArrayList<EvolutionAlgorithm>();
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
-	ArrayList<TabController> tabControllers = new ArrayList<TabController>();
+	ArrayList<EaTabController> tabControllers = new ArrayList<EaTabController>();
 	
 	int eaCount = 0;
 
@@ -54,7 +54,7 @@ public class FXController implements Initializable {
 		t.setId("" + tabID);
 		
 		//Add Tab Pane
-		TabController tc = new TabController(t.getId(), this, t);
+		EaTabController tc = new EaTabController(t.getId(), this, t);
 		tabControllers.add(tc);
 		
 		//Show Tab

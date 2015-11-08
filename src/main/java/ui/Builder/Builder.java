@@ -13,7 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Popup;
 import ui.controllers.GUI;
-import ui.controllers.TabController;
+import ui.controllers.EaTabController;
 import util.BooleanHolder;
 import util.ComboHolder;
 import util.DoubleHolder;
@@ -22,14 +22,14 @@ import util.StringHolder;
 
 public class Builder {
 	
-	private final TabController tabController;
+	private final EaTabController tabController;
 	private static ArrayList<Control> constants = new ArrayList<Control>();
 	
 	/**
 	 * Makes a new Builder for this controller.
 	 * @param tabController the Controller that made this Builder
 	 */
-	public Builder(TabController tabController){
+	public Builder(EaTabController tabController){
 		this.tabController = tabController;
 	}
 	
@@ -203,7 +203,7 @@ public class Builder {
 				Label lab = new Label();
 				lab.maxWidth(198.0);
 				lab.setWrapText(true);
-				System.out.println(grid.getRowConstraints().size());
+				//System.out.println(grid.getRowConstraints().size());
 				//RowConstraints rc = new RowConstraints();
 				//rc.setVgrow(Priority.NEVER);
 				//grid.getRowConstraints().add(rc);
@@ -214,7 +214,9 @@ public class Builder {
 				ComboBox<Object> comboB = new ComboBox<Object>();
 				comboB.setPromptText("Select a Value");
 				ComboHolder ch = ((ComboHolder)inputF.getVariable(i));
+				ch.setComboBox(comboB);
 				comboB.getItems().addAll(ch.getTitles());
+				
 				if(ch.getFocusObject() != null){
 					comboB.getSelectionModel().select(ch.getFocusObject());
 				}
@@ -239,7 +241,7 @@ public class Builder {
 	 */
 	public void setChangable(boolean val){
 		for(Control c : constants){
-			System.out.println(c);
+			//System.out.println(c);
 			c.setDisable(!val);
 		}
 	}
