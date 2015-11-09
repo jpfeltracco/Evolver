@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.File;
 import java.io.Serializable;
 
 import evolver.Element;
@@ -90,6 +91,8 @@ public abstract class Controller implements Serializable{
 	 * @return whether these two Elements are the same
 	 */
 	public abstract boolean isSame(Element e1, Element e2);
+	
+	public abstract void saveConfig(File loc);
 	
 
 	//-------------------------------------------------------------------

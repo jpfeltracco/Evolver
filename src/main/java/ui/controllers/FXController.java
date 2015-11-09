@@ -56,6 +56,16 @@ public class FXController implements Initializable {
 	}
 	
 	@FXML
+	private void onExportController(){
+		for(EATabHolder ea : tabControllers){
+			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+				ea.exportController();
+				break;
+			}
+		}
+	}
+	
+	@FXML
 	private void openEvolution(){
 		final DirectoryChooser directoryChooser = new DirectoryChooser();
 	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
@@ -188,6 +198,9 @@ public class FXController implements Initializable {
 	
 	@FXML
 	private MenuItem openProject;
+	
+	@FXML
+	private MenuItem exportController;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -199,9 +212,11 @@ public class FXController implements Initializable {
 		if(System.getProperty("os.name").contains("Mac")){
 			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.META_DOWN));
 			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.META_DOWN));
+			exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.META_DOWN, KeyCombination.SHIFT_DOWN));
 		}else{
 			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+			exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
 		}
 	}
 

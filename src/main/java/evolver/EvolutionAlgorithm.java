@@ -47,6 +47,8 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	private Controller[] controllers;
 	private Controller controllerType;
 	
+	private Element bestElement;
+	
 	private Graph grapher;
 	
 	private Vector<Float> avgFit = new Vector<Float>();
@@ -292,9 +294,11 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 			
 			runningAvg.add(elements[elements.length-1].getFitness());
 			
+			bestElement = elements[elements.length-1];
+			
 			if(genNum%graphAmt.getValue() == 0){	
 				//System.out.println("Gen: " + genNum + "\tElement: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness() + "\tReproduction: " + reproductionType);
-				System.out.println("SYS: Gen: " + genNum + "\tFitness: " + elements[elements.length-1].getFitness() + "\tAvg: " + avg(runningAvg));
+				System.out.println("SYS: Gen: " + genNum + "\tFitness: " + bestElement.getFitness() + "\tAvg: " + avg(runningAvg));
 				/*Platform.runLater(new Runnable() {
 					  @Override
 					  public void run() {
@@ -307,7 +311,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 				});*/
 				
 				//grapher.graphData("Average Fitness", new Number[] {genNum, avg(runningAvg)});
-				grapher.graphData("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
+				grapher.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
 				
 				runningAvg.clear();
 				
@@ -333,7 +337,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 			//grapher.addToSeries("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
 			
 			//Elitism
-			nextGen[0] = elements[elements.length-1];
+			nextGen[0] = bestElement;
 			nextGen[0].setFitness(0);
 
 			for(int i = 1; i < elements.length; i++)
@@ -374,6 +378,12 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		
 		System.out.println("EA stopped");
 		
+	}
+	
+	public synchronized Controller getBestElement(){
+		System.out.println(bestElement);
+		controllerType.setConfig(bestElement);
+		return controllerType;
 	}
 	
 	public ElementHolder getExportedElements(){
