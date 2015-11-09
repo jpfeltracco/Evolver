@@ -3,13 +3,13 @@ package simulations;
 import com.badlogic.gdx.math.MathUtils;
 import controllers.Controller;
 
-public class Through extends Simulation{
+public class Through extends Simulation {
 	
 	@Override
 	public void simulate(Controller[] c) {
 		double in = MathUtils.random() * 2 - 1;//i;
 		double out = c[0].calculate(in)[0];
-		double error = Math.abs(out - in);
+		double error = Math.abs(out * .5 - in);
 		c[0].addFitness(-error);
 			
 	}		

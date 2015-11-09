@@ -2,6 +2,8 @@ package controllers;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
+
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.util.TransferFunctionType;
 import org.neuroph.util.random.GaussianRandomizer;
@@ -12,11 +14,12 @@ import evolver.Element;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 import ui.Builder.InputFramework.EntryType;
-import util.*;
+import util.ComboHolder;
+import util.StringHolder;
 
 public class MLP extends Controller implements HasMenu{
 	MultiLayerPerceptron mlpNet;
-	private static GaussianRandomizer r = new GaussianRandomizer(0, 3);
+	private static Random r = new Random();
 	
 	@Override
 	public double[] calculate(double... in) {
@@ -41,15 +44,18 @@ public class MLP extends Controller implements HasMenu{
 	public Element generateRandomConfig() {
 		Element e = new Element();
 		e.config = new double[getConfigSize()];
-		for (int j = 0; j < getConfigSize(); j++)
-			e.config[j] = r.getRandomGenerator().nextDouble();
+		for (int j = 0; j < getConfigSize(); j++) {
+//			e.config[j] = r.getRandomGenerator().nextDouble();
+			e.config[j] = r.nextGaussian();
+			System.out.println(e.config[j]);
+		}	
 		return e;
 	}
 
 	@Override
 	public void mutateElement(Element e, float mutateAmt) {
 		for(int i = 0; i < mutateAmt * e.config.length; i++){
-			e.config[(int) (MathUtils.random() * e.config.length)] = r.getRandomGenerator().nextDouble();
+			e.config[(int) (MathUtils.random() * e.config.length)] = r.nextGaussian();
 		}
 	}
 

@@ -229,7 +229,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 			
 			Arrays.sort(elements);
 			
-			if (elements[elements.length - 1].getFitness() > -1f) {
+			/*if (elements[elements.length - 1].getFitness() > -1f) {
 //				System.out.println("----");
 				for(int i = 0; i < 3; i++){
 					Simulation s = simType.clone();
@@ -238,7 +238,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 					s.verbose = false;
 					new Thread(s).start();
 				}
-			}
+			}*/
 			
 			
 			//InsertionSort(elements);
@@ -279,9 +279,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 //				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
 //				System.out.println(genNum);
 //			}
-			
-			float curve = 2.0f;
-			float x;
+
 			Element.numElements = 0;
 			Element[] nextGen = new Element[elements.length];
 			
@@ -337,7 +335,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 			//grapher.addToSeries("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
 			
 			//Elitism
-			nextGen[0] = bestElement;
+			nextGen[0] = elements[elements.length-1];
 			nextGen[0].setFitness(0);
 
 			for(int i = 1; i < elements.length; i++)
@@ -386,7 +384,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		return controllerType;
 	}
 	
-	public ElementHolder getExportedElements(){
+	public synchronized ElementHolder getExportedElements(){
 		return new ElementHolder(elements, genNum);
 	}
 	
