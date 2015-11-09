@@ -7,7 +7,7 @@ public class Through extends Simulation{
 	
 	@Override
 	public void simulate(Controller[] c) {
-		double in = MathUtils.random();//i;
+		double in = MathUtils.random() * 2 - 1;//i;
 		double out = c[0].calculate(in)[0];
 		double error = Math.abs(out - in);
 		c[0].addFitness(-error);
