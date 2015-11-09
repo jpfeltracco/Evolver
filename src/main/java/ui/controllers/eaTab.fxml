@@ -16,7 +16,7 @@
                   <HBox spacing="10.0">
                      <children>
                         <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
-                      <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#onPauseClicked" text="Pause" />
+                      <Button fx:id="clearButton" mnemonicParsing="false" onAction="#onClearClicked" text="Clear" />
                         <Button fx:id="renderbutton" mnemonicParsing="false" text="Render" />
                         <Button fx:id="graphClean" mnemonicParsing="false" onAction="#checkGraphClean" text="Clean" />
                      </children>

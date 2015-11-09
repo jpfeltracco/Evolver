@@ -136,43 +136,31 @@ public class EATabController extends EATabHolder {
 	protected void onStartClicked() {
 		if (startClicked = !startClicked) {
 			stopped = false;
-			if(!fitnessGrapher.getLoaded()){
-				fitnessGrapher.resetGraph();
-			}else{
-				fitnessGrapher.setLoaded(false);
-			}
-			ea.setRunning(true);
+			
+			clearButton.setDisable(true);
 			graphClean.setDisable(true);
 			builder.setChangable(false);
-			System.out.println("STARTING SIMULATION");
-			System.out.println("SIM NUM IN: " + simulation.getNumInputs() + "\tNUM OUT: " + simulation.getNumOutputs());
+			//System.out.println("STARTING SIMULATION");
+			//System.out.println("SIM NUM IN: " + simulation.getNumInputs() + "\tNUM OUT: " + simulation.getNumOutputs());
 			controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
 			if(simulation instanceof HasMenu)
 				((HasMenu)simulation).confirmMenu();
 			if(controller instanceof HasMenu)
 				((HasMenu)controller).confirmMenu();
+			ea.readElementHolder(elementHolder);
 			ea.setSimAndController(simulation,controller);
 			((HasMenu)ea).confirmMenu();
+			ea.setRunning(true);
 			(new Thread(ea)).start();
-			pauseButton.setDisable(false);
 			startButton.setText("Stop");
 		} else {
 			stopped = true;
 			ea.setRunning(false);
-			builder.setChangable(true);
+			clearButton.setDisable(false);
 			graphClean.setDisable(false);
-			InputFramework def = ea.getFramework();
+			
 			elementHolder = ea.getExportedElements();
-			ea = new EvolutionAlgorithm();
-			ea.frameworkInit();
-			ea.getFramework().setDefaults(def);
-			ea.setGrapher(fitnessGrapher);
-			GridPane grid = getNewGrid();
-			evolutionScrollPane.setContent(builder.build(ea, grid));
-			pauseButton.setDisable(true);
 			startButton.setText("Start");
-			pauseClicked = false;
-			pauseButton.setText("Pause");
 		}
 	}
 	
@@ -192,17 +180,37 @@ public class EATabController extends EATabHolder {
 	
 	@Override
 	@FXML
-	protected void onPauseClicked() {
-		if (pauseClicked == false) {
+	protected void onClearClicked() {
+		InputFramework def = ea.getFramework();
+		
+		if(!fitnessGrapher.getLoaded()){
+			fitnessGrapher.resetGraph();
+		}else{
+			fitnessGrapher.setLoaded(false);
+		}
+		builder.setChangable(true);
+		ea = new EvolutionAlgorithm();
+		ea.frameworkInit();
+		ea.getFramework().setDefaults(def);
+		ea.setGrapher(fitnessGrapher);
+		GridPane grid = getNewGrid();
+		evolutionScrollPane.setContent(builder.build(ea, grid));
+		clearButton.setDisable(true);
+		//startButton.setText("Start");
+		//pauseClicked = false;
+		//clearButton.setText("Pause");
+		
+		/*if (pauseClicked == false) {
 			pauseClicked = true;
 			ea.setRunning(false);
-			pauseButton.setText("Resume");
+			clearButton.setText("Resume");
 		}else{
 			pauseClicked = false;
 			ea.setRunning(true);
-			pauseButton.setText("Pause");
+			clearButton.setText("Pause");
 			(new Thread(ea)).start();
-		}
+		}*/
+		
 	}
 	
 	

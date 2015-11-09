@@ -1,5 +1,7 @@
 package controllers;
 
+import java.io.File;
+
 import evolver.Element;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
@@ -45,6 +47,12 @@ public class FPGA extends Controller {
 	public boolean isSame(Element e1, Element e2) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void saveConfig(File loc) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

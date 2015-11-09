@@ -1,19 +1,26 @@
 package ui.controllers;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
 import controllers.Controller;
+import evolver.Element;
 import evolver.ElementHolder;
 import evolver.EvolutionAlgorithm;
 import javafx.embed.swing.SwingFXUtils;
@@ -160,12 +167,13 @@ public abstract class EATabHolder {
 		}
 		
 		//Set up grapher
+		System.out.println("GRAPH: " + fitnessGraph);
 		fitnessGrapher = new Graph(fitnessGraph, this);
 		ea.setGrapher(fitnessGrapher);
 		
 		//Set the initial button enables
 		startButton.setDisable(true);
-		pauseButton.setDisable(true);
+		clearButton.setDisable(true);
 		graphClean.setDisable(false);
 			
 		//Sets Non-changeable items
@@ -185,41 +193,69 @@ public abstract class EATabHolder {
 	}
 	
 	public void saveAll(ElementHolder elementHolder){	
+		System.out.print("THING");
 		WritableImage image = fitnessGraph.snapshot(new SnapshotParameters(), null);
 		final DirectoryChooser directoryChooser = new DirectoryChooser();
 	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
 	    if (selectedDirectory == null) {
 	    	throw new RuntimeException("Directory error.");
 	    }
+	    String outputName = "output";
 	    String dir = selectedDirectory.getAbsolutePath();
-	    File f = new File(dir + "/output/chart.png");
+	    File f = new File(dir + "/"+outputName+"/chart.png");
+	    System.out.print(f.getAbsolutePath() + "\n");
 	    try {
 			fitnessGrapher.writeData(selectedDirectory);
 			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
 			
-			FileOutputStream fileOut = new FileOutputStream(dir + "/output/controller.ser");
+			/*FileOutputStream fileOut = new FileOutputStream(dir + "/"+outputName+"/controller.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			
+			//out = new ObjectOutputStream(bos);   
+			//out.writeObject(controller);
+			
+			
+			//ZipEntry e = new ZipEntry("controller.ser");
+			
+			
+			
+			FileOutputStream fos = new FileOutputStream(dir + "controller.gz");
+			GZIPOutputStream gz = new GZIPOutputStream(fos);
+
+			ObjectOutputStream oos = new ObjectOutputStream(gz);
+			   
+			oos.writeObject(controller);
+			oos.close();*/
+			
+			FileOutputStream fileOut = new FileOutputStream(dir + "/"+outputName+"/controller.ser");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out = new ObjectOutputStream(fileOut);
 			out.writeObject(controller);
 			out.close();
 			fileOut.close();
 			
-			fileOut = new FileOutputStream(dir + "/output/simulation.ser");
+			fileOut = new FileOutputStream(dir + "/"+outputName+"/simulation.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(simulation);
 			out.close();
 			fileOut.close();
 			
-			fileOut = new FileOutputStream(dir + "/output/evolve.ser");
+			fileOut = new FileOutputStream(dir + "/"+outputName+"/evolve.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(ea.getFramework());
 			out.close();
 			fileOut.close();
 			
-			fileOut = new FileOutputStream(dir + "/output/elements.ser");
+			fileOut = new FileOutputStream(dir + "/"+outputName+"/elements.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(elementHolder);
 			out.close();
 			fileOut.close();
+			
+			
+			
+			
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -233,31 +269,32 @@ public abstract class EATabHolder {
 	    if (selectedDirectory == null) {
 	    	throw new RuntimeException("Directory error.");
 	    }
+	    String outputName = "output.ev";
 	    String dir = selectedDirectory.getAbsolutePath();
-	    File f = new File(dir + "/output/chart.png");
+	    File f = new File(dir + "/"+outputName+"/chart.png");
 	    try {
 			fitnessGrapher.writeData(selectedDirectory);
 			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
 			
-			FileOutputStream fileOut = new FileOutputStream(dir + "/output/controller.ser");
+			FileOutputStream fileOut = new FileOutputStream(dir + "/"+outputName+"/controller.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(controller);
 			out.close();
 			fileOut.close();
 			
-			fileOut = new FileOutputStream(dir + "/output/simulation.ser");
+			fileOut = new FileOutputStream(dir + "/"+outputName+"/simulation.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(simulation);
 			out.close();
 			fileOut.close();
 			
-			fileOut = new FileOutputStream(dir + "/output/evolve.ser");
+			fileOut = new FileOutputStream(dir + "/"+outputName+"/evolve.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(ea.getFramework());
 			out.close();
 			fileOut.close();
 			
-			fileOut = new FileOutputStream(dir + "/output/elements.ser");
+			fileOut = new FileOutputStream(dir + "/"+outputName+"/elements.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(ea.getExportedElements());
 			out.close();
@@ -407,17 +444,28 @@ public abstract class EATabHolder {
 	
 	public abstract boolean close();
 	
+	public synchronized void exportController(){
+		final DirectoryChooser directoryChooser = new DirectoryChooser();
+	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
+	    if (selectedDirectory == null) {
+	    	throw new RuntimeException("Directory error.");
+	    }else{
+	    	Controller c = ea.getBestElement();
+			c.saveConfig(selectedDirectory);
+	    }
+	}
+	
 	@FXML
 	protected abstract void onStartClicked();
 	
 	@FXML
-	protected abstract void onPauseClicked();
+	protected abstract void onClearClicked();
 	
 	@FXML
 	protected Button startButton;
 	
 	@FXML
-	protected Button pauseButton;
+	protected Button clearButton;
 	
 	@FXML
 	protected Button renderButton;

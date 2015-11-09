@@ -17,17 +17,13 @@
             <items>
                   <MenuItem fx:id="saveProject" mnemonicParsing="false" onAction="#saveEvolution" text="Save Project" />
                   <MenuItem fx:id="openProject" mnemonicParsing="false" onAction="#openEvolution" text="Open Project" />
+                  <MenuItem fx:id="exportController" mnemonicParsing="false" onAction="#onExportController" text="Export Controller" />
               <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
               <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>

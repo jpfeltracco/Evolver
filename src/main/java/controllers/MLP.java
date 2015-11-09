@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.File;
 import java.util.ArrayList;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.util.TransferFunctionType;
@@ -147,6 +148,12 @@ public class MLP extends Controller implements HasMenu{
 		for (int i = 1; i < dims.length - 1; i++)
 			dims[i] = netDim[i - 1];
 		return dims;
+	}
+
+	@Override
+	public void saveConfig(File loc) {
+		System.out.println(loc.getAbsolutePath() + "/config.nnet");
+		mlpNet.save(loc.getAbsolutePath() + "/config.nnet");
 	}
 
 	//------------------------------------------------------------------------------------------
