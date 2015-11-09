@@ -95,8 +95,18 @@ public abstract class Controller implements Serializable{
 	//-------------------------------------------------------------------
 	// TODO Create a better way of doing this!
 	//-------------------------------------------------------------------
+	static String[] names = new String[] {"MLP","FPGA"};
 	public static String[] getTypeOfControllers(){
-		return new String[] {"MLP","FPGA"};
+		return names;
+	}
+	
+	public static boolean check(String name){
+		for(String s : names){
+			if(s.equals(name)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public static Controller getController(String sim){

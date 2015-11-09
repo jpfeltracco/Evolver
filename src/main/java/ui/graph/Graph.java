@@ -13,17 +13,19 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import ui.controllers.EaTabController;
+import ui.controllers.EATabController;
+import ui.controllers.EATabHolder;
 
 public class Graph {
 	LineChart<Number, Number> chart;
 	ArrayList<String> graphSeriesTitles = new ArrayList<String>();
 	ObservableList<Series<Number, Number>> graphSeries = FXCollections.observableArrayList();
-	EaTabController EAController;
-	public Graph(LineChart<Number, Number> chart, EaTabController EAController){
+	EATabHolder EAController;
+	public Graph(LineChart<Number, Number> chart, EATabHolder EAController){
 		this.EAController = EAController;
 		this.chart = chart;
 		//EAController.addSeries(graphSeries);
+		System.out.println("Thing: " + chart);
 		chart.setData(graphSeries);
 		chart.setCreateSymbols(false);
 		//chart.setData(graphSeries);
@@ -124,7 +126,6 @@ public class Graph {
 				EAController.setGeneration(g);
 			}
 		});
-		
 	}
 	
 	public void writeData(File f) throws IOException{

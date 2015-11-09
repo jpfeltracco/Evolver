@@ -13,7 +13,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Popup;
 import ui.controllers.GUI;
-import ui.controllers.EaTabController;
+import ui.controllers.EATabController;
+import ui.controllers.EATabHolder;
 import util.BooleanHolder;
 import util.ComboHolder;
 import util.DoubleHolder;
@@ -22,14 +23,14 @@ import util.StringHolder;
 
 public class Builder {
 	
-	private final EaTabController tabController;
+	private final EATabHolder tabController;
 	private static ArrayList<Control> constants = new ArrayList<Control>();
 	
 	/**
 	 * Makes a new Builder for this controller.
 	 * @param tabController the Controller that made this Builder
 	 */
-	public Builder(EaTabController tabController){
+	public Builder(EATabHolder tabController){
 		this.tabController = tabController;
 	}
 	
@@ -105,7 +106,7 @@ public class Builder {
 					DoubleHolder output = (DoubleHolder)inputF.getVariable(i);
 					s.setMin(c.getMinDouble());
 					s.setMax(c.getMaxDouble());
-					if(output.getValue() > c.getMinDouble() && output.getValue() < c.getMaxDouble()){
+					if(output.getValue() >= c.getMinDouble() && output.getValue() <= c.getMaxDouble()){
 						s.setValue(output.getValue());
 					}else{
 						output.setValue(c.getMinDouble());
@@ -142,7 +143,7 @@ public class Builder {
 					IntegerHolder output = (IntegerHolder)inputF.getVariable(i);
 					s.setMin(c.getMinInt());
 					s.setMax(c.getMaxInt());
-					if(output.getValue() > c.getMinInt() && output.getValue() < c.getMaxInt()){
+					if(output.getValue() >= c.getMinInt() && output.getValue() <= c.getMaxInt()){
 						s.setValue(output.getValue());
 					}else{
 						output.setValue(c.getMinInt());

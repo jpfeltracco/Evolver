@@ -68,6 +68,10 @@ public abstract class Simulation implements Runnable,Serializable{
 	 */
 	public abstract String toString();
 	
+	public String getName(){
+		return this.getClass().toString();
+	}
+	
 	public Controller[] getControllers() {
 		return controllers;
 	}
@@ -87,8 +91,27 @@ public abstract class Simulation implements Runnable,Serializable{
 	
 	
 	//-------------------------------------------------------------------
+	static String[] names = new String[] {"Memory","Pong","Round","Through","XOR"};
 	public static String[] getTypeOfSimulations(){
-		return new String[] {"Memory","Pong","Round","Through","XOR"};
+		return names;
+	}
+	
+	public static boolean check(String name){
+		for(String s : names){
+			if(s.equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static Simulation[] getAllSimulations(){
+		
+		Simulation[] sims = new Simulation[names.length];
+		for(int i = 0; i < names.length; i++){
+			sims[i] = getSimulation(names[i]);
+		}
+		return sims;
 	}
 	
 	public static Simulation getSimulation(String sim){
