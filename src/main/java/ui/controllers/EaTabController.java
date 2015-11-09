@@ -74,7 +74,7 @@ public class EaTabController {
 	
 	
 	ArrayList<Series> graphSeries = new ArrayList<Series>();
-	
+	boolean controllerOrgnial = true;
 	
 	public EaTabController(String tabID, FXController fxController, Tab tab){
 		this.tabID = tabID;
@@ -117,7 +117,37 @@ public class EaTabController {
 		
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 		simType.getSelectionModel().select(Simulation.getTypeOfSimulations()[0]);
+		
+		controllerOrgnial = false;
 		controllerType.getSelectionModel().select(Controller.getTypeOfControllers()[0]);
+		
+		//-----
+		String val = (String)controllerType.getValue();
+		controller = (Controller) Controller.getController(val);
+		
+		controlLabel.setText(val);
+		
+		GridPane grid2 = getNewGrid();
+		
+        grid2.add(controllerType, 1, 0);
+        grid2.add(new Label("Type:"), 0, 0);
+        
+        
+        if(controller instanceof HasMenu){
+        	//((HasMenu)controller).clearFramework();
+        	((HasMenu)controller).frameworkInit();
+        	controllerScrollPane.setContent(builder.build(controller, grid2));
+        }else{
+        	controllerValid.setSelected(true);
+        	status[1] = true;
+        	controllerScrollPane.setContent(grid);
+        	checkValidity();
+        }
+        
+        //controllerPane.requestFocus();
+      //-----
+		
+		controllerOrgnial = true;
 		
 		builder.addNonChangable(simType);
 		builder.addNonChangable(controllerType);
@@ -230,6 +260,10 @@ public class EaTabController {
 	
 	@FXML
 	private void onControllerTypeChanged(Event t){
+		if(!controllerOrgnial){
+			t.consume();
+			return;
+		}
 		String val = (String)((ComboBox)t.getSource()).getValue();
 		controller = (Controller) Controller.getController(val);
 		//System.out.println(s.getSettings());
