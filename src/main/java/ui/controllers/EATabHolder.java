@@ -282,7 +282,7 @@ public abstract class EATabHolder {
 			out.close();
 			fileOut.close();
 			
-			fileOut = new FileOutputStream(dir + "/"+outputName+"/simulation.ser");
+			/*fileOut = new FileOutputStream(dir + "/"+outputName+"/simulation.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(simulation);
 			out.close();
@@ -298,7 +298,7 @@ public abstract class EATabHolder {
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(ea.getExportedElements());
 			out.close();
-			fileOut.close();
+			fileOut.close();*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

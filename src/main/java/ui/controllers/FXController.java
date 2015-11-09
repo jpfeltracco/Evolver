@@ -79,35 +79,42 @@ public class FXController implements Initializable {
 	    Controller control = null;
 	    InputFramework inputF = null;
 	    ElementHolder elements = null;
+	    
 		try{
-			FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
+			/*FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			sim = (Simulation) in.readObject();
 			in.close();
 			fileIn.close();
 			
-			fileIn = new FileInputStream(dir + "controller.ser");
-			in = new ObjectInputStream(fileIn);
-			control = (Controller) in.readObject();
-			in.close();
-			fileIn.close();
+			/*FileInputStream fileIn2 = new FileInputStream(dir + "controller.ser");
+			ObjectInputStream in2 = new ObjectInputStream(fileIn2);
+			control = (Controller) in2.readObject();
+			in2.close();
+			fileIn2.close();*/
 			
-			fileIn = new FileInputStream(dir + "evolve.ser");
+			/*fileIn = new FileInputStream(dir + "evolve.ser");
 			in = new ObjectInputStream(fileIn);
 			inputF = (InputFramework) in.readObject();
 			in.close();
 			fileIn.close();
 			
+			
 			fileIn = new FileInputStream(dir + "elements.ser");
 			in = new ObjectInputStream(fileIn);
 			elements = (ElementHolder) in.readObject();
+			in.close();
+			fileIn.close();*/
+			
+			FileInputStream fileIn = new FileInputStream(dir + "controller.ser");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			control = (Controller) in.readObject();
 			in.close();
 			fileIn.close();
 		}catch(IOException i){
 			i.printStackTrace();
 			return;
 		}catch(ClassNotFoundException c){
-			System.out.println("Employee class not found");
 			c.printStackTrace();
 			return;
 		}

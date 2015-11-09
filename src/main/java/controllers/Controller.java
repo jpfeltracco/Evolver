@@ -6,6 +6,7 @@ import java.io.Serializable;
 import evolver.Element;
 
 public abstract class Controller implements Serializable{
+	private static final long serialVersionUID = 6715435294345561248L;
 	protected int numIn;
 	protected int numOut;
 	double[] output;
