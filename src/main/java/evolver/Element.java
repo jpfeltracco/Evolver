@@ -1,6 +1,8 @@
 package evolver;
 
-public class Element implements Comparable<Element> {
+import java.io.Serializable;
+
+public class Element implements Comparable<Element>, Serializable {
 	public double config[];
 	private double fitness = 0;
 	private int gamesPlayed = 0;

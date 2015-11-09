@@ -128,7 +128,10 @@ public class Builder {
 					    tabController.setValidity(client.check(), sIn);
 					});
 					tf.setOnAction((event) -> {
-						double in = Double.parseDouble(tf.getText());
+						double in = c.getMinDouble();
+						try{
+							in = Double.parseDouble(tf.getText());
+						}catch(NumberFormatException ex){}
 						if(in < c.getMinDouble())
 							in = c.getMinDouble();
 						else if(in > c.getMaxDouble())
@@ -157,7 +160,10 @@ public class Builder {
 					    tabController.setValidity(client.check(), sIn);
 					});
 					tf.setOnAction((event) -> {
-						int in = Integer.parseInt(tf.getText());
+						int in = c.getMinInt();
+						try{
+							in = Integer.parseInt(tf.getText());
+						}catch(NumberFormatException ex){}
 						if(in < c.getMinInt())
 							in = c.getMinInt();
 						else if(in > c.getMaxInt())
