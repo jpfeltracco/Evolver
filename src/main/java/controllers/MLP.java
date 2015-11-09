@@ -77,7 +77,7 @@ public class MLP extends Controller implements HasMenu{
 	//Initializations:
 	InputFramework inputF = new InputFramework();
 	StringHolder internalSize = new StringHolder("2, 2");
-	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.TANH);
+	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.LINEAR);
 	
 	private TransferFunctionType f;
 	private int[] netDim;

@@ -1,12 +1,21 @@
 package ui.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.ResourceBundle;
+
+import controllers.Controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.stage.DirectoryChooser;
+import simulations.Simulation;
+import ui.Builder.HasMenu;
 
 public class FXController implements Initializable {
 	boolean startClicked;
@@ -30,8 +39,63 @@ public class FXController implements Initializable {
 			addNewEATab();
 		}
 	}
+	
+	@FXML
+	private void saveEvolution(){
+		for(EaTabController ea : tabControllers){
+			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+				ea.saveAll();
+				break;
+			}
+		}
+	}
+	
+	@FXML
+	private void openEvolution(){
+		final DirectoryChooser directoryChooser = new DirectoryChooser();
+	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
+	    if (selectedDirectory == null) {
+	    	throw new RuntimeException("Directory error.");
+	    }
+	    
+	    String dir = selectedDirectory.getAbsolutePath() + "/";
+	    
+	    Simulation sim = null;
+	    Controller control = null;
+		try{
+			FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			sim = (Simulation) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			fileIn = new FileInputStream(dir + "controller.ser");
+			in = new ObjectInputStream(fileIn);
+			control = (Controller) in.readObject();
+			in.close();
+			fileIn.close();
+		}catch(IOException i){
+			i.printStackTrace();
+			return;
+		}catch(ClassNotFoundException c){
+			System.out.println("Employee class not found");
+			c.printStackTrace();
+			return;
+		}
+	    
+	    
+	    System.out.println("Simulation HasMenu: " + (sim instanceof HasMenu));
+	    System.out.println(((HasMenu)sim).getFramework().getVariable(0).getRawVariable());
+	    
+	    EaTabController ea = addNewEATab();
+	    System.out.println("SETTING SIM");
+	    ea.setSimulation(sim);
+	    System.out.println("-----------");
+	    //ea.setController(control);
+	    
+	}
 
-	public void addNewEATab() {
+	public EaTabController addNewEATab() {
 		//Set up Tab ID
 		Tab t = null;
 		boolean set = false;
@@ -61,6 +125,8 @@ public class FXController implements Initializable {
 		EATabs.getTabs().add(t);
 		EATabs.getTabs().sort(new TabOrder());
 		EATabs.getSelectionModel().select(t);
+		
+		return tc;
 
 	}
 
@@ -77,43 +143,7 @@ public class FXController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.setProperty("glass.accessible.force", "false"); // Windows 10
-																// crashes
-																// unless this
-																// is here :(
-
-		// Demo of way to populate combo box programmatically
-		// ObservableList<String> options =
-		// FXCollections.observableArrayList(
-		// "MLP 3x3",
-		// "FPGA",
-		// "Norris's brain"
-		// );
-		// controllerCombo.setItems(options);
-		//
-		// // Demo of way to populate graph programmatically
-		// series = new Series<Number, Number>();
-		// //populating the series with data
-		// series.getData().add(new XYChart.Data<Number, Number>(1, 23));
-		// series.getData().add(new XYChart.Data<Number, Number>(2, 14));
-		// series.getData().add(new XYChart.Data<Number, Number>(3, 15));
-		// series.getData().add(new XYChart.Data<Number, Number>(4, 24));
-		// series.getData().add(new XYChart.Data<Number, Number>(5, 34));
-		// series.getData().add(new XYChart.Data<Number, Number>(6, 36));
-		// series.getData().add(new XYChart.Data<Number, Number>(7, 22));
-		// series.getData().add(new XYChart.Data<Number, Number>(8, 45));
-		// series.getData().add(new XYChart.Data<Number, Number>(9, 43));
-		// series.getData().add(new XYChart.Data<Number, Number>(10, 17));
-		// series.getData().add(new XYChart.Data<Number, Number>(11, 29));
-		// series.getData().add(new XYChart.Data<Number, Number>(12, 25));
-		//
-		// EATabs.getSelectionModel().clearSelection();
-
-		
-		
-		
-		// By default, select 1st tab and load its content.
-		//EATabs.getSelectionModel().selectLast();
+		System.setProperty("glass.accessible.force", "false"); 
 		addNewEATab();
 		EATabs.getSelectionModel().select(1);
 

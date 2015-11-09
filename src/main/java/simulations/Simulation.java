@@ -1,11 +1,13 @@
 package simulations;
 
+import java.io.Serializable;
+
 import controllers.Controller;
 import evolver.Element;
 import evolver.EvolutionAlgorithm;
 import ui.Builder.InputFramework;
 
-public abstract class Simulation implements Runnable {
+public abstract class Simulation implements Runnable,Serializable{
 	
 	public boolean verbose = false;
 	protected EvolutionAlgorithm ea;

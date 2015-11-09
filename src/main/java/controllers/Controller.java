@@ -1,5 +1,7 @@
 package controllers;
 
+import java.io.Serializable;
+
 import evolver.Element;
 import simulations.Memory;
 import simulations.Pong;
@@ -8,7 +10,7 @@ import simulations.Simulation;
 import simulations.Through;
 import simulations.XOR;
 
-public abstract class Controller {
+public abstract class Controller implements Serializable{
 	protected int numIn;
 	protected int numOut;
 	double[] output;

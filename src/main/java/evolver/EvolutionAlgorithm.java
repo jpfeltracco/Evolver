@@ -9,12 +9,16 @@ import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
 import controllers.LimitedControllers;
+import javafx.application.Platform;
 import simulations.Simulation;
 import ui.Builder.Constraint;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 import ui.Builder.InputFramework.EntryType;
+import ui.controllers.EaTabController;
 import ui.controllers.GUI;
+import ui.graph.Graph;
+import ui.graph.GraphData;
 import util.*;
 
 public class EvolutionAlgorithm implements HasMenu, Runnable {
@@ -43,13 +47,20 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	private Controller[] controllers;
 	private Controller controllerType;
 	
+	private Graph grapher;
+	
 	private Vector<Float> avgFit = new Vector<Float>();
 	
 	public int genNum = 0;
 	
+	public void setGrapher(Graph g){
+		grapher = g;
+	}
+	
 	public synchronized void setRunning(boolean running) {
 		this.running = running;
 	}
+	
 	
 	public void setReproductionType(Type t){
 		this.reproductionType = t;
@@ -132,7 +143,9 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	private InputFramework inputF;
 	 */
 	
-
+	ArrayList<Double> runningAvg = new ArrayList<Double>();
+	int startFrom = 0;
+	
 	@Override
 	public void run() {
 		System.out.println("EA started");
@@ -270,16 +283,55 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 			Element.numElements = 0;
 			Element[] nextGen = new Element[elements.length];
 			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+			runningAvg.add(elements[elements.length-1].getFitness());
+			
+			if(genNum%graphAmt.getValue() == 0){	
+				//System.out.println("Gen: " + genNum + "\tElement: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness() + "\tReproduction: " + reproductionType);
+				System.out.println("SYS: Gen: " + genNum + "\tFitness: " + elements[elements.length-1].getFitness() + "\tAvg: " + avg(runningAvg));
+				/*Platform.runLater(new Runnable() {
+					  @Override
+					  public void run() {
+						  System.out.println("THR: Gen: " + genNum + "\tFitness: " + elements[elements.length-1].getFitness() + "\tAvg: " + avg(runningAvg));
+						  grapher.addToSeries("Fitness Avg", new Number[] {genNum, avg(runningAvg)});
+						  grapher.addToSeries("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
+						  runningAvg.clear();
+						  
+					  }
+				});*/
+				
+				//grapher.graphData("Average Fitness", new Number[] {genNum, avg(runningAvg)});
+				grapher.graphData("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
+				
+				runningAvg.clear();
+				
 			}
 			
-			if(genNum%500 == 0){
-				System.out.println("Gen: " + genNum + "\tElement: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness() + "\tReproduction: " + reproductionType);
-			}
+			/*if(genNum%2000 == 0){
+				final Integer input = startFrom;
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						grapher.simplifyData("Fitness", 10, input);
+						grapher.simplifyData("Average Fitness", 10, input);
+					}
+				});
+				startFrom = genNum;
+			}*/
+			
+			
+			
+			
+			
+			
+			//grapher.addToSeries("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
+			
 			//Elitism
 			nextGen[0] = elements[elements.length-1];
 			nextGen[0].setFitness(0);
@@ -295,7 +347,16 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 			avgFit.add(totalFitness / elements.length);
 			
 			genNum++;
+			
+			grapher.setGeneration(genNum);
 			elements = nextGen;
+			
+			try {
+				Thread.sleep(delayAmt.getValue());
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			//System.out.println("2Element: " + elements[0].id + "\t Fitness: " + elements[0].getFitness());
 			//for(Element e : elements)
@@ -313,6 +374,16 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		
 		System.out.println("EA stopped");
 		
+	}
+	
+	private double avg(ArrayList<Double> points){
+		double sum = 0;
+		for(Double d : points){
+			sum += d;
+		}
+		double out = sum / points.size();
+		//System.out.println(out);
+		return out;
 	}
 	
 	private Element reproduceFromArray(Element[] els) {
@@ -386,12 +457,12 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	public boolean check() {
 		if(!inputF.checkAllInit())
 			return false;
-		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
-		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
-		System.out.println("M Rate:\t" + menuMutationRate.getValue());
-		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
-		System.out.println("Mutiplier:\t" + menuMult.getValue());
-		System.out.println("Games Per:\t" + menuGamePerElement.getValue());
+//		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+//		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
+//		System.out.println("M Rate:\t" + menuMutationRate.getValue());
+//		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
+//		System.out.println("Mutiplier:\t" + menuMult.getValue());
+//		System.out.println("Games Per:\t" + menuGamePerElement.getValue());
 		return true;
 	}
 
@@ -445,18 +516,23 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	DoubleHolder menuMutationRate = new DoubleHolder(0.15);
 	DoubleHolder menuFoundersPercent = new DoubleHolder(0.5);
 	IntegerHolder menuMult = new IntegerHolder(10);
-	IntegerHolder menuGamePerElement = new IntegerHolder(5);
-	IntegerHolder preferedControllers = new IntegerHolder(5);
+	IntegerHolder menuGamePerElement = new IntegerHolder(40);
+	IntegerHolder preferedControllers = new IntegerHolder(15);
+	IntegerHolder graphAmt = new IntegerHolder(10);
+	
+	IntegerHolder delayAmt = new IntegerHolder(0);
 
 	@Override
 	public void frameworkInit() {
 		inputF.addEntry("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
+		inputF.addEntry("Delay", EntryType.SLIDER, delayAmt, new Constraint(0,1000), true);
+		inputF.addEntry("Graph Frequancy (/GEN)", EntryType.SLIDER, graphAmt, new Constraint(1,1000),true);
 		inputF.addEntry("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
 		inputF.addEntry("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
 		inputF.addEntry("Founders %", EntryType.SLIDER, menuFoundersPercent, new Constraint(0,1,4),true);
 		inputF.addEntry("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
 		inputF.addEntry("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
-		inputF.addEntry("Controler #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
+		inputF.addEntry("Controller #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
 	}
 
 	@Override

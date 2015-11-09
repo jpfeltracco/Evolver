@@ -1,11 +1,14 @@
 package ui.Builder;
+
+import java.io.Serializable;
+
 /**
  * The Constraint class ensures that a Slider will keep its numerical values in the proper range.
  * Used with InputFrameworks.
  * @author Keenan Nicholson
  *
  */
-public class Constraint{
+public class Constraint implements Serializable{
 	private final double min;
 	private final double max;
 	private Type type;

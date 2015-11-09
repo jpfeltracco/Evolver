@@ -20,6 +20,7 @@
                         <Button fx:id="renderbutton" mnemonicParsing="false" text="Render" />
                      </children>
                   </HBox>
+                  <Button fx:id="graphClean" mnemonicParsing="false" onAction="#checkGraphClean" text="Clean" />
               </items>
             </ToolBar>
             <StackPane prefWidth="379.0">
@@ -58,26 +59,9 @@
                   </HBox>
                </children>
             </StackPane>
-            <Accordion fx:id="accordion" VBox.vgrow="ALWAYS">
+            <Accordion fx:id="accordion">
               <panes>
                 <TitledPane fx:id="simPane" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" text="Simulation">
-                  <content>
-                        <GridPane hgap="2.0" vgap="10.0">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="124.0" />
-                            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints vgrow="NEVER" />
-                            <RowConstraints vgrow="NEVER" />
-                            <RowConstraints vgrow="NEVER" />
-                          </rowConstraints>
-                           <children>
-                              <Label text="Type:" />
-                              <ComboBox fx:id="simType" onAction="#onSimTypeChanged" promptText="Click Here" GridPane.columnIndex="1" />
-                           </children>
-                        </GridPane>
-                  </content>
                      <graphic>
                         <CheckBox fx:id="simulationValid" disable="true" mnemonicParsing="false">
                            <padding>
@@ -85,23 +69,32 @@
                            </padding>
                         </CheckBox>
                      </graphic>
+                     <content>
+                        <ScrollPane fx:id="simScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <content>
+                              <GridPane hgap="2.0" vgap="10.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="124.0" />
+                                  <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints vgrow="NEVER" />
+                                  <RowConstraints vgrow="NEVER" />
+                                  <RowConstraints vgrow="NEVER" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Type:" />
+                                    <ComboBox fx:id="simType" onAction="#onSimTypeChanged" promptText="Click Here" GridPane.columnIndex="1" />
+                                 </children>
+                              </GridPane>
+                           </content>
+                        </ScrollPane>
+                     </content>
                 </TitledPane>
                 <TitledPane fx:id="controllerPane" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" prefWidth="377.0" text="Controller">
-                  <content>
-                        <GridPane hgap="2.0" vgap="10.0">
-                           <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="124.0" />
-                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
-                           </columnConstraints>
-                           <rowConstraints>
-                              <RowConstraints vgrow="NEVER" />
-                           </rowConstraints>
-                           <children>
-                              <Label text="Type:" />
-                              <ComboBox fx:id="controllerType" onAction="#onControllerTypeChanged" promptText="Click Here" GridPane.columnIndex="1" />
-                           </children>
-                        </GridPane>
-                  </content>
                      <graphic>
                         <CheckBox fx:id="controllerValid" disable="true" mnemonicParsing="false">
                            <padding>
@@ -109,21 +102,30 @@
                            </padding>
                         </CheckBox>
                      </graphic>
+                     <content>
+                        <ScrollPane fx:id="controllerScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <content>
+                              <GridPane hgap="2.0" vgap="10.0">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="124.0" />
+                                    <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints vgrow="NEVER" />
+                                 </rowConstraints>
+                                 <children>
+                                    <Label text="Type:" />
+                                    <ComboBox fx:id="controllerType" onAction="#onControllerTypeChanged" promptText="Click Here" GridPane.columnIndex="1" />
+                                 </children>
+                              </GridPane>
+                           </content>
+                        </ScrollPane>
+                     </content>
                 </TitledPane>
                 <TitledPane fx:id="evolutionPane" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" text="Evolution">
-                     <content>
-                        <GridPane>
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                        </GridPane>
-                     </content>
                      <graphic>
                         <CheckBox fx:id="evolutionValid" disable="true" mnemonicParsing="false">
                            <padding>
@@ -131,6 +133,13 @@
                            </padding>
                         </CheckBox>
                      </graphic>
+                     <content>
+                        <ScrollPane fx:id="evolutionScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </ScrollPane>
+                     </content>
                 </TitledPane>
               </panes>
             </Accordion>
@@ -142,7 +151,7 @@
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <LineChart fx:id="fitnessGraph" legendVisible="false" prefHeight="434.0" prefWidth="417.0" title="Fitness" VBox.vgrow="ALWAYS">
+                        <LineChart fx:id="fitnessGraph" prefHeight="434.0" prefWidth="417.0" title="Fitness" VBox.vgrow="ALWAYS">
                           <xAxis>
                             <NumberAxis side="BOTTOM" />
                           </xAxis>
@@ -160,7 +169,7 @@
                               <Pane HBox.hgrow="ALWAYS" />
                               <StackPane>
                                  <children>
-                                    <Label text="Generation: 5720" />
+                                    <Label fx:id="generationTag" text="Generation: 5720" />
                                  </children>
                                  <HBox.margin>
                                     <Insets />
@@ -169,8 +178,8 @@
                               <Pane HBox.hgrow="ALWAYS" />
                               <MenuButton mnemonicParsing="false" text="Save">
                                 <items>
-                                  <MenuItem mnemonicParsing="false" text="Graph Data" />
-                                  <MenuItem mnemonicParsing="false" text="Graph Image" />
+                                  <MenuItem mnemonicParsing="false" onAction="#saveFitnessGraphData" text="Save Data" />
+                                  <MenuItem mnemonicParsing="false" onAction="#saveFitnessGraph" text="Save Image" />
                                 </items>
                                  <HBox.margin>
                                     <Insets />

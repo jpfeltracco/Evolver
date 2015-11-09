@@ -1,34 +1,18 @@
 package simulations;
 
 import com.badlogic.gdx.math.MathUtils;
-
 import controllers.Controller;
-import ui.Builder.Constraint;
-import ui.Builder.HasMenu;
-import ui.Builder.InputFramework;
-import ui.Builder.InputFramework.EntryType;
-import util.IntegerHolder;
 
 public class Through extends Simulation{
-	static int x = 0;
+	
 	@Override
 	public void simulate(Controller[] c) {
-//		if (x++ > 50000000)
-//			System.out.println("--");
-		
-		//for (int i = 0; i < 20; i+= 1) {
-			double in = MathUtils.random();//i;
-			double out = c[0].calculate(in)[0];
-			//System.out.print(i + ", ");
-			double error = Math.abs(out - in);
-//			if (x++ > 50000000)
-//				System.out.println(in + "\t" + out);
-			c[0].addFitness(-error);
-		//}
-		//System.out.println();
+		double in = MathUtils.random();//i;
+		double out = c[0].calculate(in)[0];
+		double error = Math.abs(out - in);
+		c[0].addFitness(-error);
 			
-	}
-			
+	}		
 	
 	@Override
 	public int getNumInputs() {
