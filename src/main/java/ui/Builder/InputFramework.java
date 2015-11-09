@@ -1,9 +1,10 @@
 package ui.Builder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import util.*;
 
-public class InputFramework {
+public class InputFramework implements Serializable{
 	ArrayList<String> titles = new ArrayList<String>();
 	ArrayList<EntryType> types = new ArrayList<EntryType>();
 	ArrayList<Holder> variables = new ArrayList<Holder>();
@@ -145,20 +146,14 @@ public class InputFramework {
 	 */
 	public boolean checkAllInit(){
 		for(int i = 0; i < types.size(); i++){
-			/*if(((Holder)variables.get(i)).getRawVariable() == null)
-				return false;*/
-			
-			
 			switch(types.get(i)){
 			case TEXT:
 				StringHolder sh = (StringHolder)variables.get(i);
-				System.out.println("String: " + sh.initialized());
 				if(!sh.initialized())
 					return false;
 				break;
 			case COMBOBOX:
 				ComboHolder ch = (ComboHolder)variables.get(i);
-				System.out.println("Combo: " + ch.initialized());
 				if(!ch.initialized())
 					return false;
 				break;

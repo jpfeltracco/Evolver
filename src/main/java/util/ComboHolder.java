@@ -10,7 +10,7 @@ import javafx.scene.control.ComboBox;
 public class ComboHolder implements Holder{
 	Object[] objects;
 	String[] titles;
-	ComboBox<Object> comboB;
+	transient ComboBox<Object> comboB;
 	Object focus;
 	
 	/**

@@ -1,6 +1,8 @@
 package util;
 
-public interface Holder {
+import java.io.Serializable;
+
+public interface Holder extends Serializable{
 	
 	/**
 	 * Sets the Holder's variable to that of another's. Object based.
