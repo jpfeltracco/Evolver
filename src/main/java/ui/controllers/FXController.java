@@ -10,9 +10,13 @@ import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import controllers.Controller;
+import evolver.ElementHolder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.DirectoryChooser;
 import simulations.Simulation;
 import ui.Builder.HasMenu;
@@ -64,6 +68,7 @@ public class FXController implements Initializable {
 	    Simulation sim = null;
 	    Controller control = null;
 	    InputFramework inputF = null;
+	    ElementHolder elements = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -82,6 +87,12 @@ public class FXController implements Initializable {
 			inputF = (InputFramework) in.readObject();
 			in.close();
 			fileIn.close();
+			
+			fileIn = new FileInputStream(dir + "elements.ser");
+			in = new ObjectInputStream(fileIn);
+			elements = (ElementHolder) in.readObject();
+			in.close();
+			fileIn.close();
 		}catch(IOException i){
 			i.printStackTrace();
 			return;
@@ -97,7 +108,7 @@ public class FXController implements Initializable {
 	    System.out.println("Simulation HasMenu: " + (sim instanceof HasMenu));
 	    //System.out.println(((HasMenu)sim).getFramework().getVariable(0).getRawVariable());
 	    
-	    EATabController ea = addNewEATab(sim, control, inputF);
+	    EATabController ea = addNewEATab(sim, control, inputF, elements, selectedDirectory);
 	    //ea.setSimulation(sim);
 	    //ea.setController(control);
 	    
@@ -120,12 +131,12 @@ public class FXController implements Initializable {
 
 	}
 
-	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF) {
+	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF, ElementHolder elements, File directory) {
 		
 		Tab t = getNewEATab();
 		
 		//Add Tab Pane
-		EATabController tc = new EATabController(t.getId(), this, t, s, c, inputF);
+		EATabController tc = new EATabController(t.getId(), this, t, s, c, inputF, elements, directory);
 		tabControllers.add(tc);
 		
 		//Show Tab
@@ -171,13 +182,27 @@ public class FXController implements Initializable {
 				return 0;
 		}
 	}
+	
+	@FXML
+	private MenuItem saveProject;
+	
+	@FXML
+	private MenuItem openProject;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		System.setProperty("glass.accessible.force", "false"); 
 		addNewEATab();
 		EATabs.getSelectionModel().select(1);
-
+		
+		System.out.println(System.getProperty("os.name"));
+		if(System.getProperty("os.name").contains("Mac")){
+			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.META_DOWN));
+			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.META_DOWN));
+		}else{
+			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+		}
 	}
 
 }

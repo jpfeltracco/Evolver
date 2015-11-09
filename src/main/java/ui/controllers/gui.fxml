@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
@@ -14,8 +15,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#saveEvolution" text="Save Evolution" />
-                  <MenuItem mnemonicParsing="false" onAction="#openEvolution" text="Open" />
+                  <MenuItem fx:id="saveProject" mnemonicParsing="false" onAction="#saveEvolution" text="Save Project" />
+                  <MenuItem fx:id="openProject" mnemonicParsing="false" onAction="#openEvolution" text="Open Project" />
               <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>

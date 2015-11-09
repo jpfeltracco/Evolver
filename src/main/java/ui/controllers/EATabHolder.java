@@ -1,14 +1,20 @@
 package ui.controllers;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 
 import controllers.Controller;
+import evolver.ElementHolder;
 import evolver.EvolutionAlgorithm;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
@@ -73,7 +79,7 @@ public abstract class EATabHolder {
 		
 	}
 	
-	public EATabHolder(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, InputFramework inputF){
+	public EATabHolder(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, InputFramework inputF, ElementHolder elements, File directory){
 		this.tabID = tabID;
 		this.tab = tab;
 		this.fxController = fxController;
@@ -83,8 +89,39 @@ public abstract class EATabHolder {
 		ea.getFramework().clear();
 		ea.frameworkInit();
 		ea.getFramework().setDefaults(inputF);
+		ea.readElementHolder(elements);
 		
 		initializeTab();
+		
+		
+		FilenameFilter textFilter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.toLowerCase().endsWith(".txt");
+			}
+		};
+		
+		File[] files = directory.listFiles(textFilter);
+		for (File file : files) {
+			if (!file.isDirectory()) {
+				String sCurrentLine;
+				BufferedReader br;
+				StringTokenizer st;
+				String series = file.getName().substring(0, file.getName().indexOf("."));
+				fitnessGrapher.addSeries(series);
+				try {
+					br = new BufferedReader(new FileReader(file.getAbsolutePath()));
+					sCurrentLine = br.readLine();
+					while ((sCurrentLine = br.readLine()) != null) {
+						st = new StringTokenizer(sCurrentLine, ",");
+						fitnessGrapher.addToSeries(series, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
+						fitnessGrapher.setLoaded(true);
+					}
+					br.close();
+				} catch (IOException e) {
+					throw new RuntimeException("There was an error opening the Elements: " + e);
+				}
+			}
+		}
 		
 		GridPane grid = getNewGrid();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
@@ -97,7 +134,6 @@ public abstract class EATabHolder {
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 	}
 	
-
 	public void initializeTab(){
 		//Sets the master Tab to close when this thing is ready, and not before.
 		tab.setOnCloseRequest(new EventHandler<Event>() {
@@ -144,11 +180,50 @@ public abstract class EATabHolder {
 		controllerType.getItems().addAll(Controller.getTypeOfControllers());
 	}
 	
-	public abstract boolean close();
-	
-	
 	public String getTabID(){
 		return tabID;
+	}
+	
+	public void saveAll(ElementHolder elementHolder){	
+		WritableImage image = fitnessGraph.snapshot(new SnapshotParameters(), null);
+		final DirectoryChooser directoryChooser = new DirectoryChooser();
+	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
+	    if (selectedDirectory == null) {
+	    	throw new RuntimeException("Directory error.");
+	    }
+	    String dir = selectedDirectory.getAbsolutePath();
+	    File f = new File(dir + "/output/chart.png");
+	    try {
+			fitnessGrapher.writeData(selectedDirectory);
+			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
+			
+			FileOutputStream fileOut = new FileOutputStream(dir + "/output/controller.ser");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(controller);
+			out.close();
+			fileOut.close();
+			
+			fileOut = new FileOutputStream(dir + "/output/simulation.ser");
+			out = new ObjectOutputStream(fileOut);
+			out.writeObject(simulation);
+			out.close();
+			fileOut.close();
+			
+			fileOut = new FileOutputStream(dir + "/output/evolve.ser");
+			out = new ObjectOutputStream(fileOut);
+			out.writeObject(ea.getFramework());
+			out.close();
+			fileOut.close();
+			
+			fileOut = new FileOutputStream(dir + "/output/elements.ser");
+			out = new ObjectOutputStream(fileOut);
+			out.writeObject(elementHolder);
+			out.close();
+			fileOut.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void saveAll(){	
@@ -179,6 +254,12 @@ public abstract class EATabHolder {
 			fileOut = new FileOutputStream(dir + "/output/evolve.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(ea.getFramework());
+			out.close();
+			fileOut.close();
+			
+			fileOut = new FileOutputStream(dir + "/output/elements.ser");
+			out = new ObjectOutputStream(fileOut);
+			out.writeObject(ea.getExportedElements());
 			out.close();
 			fileOut.close();
 		} catch (IOException e) {
@@ -238,9 +319,6 @@ public abstract class EATabHolder {
 		return grid;
 	}
 	
-	
-	
-	
 	@FXML
 	protected void onControllerTypeChanged(Event t){
 		if(!original){
@@ -263,13 +341,6 @@ public abstract class EATabHolder {
 		changeSim(simulation);
 	}
 	
-	protected abstract void changeSim(Simulation sim);
-	
-	protected abstract void changeController(Controller control);
-	
-	@FXML
-	protected abstract void onStartClicked();
-	
 	@FXML
 	protected void checkGraphClean(){
 		if(fitnessGrapher != null && fitnessGrapher.size("Fitness")>4)
@@ -277,12 +348,67 @@ public abstract class EATabHolder {
 	}
 	
 	@FXML
-	protected abstract void saveFitnessGraph();
-	
-	@FXML
 	public void saveFitnessGraphData(){
 		saveChartAsXML(fitnessGraph);
 	}
+	
+	public void setGeneration(int g){
+		generationTag.setText("Generation: " + g);
+	}
+	
+	public void saveChartAsPng(Chart graph) {
+		// TODO: Review this process
+	    WritableImage image = graph.snapshot(new SnapshotParameters(), null);
+
+	    final DirectoryChooser directoryChooser = new DirectoryChooser();
+	    final File selectedDirectory = directoryChooser.showDialog(GUI.stage);
+	    if (selectedDirectory == null) {
+	    	throw new RuntimeException("Directory error.");
+	    }
+	    File file = new File(selectedDirectory.getAbsolutePath() + "/chart.png");
+
+	    try {
+	        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+	    } catch (IOException e) {
+	        // TODO: handle exception here
+	    }
+	}
+	
+	public void saveChartAsXML(Chart graph) {
+		// TODO: Review this process
+
+		WritableImage image = graph.snapshot(new SnapshotParameters(), null);
+	    final DirectoryChooser directoryChooser = new DirectoryChooser();
+	    final File selectedDirectory = directoryChooser.showDialog(GUI.stage);
+	    if (selectedDirectory == null) {
+	    	throw new RuntimeException("Directory error.");
+	    }
+
+	    File f = new File(selectedDirectory.getAbsolutePath() + "/output/chart.png");
+	    
+	    try {
+			fitnessGrapher.writeData(selectedDirectory);
+			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	}
+	
+	
+	//Abstract methods -----------------------------------------------------------
+	@FXML
+	protected abstract void saveFitnessGraph();
+	
+	protected abstract void changeSim(Simulation sim);
+	
+	protected abstract void changeController(Controller control);
+	
+	public abstract boolean close();
+	
+	@FXML
+	protected abstract void onStartClicked();
 	
 	@FXML
 	protected abstract void onPauseClicked();
@@ -351,47 +477,5 @@ public abstract class EATabHolder {
 	protected StackPane SimComboBox;
 	
 	
-	public void setGeneration(int g){
-		generationTag.setText("Generation: " + g);
-	}
 	
-	public void saveChartAsPng(Chart graph) {
-		// TODO: Review this process
-	    WritableImage image = graph.snapshot(new SnapshotParameters(), null);
-
-	    final DirectoryChooser directoryChooser = new DirectoryChooser();
-	    final File selectedDirectory = directoryChooser.showDialog(GUI.stage);
-	    if (selectedDirectory == null) {
-	    	throw new RuntimeException("Directory error.");
-	    }
-	    File file = new File(selectedDirectory.getAbsolutePath() + "/chart.png");
-
-	    try {
-	        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-	    } catch (IOException e) {
-	        // TODO: handle exception here
-	    }
-	}
-	
-	public void saveChartAsXML(Chart graph) {
-		// TODO: Review this process
-
-		WritableImage image = graph.snapshot(new SnapshotParameters(), null);
-	    final DirectoryChooser directoryChooser = new DirectoryChooser();
-	    final File selectedDirectory = directoryChooser.showDialog(GUI.stage);
-	    if (selectedDirectory == null) {
-	    	throw new RuntimeException("Directory error.");
-	    }
-
-	    File f = new File(selectedDirectory.getAbsolutePath() + "/output/chart.png");
-	    
-	    try {
-			fitnessGrapher.writeData(selectedDirectory);
-			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    
-	}
 }

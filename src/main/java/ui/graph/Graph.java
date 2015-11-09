@@ -21,6 +21,7 @@ public class Graph {
 	ArrayList<String> graphSeriesTitles = new ArrayList<String>();
 	ObservableList<Series<Number, Number>> graphSeries = FXCollections.observableArrayList();
 	EATabHolder EAController;
+	boolean setLoaded = false;
 	public Graph(LineChart<Number, Number> chart, EATabHolder EAController){
 		this.EAController = EAController;
 		this.chart = chart;
@@ -33,6 +34,14 @@ public class Graph {
 	
 	public void graphData(String series, Number[] data){
 		new GraphData(this, series, data);
+	}
+	
+	public void setLoaded(boolean val){
+		setLoaded = val;
+	}
+	
+	public boolean getLoaded(){
+		return setLoaded;
 	}
 	
 	public synchronized void addSeries(String name){

@@ -376,6 +376,21 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		
 	}
 	
+	public ElementHolder getExportedElements(){
+		return new ElementHolder(elements, genNum);
+	}
+	
+	boolean setValues = false;
+	public void readElementHolder(ElementHolder eh){
+		if(eh != null && eh.getElements() != null){
+			elements = eh.getElements();
+			Element.numElements = elements.length;
+			setValues = true;
+			genNum = eh.getGen();
+		}
+		
+	}
+	
 	private double avg(ArrayList<Double> points){
 		double sum = 0;
 		for(Double d : points){
@@ -492,16 +507,16 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		//System.out.println("controlPerSim: " + controlPerSim);
 		//System.out.println("NumPerGen: " + numPerGen);
 		
-		elements = new Element[numPerGen];
-		
 		controllers = new Controller[availableControllers];
-
 		for(int i = 0; i < availableControllers; i++)
 			controllers[i] = controllerType.clone();
 		
-		Element.numElements = 0;
-		for (int i = 0; i < elements.length; i++)
-			elements[i] = controllerType.generateRandomConfig();
+		if(!setValues){
+			elements = new Element[numPerGen];			
+			Element.numElements = 0;
+			for (int i = 0; i < elements.length; i++)
+				elements[i] = controllerType.generateRandomConfig();
+		}
 		
 	}
 	

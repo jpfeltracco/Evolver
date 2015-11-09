@@ -1,6 +1,9 @@
 package ui.controllers;
 
+import java.io.File;
+
 import controllers.Controller;
+import evolver.ElementHolder;
 import evolver.EvolutionAlgorithm;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -15,7 +18,7 @@ public class EATabController extends EATabHolder {
 	boolean pauseClicked = false;
 	boolean startClicked = false;
 	
-	
+	ElementHolder elementHolder;
 	
 	
 	public EATabController(String tabID, FXController fxController, Tab tab){
@@ -30,8 +33,8 @@ public class EATabController extends EATabHolder {
 		
 	}
 	
-	public EATabController(String tabID, FXController fxController, Tab tab, Simulation simulation, Controller controller,  InputFramework evolveFrame){
-		super(tabID, tab, fxController, simulation, controller, evolveFrame);
+	public EATabController(String tabID, FXController fxController, Tab tab, Simulation simulation, Controller controller,  InputFramework evolveFrame, ElementHolder elements, File directory){
+		super(tabID, tab, fxController, simulation, controller, evolveFrame, elements, directory);
 		String simClassName = simulation.getClass().getName();
 		String simName = simClassName.substring(simClassName.indexOf(".") + 1);
 		String controllerClassName = controller.getClass().getName();
@@ -126,11 +129,18 @@ public class EATabController extends EATabHolder {
 
 	}
 	
+	boolean stopped = true;
+	
 	@Override
 	@FXML
 	protected void onStartClicked() {
 		if (startClicked = !startClicked) {
-			fitnessGrapher.resetGraph();
+			stopped = false;
+			if(!fitnessGrapher.getLoaded()){
+				fitnessGrapher.resetGraph();
+			}else{
+				fitnessGrapher.setLoaded(false);
+			}
 			ea.setRunning(true);
 			graphClean.setDisable(true);
 			builder.setChangable(false);
@@ -147,10 +157,12 @@ public class EATabController extends EATabHolder {
 			pauseButton.setDisable(false);
 			startButton.setText("Stop");
 		} else {
+			stopped = true;
 			ea.setRunning(false);
 			builder.setChangable(true);
 			graphClean.setDisable(false);
 			InputFramework def = ea.getFramework();
+			elementHolder = ea.getExportedElements();
 			ea = new EvolutionAlgorithm();
 			ea.frameworkInit();
 			ea.getFramework().setDefaults(def);
@@ -161,6 +173,14 @@ public class EATabController extends EATabHolder {
 			startButton.setText("Start");
 			pauseClicked = false;
 			pauseButton.setText("Pause");
+		}
+	}
+	
+	public void saveAll(){
+		if(stopped){
+			super.saveAll(elementHolder);
+		}else{
+			super.saveAll();
 		}
 	}
 	
