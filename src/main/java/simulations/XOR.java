@@ -19,18 +19,21 @@ public class XOR extends Simulation{
 	public void simulate(Controller[] c) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				int rand1 = i;
-				int rand2 = j;
+				float rand1 = i;
+				float rand2 = j;
+				// 0 -> -1, 1 -> 1
+				rand1 = rand1 * 2 - 1;
+				rand2 = rand2 * 2 - 1;
+				System.out.println(rand1 + ", " + rand2);
 				double out = c[0].calculate(rand1, rand2)[0];			
-				double expected = 0;
+				double expected = 5000;
 				double error;
 				if ((i == 1 && j == 1) || (i == 0 && j == 0)) {
 					expected = 0;
+					expected = -1;
 				} else if ((i == 0 && j == 1) || (i == 1 && j == 0)) {
 					expected = 1;
 				}
-				error = Math.abs(expected - out);
-				c[0].addFitness(-error);
 			}
 		}
 	}
