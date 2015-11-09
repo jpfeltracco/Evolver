@@ -16,13 +16,14 @@ import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import simulations.Simulation;
 import ui.Builder.HasMenu;
+import ui.Builder.InputFramework;
 
 public class FXController implements Initializable {
 	boolean startClicked;
 
 	// ArrayList<EvolutionAlgorithm> eas = new ArrayList<EvolutionAlgorithm>();
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
-	ArrayList<EaTabController> tabControllers = new ArrayList<EaTabController>();
+	ArrayList<EATabHolder> tabControllers = new ArrayList<EATabHolder>();
 	
 	int eaCount = 0;
 
@@ -42,7 +43,7 @@ public class FXController implements Initializable {
 	
 	@FXML
 	private void saveEvolution(){
-		for(EaTabController ea : tabControllers){
+		for(EATabHolder ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
 				ea.saveAll();
 				break;
@@ -62,6 +63,7 @@ public class FXController implements Initializable {
 	    
 	    Simulation sim = null;
 	    Controller control = null;
+	    InputFramework inputF = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -74,6 +76,12 @@ public class FXController implements Initializable {
 			control = (Controller) in.readObject();
 			in.close();
 			fileIn.close();
+			
+			fileIn = new FileInputStream(dir + "evolve.ser");
+			in = new ObjectInputStream(fileIn);
+			inputF = (InputFramework) in.readObject();
+			in.close();
+			fileIn.close();
 		}catch(IOException i){
 			i.printStackTrace();
 			return;
@@ -82,20 +90,54 @@ public class FXController implements Initializable {
 			c.printStackTrace();
 			return;
 		}
+		
+		
 	    
 	    
 	    System.out.println("Simulation HasMenu: " + (sim instanceof HasMenu));
-	    System.out.println(((HasMenu)sim).getFramework().getVariable(0).getRawVariable());
+	    //System.out.println(((HasMenu)sim).getFramework().getVariable(0).getRawVariable());
 	    
-	    EaTabController ea = addNewEATab();
-	    System.out.println("SETTING SIM");
-	    ea.setSimulation(sim);
-	    System.out.println("-----------");
+	    EATabController ea = addNewEATab(sim, control, inputF);
+	    //ea.setSimulation(sim);
 	    //ea.setController(control);
 	    
 	}
 
-	public EaTabController addNewEATab() {
+	public EATabController addNewEATab() {
+		
+		Tab t = getNewEATab();
+		
+		//Add Tab Pane
+		EATabController tc = new EATabController(t.getId(), this, t);
+		tabControllers.add(tc);
+		
+		//Show Tab
+		EATabs.getTabs().add(t);
+		EATabs.getTabs().sort(new TabOrder());
+		EATabs.getSelectionModel().select(t);
+		
+		return tc;
+
+	}
+
+	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF) {
+		
+		Tab t = getNewEATab();
+		
+		//Add Tab Pane
+		EATabController tc = new EATabController(t.getId(), this, t, s, c, inputF);
+		tabControllers.add(tc);
+		
+		//Show Tab
+		EATabs.getTabs().add(t);
+		EATabs.getTabs().sort(new TabOrder());
+		EATabs.getSelectionModel().select(t);
+		
+		return tc;
+	
+	}
+	
+	public Tab getNewEATab(){
 		//Set up Tab ID
 		Tab t = null;
 		boolean set = false;
@@ -116,18 +158,7 @@ public class FXController implements Initializable {
 			eaCount++;
 		}
 		t.setId("" + tabID);
-		
-		//Add Tab Pane
-		EaTabController tc = new EaTabController(t.getId(), this, t);
-		tabControllers.add(tc);
-		
-		//Show Tab
-		EATabs.getTabs().add(t);
-		EATabs.getTabs().sort(new TabOrder());
-		EATabs.getSelectionModel().select(t);
-		
-		return tc;
-
+		return t;
 	}
 
 	class TabOrder implements Comparator<Tab> {

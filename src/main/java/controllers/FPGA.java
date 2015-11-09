@@ -4,7 +4,7 @@ import evolver.Element;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 
-public class FPGA extends Controller implements LimitedControllers{
+public class FPGA extends Controller implements HasMenu, LimitedControllers{
 
 	@Override
 	public void initializeControllerType() {
@@ -22,6 +22,31 @@ public class FPGA extends Controller implements LimitedControllers{
 	public Controller[] checkout(int preferedNumControllers) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	
+	@Override
+	public void frameworkInit() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public InputFramework getFramework() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void confirmMenu() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -56,7 +81,6 @@ public class FPGA extends Controller implements LimitedControllers{
 
 	@Override
 	public Controller clone() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -65,5 +89,7 @@ public class FPGA extends Controller implements LimitedControllers{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+
 
 }

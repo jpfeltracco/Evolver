@@ -15,7 +15,7 @@ import ui.Builder.Constraint;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 import ui.Builder.InputFramework.EntryType;
-import ui.controllers.EaTabController;
+import ui.controllers.EATabController;
 import ui.controllers.GUI;
 import ui.graph.Graph;
 import ui.graph.GraphData;
