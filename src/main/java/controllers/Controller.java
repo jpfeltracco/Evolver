@@ -4,12 +4,6 @@ import java.io.File;
 import java.io.Serializable;
 
 import evolver.Element;
-import simulations.Memory;
-import simulations.Pong;
-import simulations.Round;
-import simulations.Simulation;
-import simulations.Through;
-import simulations.XOR;
 
 public abstract class Controller implements Serializable{
 	protected int numIn;
