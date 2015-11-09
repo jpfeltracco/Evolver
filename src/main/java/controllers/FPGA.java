@@ -3,8 +3,6 @@ package controllers;
 import java.io.File;
 
 import evolver.Element;
-import ui.Builder.HasMenu;
-import ui.Builder.InputFramework;
 
 public class FPGA extends Controller {
 
