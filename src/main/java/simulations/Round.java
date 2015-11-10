@@ -4,14 +4,14 @@ import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
 import ui.Builder.Constraint;
-import ui.Builder.HasMenu;
-import ui.Builder.InputFramework;
-import ui.Builder.InputFramework.EntryType;
+import ui.Builder.TabMenu;
+import ui.Builder.MenuItems;
+import ui.Builder.MenuItems.EntryType;
 import util.*;
 
-public class Round extends Simulation implements HasMenu {
+public class Round extends Simulation {
 	int trialCount;
-	InputFramework inputF = new InputFramework();
+	MenuItems inputF = new MenuItems();
 	
 	@Override
 	public void simulate(Controller[] c) {
@@ -53,18 +53,12 @@ public class Round extends Simulation implements HasMenu {
 	}
 
 	
-	IntegerHolder numTrials = new IntegerHolder(5);
-	@Override
-	public void frameworkInit() {
-		inputF.addEntry("Trial Count", EntryType.SLIDER, numTrials, new Constraint(1,20) ,true);
-	}
+	
 
 	
 	@Override
-	public Simulation clone() {
-		Round r = new Round();
-		HasMenu.migrate(inputF,r);
-		return r;
+	public Simulation cloneSimulation() {
+		return new Round();
 	}
 
 	@Override
@@ -73,13 +67,14 @@ public class Round extends Simulation implements HasMenu {
 	}
 
 	@Override
-	public void confirmMenu() {
+	public void start() {
 		trialCount = numTrials.getValue();
 	}
 
+	IntegerHolder numTrials = new IntegerHolder(5);
 	@Override
-	public InputFramework getFramework() {
-		return inputF;
+	public void menuInit(MenuItems inputF) {
+		inputF.add("Trial Count", EntryType.SLIDER, numTrials, new Constraint(1,20) ,true);
 	}
 	
 

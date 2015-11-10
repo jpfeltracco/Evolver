@@ -1,7 +1,7 @@
 package simulations;
 
 import controllers.Controller;
-import ui.Builder.InputFramework;
+import ui.Builder.MenuItems;
 import util.BooleanHolder;
 import util.DoubleHolder;
 import util.IntegerHolder;
@@ -13,7 +13,7 @@ public class XOR extends Simulation{
 	DoubleHolder setting2 = new DoubleHolder();
 	IntegerHolder setting5 = new IntegerHolder();
 	StringHolder setting3 = new StringHolder();
-	InputFramework inputF;
+	MenuItems inputF;
 	
 	@Override
 	public void simulate(Controller[] c) {
@@ -52,14 +52,27 @@ public class XOR extends Simulation{
 	}
 
 	@Override
-	public Simulation clone() {
-		XOR r = new XOR();
-		return r;
+	public Simulation cloneSimulation() {
+		return new XOR();
 	}
 	
 	@Override
 	public String toString() {
 		return "XOR Simulation";
 	}
+
+
+	@Override
+	public void menuInit(MenuItems inputF) { }
+
+
+	@Override
+	public boolean check() {
+		return true;
+	}
+
+
+	@Override
+	public void start() { }
 
 }

@@ -3,6 +3,7 @@ package simulations;
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
+import ui.Builder.MenuItems;
 
 public class Memory extends Simulation {
 	static int x = 0;
@@ -42,14 +43,24 @@ public class Memory extends Simulation {
 	}
 
 	@Override
-	public Simulation clone() {
-		Memory r = new Memory();
-		return r;
+	public Simulation cloneSimulation() {
+		return new Memory();
 	}
 
 	@Override
 	public String toString() {
 		return "Memory thing.";
 	}
+
+	@Override
+	public void menuInit(MenuItems inputF) { }
+
+	@Override
+	public boolean check() {
+		return true;
+	}
+
+	@Override
+	public void start() { }
 
 }

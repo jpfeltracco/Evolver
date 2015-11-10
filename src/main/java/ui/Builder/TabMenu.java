@@ -2,7 +2,7 @@ package ui.Builder;
 
 /**
  * HasMenu enables objects to produce a menu that Builder will populate into a Pane. Use
- * InputFrameworks to manage the specifics of the menu, and define Holder variables to pass
+ * MenuItems Objects to manage the specifics of the menu, and define Holder variables to pass
  * these menu results to your program.
  * 
  * 
@@ -13,48 +13,60 @@ package ui.Builder;
  * @author Keenan Nicholson
  *
  */
-public interface HasMenu {
+public abstract class TabMenu {
+	
+	protected MenuItems menuItems = new MenuItems();
 	
 	/**
-	 * This method is for initializing the InputFramework "inputF" for this object. Define all variables
+	 * This method is for initializing the MenuItems Object "inputF" for this object. Define all variables
 	 * and apply them to inputF by calling addEntry(). This function will get called
 	 * automatically.
 	 * 
-	 * NOTE: The InputFramework has already been initialized as "inputF"
+	 * NOTE: The MenuItems Object has already been initialized as "inputF"
 	 */
-	public void frameworkInit();
+	public abstract void menuInit(MenuItems menu);
+	
+	public void menuInit(){
+		menuInit(menuItems);
+	}
 
 	/**
-	 * Clears this InputFramework that is passed in. After this command, the InputFramework 
+	 * Clears this MenuItems Object that is passed in. After this command, the MenuItems Object 
 	 * will be completely empty of values and description.
 	 */
-	public default void clearFramework(InputFramework f){
-		f.clear();
+	public void clearMenuItems(MenuItems menuItems){
+		menuItems.clear();
+	}
+	
+	public void clearMenuItems(){
+		menuItems.clear();
 	}
 	
 	/**
-	 * This method is for returning the InputFramework "inputF" made in the frameworkInit() method of 
+	 * This method is for returning the MenuItems Object "inputF" made in the frameworkInit() method of 
 	 * this interface.
-	 * @return the InputFramework for this object
+	 * @return the MenuItems Object for this object
 	 */
-	public InputFramework getFramework();
+	public MenuItems getMenuItems(){
+		return menuItems;
+	}
 	
 	/**
 	 * Migrates one object's variables to another instance of the same object. Useful for cloning and 
 	 * other transfer methods. After this method is called, every variable that is dependent on menu
 	 * choices should be initialized in the new object.
-	 * @param inputF the InputFramework of the original object.
-	 * @param in the object to migrate this InputFramework to
+	 * @param menuItems the MenuItems Object of the original object.
+	 * @param in the object to migrate this MenuItems Object to
 	 */
-	public static void migrate(InputFramework inputF, Object in){
-		if(!(in instanceof HasMenu))
+	public void migrateVariablesTo(Object in){
+		if(!(in instanceof TabMenu))
 			throw new RuntimeException("Migration can only be applied to objects that implement HasMenu.");
-		HasMenu r = (HasMenu)in;
-		r.frameworkInit();
-		r.getFramework().setDefaults(inputF);
+		TabMenu r = (TabMenu)in;
+		r.menuInit();
+		r.getMenuItems().setDefaults(menuItems);
 		if(!r.check())
 			throw new RuntimeException("The provided variables are not valid for this object.");
-		r.confirmMenu();
+		r.start();
 	}
 	
 	/**
@@ -63,17 +75,17 @@ public interface HasMenu {
 	 * the respective Holders. 
 	 * 
 	 * NOTE: No need to check things that are constrained by Constraint. You should also call on
-	 * InputFramework inputF.checkAllInit() to see if all the menu items have been initialize IE.
+	 * MenuItems Object inputF.checkAllInit() to see if all the menu items have been initialize IE.
 	 * a ComboBox is not initialized unless a value is selected, or a default value was originally
 	 * provided.
 	 * @return whether or not all menu values are valid.
 	 */
-	public boolean check();
+	public abstract boolean check();
 	
 	/**
 	 * This method is ran once the Start button has been pressed. Manage anything that needs to be
 	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
 	 */
-	public void confirmMenu();
+	public abstract void start();
 	
 }

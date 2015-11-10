@@ -5,9 +5,10 @@ import java.io.Serializable;
 import controllers.Controller;
 import evolver.Element;
 import evolver.EvolutionAlgorithm;
-import ui.Builder.InputFramework;
+import ui.Builder.TabMenu;
+import ui.Builder.MenuItems;
 
-public abstract class Simulation implements Runnable,Serializable{
+public abstract class Simulation extends TabMenu implements Runnable, Serializable{
 	
 	public boolean verbose = false;
 	protected EvolutionAlgorithm ea;
@@ -60,8 +61,13 @@ public abstract class Simulation implements Runnable,Serializable{
 	 * are passed. NOTE: No need to pass variables that you didn't add. 
 	 * @return A Simulation of this type that is identical but not the same instance
 	 */
-	public abstract Simulation clone();
+	public abstract Simulation cloneSimulation();
 	
+	public Simulation clone(){
+		Simulation s = cloneSimulation();
+		migrateVariablesTo(s);
+		return s;
+	}
 	/**
 	 * Produce a string that tells some general information about this Simulation.
 	 * @return a String about this Simulation
@@ -89,14 +95,13 @@ public abstract class Simulation implements Runnable,Serializable{
 	}
 	
 	
-	
 	//-------------------------------------------------------------------
 	static String[] names = new String[] {"Memory","Pong","Round","Through","XOR"};
 	public static String[] getTypeOfSimulations(){
 		return names;
 	}
 	
-	public static boolean check(String name){
+	public static boolean checkExists(String name){
 		for(String s : names){
 			if(s.equals(name)){
 				return true;

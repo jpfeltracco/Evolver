@@ -25,7 +25,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.Mnemonic;
 import javafx.stage.FileChooser;
 import simulations.Simulation;
-import ui.Builder.InputFramework;
+import ui.Builder.MenuItems;
 
 public class FXController implements Initializable {
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
@@ -116,7 +116,7 @@ public class FXController implements Initializable {
         SaveObject save = null;
 	    Simulation sim = null;
 	    Controller control = null;
-	    InputFramework inputF = null;
+	    MenuItems inputF = null;
 	    ElementHolder elements = null;
 	    byte[][] graphData = null;
 		try{
@@ -150,7 +150,7 @@ public class FXController implements Initializable {
 			
 			byteIn = new ByteArrayInputStream(save.evolve[index]);
 			in = new ObjectInputStream(byteIn);
-			inputF = (InputFramework) in.readObject();
+			inputF = (MenuItems) in.readObject();
 			in.close();
 			fileIn.close();
 		}catch(IOException i){
@@ -187,7 +187,7 @@ public class FXController implements Initializable {
 
 	}
 
-	public void addNewEATab(Simulation s, Controller c, InputFramework inputF, ElementHolder elements, byte[][] graphData) {
+	public void addNewEATab(Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData) {
 		
 		Tab t = getNewEATab();
 		

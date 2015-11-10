@@ -11,14 +11,14 @@ import controllers.Controller;
 import controllers.LimitedControllers;
 import simulations.Simulation;
 import ui.Builder.Constraint;
-import ui.Builder.HasMenu;
-import ui.Builder.InputFramework;
-import ui.Builder.InputFramework.EntryType;
+import ui.Builder.TabMenu;
+import ui.Builder.MenuItems;
+import ui.Builder.MenuItems.EntryType;
 import ui.controllers.GUI;
 import ui.graph.Graph;
 import util.*;
 
-public class EvolutionAlgorithm implements HasMenu, Runnable {
+public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	public boolean running = true;
 
 	public enum Type {
@@ -121,26 +121,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 		
 	//}
 	
-	/*private Type reproductionType = Type.HALF;
-	private float mutationAmt = 0.13f;
-	private float mutationRate = 0.15f;
-	private float foundersPercent = 0.5f;
-	private int mult = 10;
-	private int gamesPerElement = 5;
-	private int numControllers = 5;
 	
-	private  int numPerGen;
-	private  Simulation simType;
-	private  int controlPerSim;
-	private  int numThreads;
-	
-	private int availableControllers;
-	private Element[] elements;
-	
-	private Controller[] controllers;
-	private Controller controllerType;
-	private InputFramework inputF;
-	 */
 	
 	ArrayList<Double> runningAvg = new ArrayList<Double>();
 	int startFrom = 0;
@@ -469,11 +450,10 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	}
 
 	
-	InputFramework inputF = new InputFramework();
 	
 	@Override
 	public boolean check() {
-		if(!inputF.checkAllInit())
+		if(!menuItems.checkAllInit())
 			return false;
 //		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
 //		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
@@ -485,7 +465,7 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	}
 
 	@Override
-	public void confirmMenu() {
+	public void start() {
 		setReproductionType((Type)menuReproductionType.getFocusObject());
 		setMutationAmt((float)menuMutationAmt.getValue());
 		setMutationRate((float)menuMutationRate.getValue());
@@ -541,22 +521,18 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 	IntegerHolder delayAmt = new IntegerHolder(0);
 
 	@Override
-	public void frameworkInit() {
-		inputF.addEntry("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
-		inputF.addEntry("Delay", EntryType.SLIDER, delayAmt, new Constraint(0,1000), true);
-		inputF.addEntry("Graph Frequancy (/GEN)", EntryType.SLIDER, graphAmt, new Constraint(1,1000),true);
-		inputF.addEntry("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
-		inputF.addEntry("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
-		inputF.addEntry("Founders %", EntryType.SLIDER, menuFoundersPercent, new Constraint(0,1,4),true);
-		inputF.addEntry("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
-		inputF.addEntry("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
-		inputF.addEntry("Controller #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
+	public void menuInit(MenuItems inputF) {
+		inputF.add("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
+		inputF.add("Delay", EntryType.SLIDER, delayAmt, new Constraint(0,1000), true);
+		inputF.add("Graph Frequancy (/GEN)", EntryType.SLIDER, graphAmt, new Constraint(1,1000),true);
+		inputF.add("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
+		inputF.add("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
+		inputF.add("Founders %", EntryType.SLIDER, menuFoundersPercent, new Constraint(0,1,4),true);
+		inputF.add("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
+		inputF.add("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
+		inputF.add("Controller #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
 	}
 
-	@Override
-	public InputFramework getFramework() {
-		return inputF;
-	}
 
 
 

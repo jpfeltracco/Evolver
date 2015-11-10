@@ -42,8 +42,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import simulations.Simulation;
 import ui.Builder.Builder;
-import ui.Builder.HasMenu;
-import ui.Builder.InputFramework;
+import ui.Builder.TabMenu;
+import ui.Builder.MenuItems;
 import ui.graph.Graph;
 
 public class EATab {
@@ -86,16 +86,16 @@ public class EATab {
 		
 	}
 	
-	public EATab(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, InputFramework inputF, ElementHolder elements, byte[][] graphData){
+	public EATab(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, MenuItems inputF, ElementHolder elements, byte[][] graphData){
 		this.tabID = tabID;
 		this.tab = tab;
 		this.fxController = fxController;
 		this.simulation = simulation;
 		this.controller = controller;
 		
-		ea.getFramework().clear();
-		ea.frameworkInit();
-		ea.getFramework().setDefaults(inputF);
+		ea.getMenuItems().clear();
+		ea.menuInit();
+		ea.getMenuItems().setDefaults(inputF);
 		ea.readElementHolder(elements);
 		
 		initializeTab();
@@ -137,11 +137,11 @@ public class EATab {
 		String controllerClassName = controller.getClass().getName();
 		String controllerName = controllerClassName.substring(controllerClassName.indexOf(".") + 1);
 		
-		if(!Simulation.check(simName)){
+		if(!Simulation.checkExists(simName)){
 			simType.getItems().add(simName);
 		}
 		
-		if(!Controller.check(controllerName)){
+		if(!Controller.checkExists(controllerName)){
 			controllerType.getItems().add(controllerName);
 		}
 		
@@ -196,14 +196,14 @@ public class EATab {
 	
 	@FXML
 	protected void onClearClicked() {
-		InputFramework def = ea.getFramework();
+		MenuItems def = ea.getMenuItems();
 		
 		fitnessGrapher.resetGraph();
 		builder.setChangable(true);
 		elementHolder = null;
 		ea = new EvolutionAlgorithm();
-		ea.frameworkInit();
-		ea.getFramework().setDefaults(def);
+		ea.menuInit();
+		ea.getMenuItems().setDefaults(def);
 		ea.setGrapher(fitnessGrapher);
 		GridPane grid = getNewGrid();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
@@ -224,13 +224,13 @@ public class EATab {
 			//System.out.println("STARTING SIMULATION");
 			//System.out.println("SIM NUM IN: " + simulation.getNumInputs() + "\tNUM OUT: " + simulation.getNumOutputs());
 			controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
-			if(simulation instanceof HasMenu)
-				((HasMenu)simulation).confirmMenu();
-			if(controller instanceof HasMenu)
-				((HasMenu)controller).confirmMenu();
+			if(simulation instanceof TabMenu)
+				((TabMenu)simulation).start();
+			if(controller instanceof TabMenu)
+				((TabMenu)controller).start();
 			ea.readElementHolder(elementHolder);
 			ea.setSimAndController(simulation,controller);
-			((HasMenu)ea).confirmMenu();
+			((TabMenu)ea).start();
 			ea.setRunning(true);
 			(new Thread(ea)).start();
 			startButton.setText("Stop");
@@ -249,7 +249,7 @@ public class EATab {
 	
 	public void setEvolutionSection(){
 		GridPane grid = getNewGrid();
-		ea.frameworkInit();
+		ea.menuInit();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 	}
 	
@@ -357,7 +357,7 @@ public class EATab {
 			
 			ByteArrayOutputStream evolveByteOut = new ByteArrayOutputStream();
 			out = new ObjectOutputStream(evolveByteOut);
-			out.writeObject(ea.getFramework());
+			out.writeObject(ea.getMenuItems());
 			out.close();
 			output.evolve[index] = evolveByteOut.toByteArray();
 			
@@ -519,9 +519,9 @@ public class EATab {
         grid.add(simType, 1, 0);
         grid.add(new Label("Type:"), 0, 0);
         
-        if(sim instanceof HasMenu){
-        	((HasMenu)sim).getFramework().clear();
-        	((HasMenu)sim).frameworkInit();
+        if(sim instanceof TabMenu){
+        	((TabMenu)sim).getMenuItems().clear();
+        	((TabMenu)sim).menuInit();
         	System.out.println("Building Simulation: " + sim);
         	simScrollPane.setContent(builder.build(sim, grid));
         }else{
@@ -545,9 +545,9 @@ public class EATab {
         grid.add(new Label("Type:"), 0, 0);
         
         
-        if(control instanceof HasMenu){
-        	((HasMenu)control).getFramework().clear();
-        	((HasMenu)control).frameworkInit();
+        if(control instanceof TabMenu){
+        	((TabMenu)control).getMenuItems().clear();
+        	((TabMenu)control).menuInit();
         	System.out.println("Building Controller: " + control);
         	controllerScrollPane.setContent(builder.build(control, grid));
         }else{

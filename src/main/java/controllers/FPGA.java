@@ -3,6 +3,7 @@ package controllers;
 import java.io.File;
 
 import evolver.Element;
+import ui.Builder.MenuItems;
 
 public class FPGA extends Controller {
 
@@ -37,8 +38,8 @@ public class FPGA extends Controller {
 	}
 
 	@Override
-	public Controller clone() {
-		return null;
+	public Controller cloneController() {
+		return new FPGA();
 	}
 
 	@Override
@@ -57,6 +58,24 @@ public class FPGA extends Controller {
 	public String[] getExtension() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void confirmMenu(int numIn, int numOut) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void menuInit(MenuItems inputF) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

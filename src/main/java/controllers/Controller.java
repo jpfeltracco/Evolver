@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.Serializable;
 
 import evolver.Element;
+import ui.Builder.TabMenu;
 
-public abstract class Controller implements Serializable{
+public abstract class Controller extends TabMenu implements Serializable{
 	protected int numIn;
 	protected int numOut;
 	double[] output;
@@ -75,7 +76,14 @@ public abstract class Controller implements Serializable{
 	 * are passed. NOTE: No need to pass variables that you didn't add. 
 	 * @return A Simulation of this type that is identical but not the same instance
 	 */
-	public abstract Controller clone();
+	public abstract Controller cloneController();
+	
+	public Controller clone(){
+		Controller c = cloneController();
+		c.setInOut(this.numIn, this.numOut);
+		migrateVariablesTo(c);
+		return c;
+	}
 	
 	/**
 	 * Determine if these two Elements are the same by this controller's standards. This can be
@@ -100,6 +108,14 @@ public abstract class Controller implements Serializable{
 	 */
 	public abstract String[] getExtension();
 	
+	
+	
+	public void start(){
+		confirmMenu(this.numIn, this.numOut);
+	}
+	
+	public abstract void confirmMenu(int numIn, int numOut);
+	
 
 	//-------------------------------------------------------------------
 	// TODO Create a better way of doing this!
@@ -109,7 +125,7 @@ public abstract class Controller implements Serializable{
 		return names;
 	}
 	
-	public static boolean check(String name){
+	public static boolean checkExists(String name){
 		for(String s : names){
 			if(s.equals(name)){
 				return true;

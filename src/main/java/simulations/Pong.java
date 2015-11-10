@@ -3,6 +3,7 @@ package simulations;
 import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
+import ui.Builder.MenuItems;
 
 public class Pong extends Simulation {
 
@@ -23,9 +24,8 @@ public class Pong extends Simulation {
 	}
 
 	@Override
-	public Simulation clone() {
-		Pong r = new Pong();
-		return r;
+	public Simulation cloneSimulation() {
+		return new Pong();
 	}
 
 	@Override
@@ -52,5 +52,16 @@ public class Pong extends Simulation {
 	public String toString() {
 		return "Pong Simulation";
 	}
+
+	@Override
+	public void menuInit(MenuItems inputF) { }
+
+	@Override
+	public boolean check() {
+		return true;
+	}
+
+	@Override
+	public void start() { }
 
 }

@@ -1,6 +1,6 @@
 package util;
 /**
- * DoubleHolder holds a double value and has some methods that are used with InputFramework, Builder,
+ * DoubleHolder holds a double value and has some methods that are used with MenuItems Object, Builder,
  * and other menu-related classes.
  * @author Keenan Nicholson
  *

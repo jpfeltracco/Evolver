@@ -34,7 +34,7 @@ public class Builder {
 	}
 	
 	/**
-	 * Builds a GridPane from the inputed object's InputFramework. The inputed object MUST implement
+	 * Builds a GridPane from the inputed object's MenuItems Object. The inputed object MUST implement
 	 * HasMenu.
 	 * 
 	 * @param sIn the Object from which to populate a GridPane
@@ -42,18 +42,20 @@ public class Builder {
 	 * @return the new GridPane
 	 */
 	public GridPane build(Object sIn, GridPane grid){
-		if(!(sIn instanceof HasMenu)){
+		if(!(sIn instanceof TabMenu)){
 			System.out.println("ERROR: Builder tried to build an object that cannot be made into a menu: " + sIn);
 			return grid;
 		}
 			
-		HasMenu client = ((HasMenu)sIn);
-		InputFramework inputF = client.getFramework();
-		if(inputF == null)
+		TabMenu client = ((TabMenu)sIn);
+		MenuItems menuItems = client.getMenuItems();
+		if(menuItems == null || menuItems.isEmpty()){
+			tabController.setValidity(client.check(), sIn);
 			return grid;
-		for(int i = 0; i < inputF.size(); i++){
-			Label label = new Label(inputF.getTitle(i));
-			String message = inputF.getTitle(i);
+		}
+		for(int i = 0; i < menuItems.size(); i++){
+			Label label = new Label(menuItems.getTitle(i));
+			String message = menuItems.getTitle(i);
 			Popup popup = new Popup();
 			Label popupMessage = new Label(message);
 			popupMessage.getStylesheets().add("./ui/css/style.css");
@@ -75,7 +77,7 @@ public class Builder {
 			
 			grid.add(label, 0, i + 1);
 			
-			switch(inputF.getType(i)){
+			switch(menuItems.getType(i)){
 			case CHECKBOX:
 				//grid.getRowConstraints().add(r);
 				CheckBox cb = new CheckBox();
@@ -83,12 +85,12 @@ public class Builder {
 				gp.setAlignment(Pos.CENTER);
 				gp.add(cb, 0, 0);
 				cb.setAlignment(Pos.CENTER);
-				BooleanHolder bol = (BooleanHolder)inputF.getVariable(i);
+				BooleanHolder bol = (BooleanHolder)menuItems.getVariable(i);
 				cb.setOnAction((event) -> {
 					bol.setValue(cb.isSelected());
 					tabController.setValidity(client.check(), sIn);
 				});
-				if(!inputF.getChangable(i)){
+				if(!menuItems.getChangable(i)){
 					constants.add((Control)cb);
 				}
 				grid.add(gp, 1, i + 1);
@@ -99,10 +101,10 @@ public class Builder {
 				hb.setSpacing(5);
 				Slider s = new Slider();
 				TextField tf = new TextField();
-				Constraint c = inputF.getConstraint(i);
+				Constraint c = menuItems.getConstraint(i);
 				int digits = 0;
 				if(c.getDigitType() == Constraint.Type.DOUBLE){
-					DoubleHolder output = (DoubleHolder)inputF.getVariable(i);
+					DoubleHolder output = (DoubleHolder)menuItems.getVariable(i);
 					s.setMin(c.getMinDouble());
 					s.setMax(c.getMaxDouble());
 					if(output.getValue() >= c.getMinDouble() && output.getValue() <= c.getMaxDouble()){
@@ -142,7 +144,7 @@ public class Builder {
 					});
 					
 				}else{
-					IntegerHolder output = (IntegerHolder)inputF.getVariable(i);
+					IntegerHolder output = (IntegerHolder)menuItems.getVariable(i);
 					s.setMin(c.getMinInt());
 					s.setMax(c.getMaxInt());
 					if(output.getValue() >= c.getMinInt() && output.getValue() <= c.getMaxInt()){
@@ -184,7 +186,7 @@ public class Builder {
 				tf.setMaxWidth(16 + digits * 8);
 				hb.getChildren().add(s);
 				hb.getChildren().add(tf);
-				if(!inputF.getChangable(i)){
+				if(!menuItems.getChangable(i)){
 					constants.add((Control)s);
 					constants.add((Control)tf);
 				}
@@ -192,7 +194,7 @@ public class Builder {
 				break;
 			case TEXT:
 				TextField textfield = new TextField();
-				StringHolder output = (StringHolder)inputF.getVariable(i);
+				StringHolder output = (StringHolder)menuItems.getVariable(i);
 				if(output.initialized()){
 					textfield.setText(output.getValue());
 				}
@@ -200,7 +202,7 @@ public class Builder {
 				    output.setValue(newValue);
 				    tabController.setValidity(client.check(), sIn);
 				});
-				if(!inputF.getChangable(i)){
+				if(!menuItems.getChangable(i)){
 					constants.add((Control)textfield);
 				}
 				grid.add(textfield,  1,  i + 1);
@@ -213,13 +215,13 @@ public class Builder {
 				//RowConstraints rc = new RowConstraints();
 				//rc.setVgrow(Priority.NEVER);
 				//grid.getRowConstraints().add(rc);
-				lab.setText(inputF.getVariable(i).toString());
+				lab.setText(menuItems.getVariable(i).toString());
 				grid.add(lab, 1, i + 1);
 				break;
 			case COMBOBOX:
 				ComboBox<Object> comboB = new ComboBox<Object>();
 				comboB.setPromptText("Select a Value");
-				ComboHolder ch = ((ComboHolder)inputF.getVariable(i));
+				ComboHolder ch = ((ComboHolder)menuItems.getVariable(i));
 				ch.setComboBox(comboB);
 				comboB.getItems().addAll(ch.getTitles());
 				
@@ -230,7 +232,7 @@ public class Builder {
 					ch.setFocus(comboB.getValue());
 					tabController.setValidity(client.check(), sIn);
 				});
-				if(!inputF.getChangable(i)){
+				if(!menuItems.getChangable(i)){
 					constants.add((Control)comboB);
 				}
 				grid.add(comboB, 1, i + 1);
@@ -247,7 +249,6 @@ public class Builder {
 	 */
 	public void setChangable(boolean val){
 		for(Control c : constants){
-			//System.out.println(c);
 			c.setDisable(!val);
 		}
 	}

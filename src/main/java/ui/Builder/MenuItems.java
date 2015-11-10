@@ -4,15 +4,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import util.*;
 
-public class InputFramework implements Serializable{
+public class MenuItems implements Serializable{
 	ArrayList<String> titles = new ArrayList<String>();
 	ArrayList<EntryType> types = new ArrayList<EntryType>();
 	ArrayList<Holder> variables = new ArrayList<Holder>();
 	ArrayList<Constraint> constraints = new ArrayList<Constraint>();
 	ArrayList<Boolean> changableElements = new ArrayList<Boolean>();
-	
+	boolean isEmpty = true;
 	/**
-	 * Adds a menu entry to the InputFramework, which will eventually be added to the GUI. Follow this step process:
+	 * Adds a menu entry to the MenuItems Object, which will eventually be added to the GUI. Follow this step process:
 	 * 1) Set up your holders (StringHolder, BooleanHolder, etc. all in ui). Giving them initial values will set their
 	 * menu entries to initial values as well.
 	 * 2) Determine the type of menu element you want. This needs to correlate to the Holder you have set up! IE. 
@@ -28,11 +28,11 @@ public class InputFramework implements Serializable{
 	 * @param constraint the Constraint object that will constrain this menu input
 	 * @param changable whether this variable can be changed during RunTime
 	 */
-	public void addEntry(String title, EntryType type, Holder variable, Constraint constraint, boolean changable){
+	public void add(String title, EntryType type, Holder variable, Constraint constraint, boolean changable){
 		if(!(variable instanceof Holder))
-			throw new RuntimeException("Variables added to an InputFramework must implement Holder. (3rd param)");
+			throw new RuntimeException("Variables added to an MenuItems Object must implement Holder. (3rd param)");
 		if(!(constraint instanceof Constraint) && constraint != null)
-			throw new RuntimeException("Constraints added to an InputFramework must extend Constraint. (4th param)");
+			throw new RuntimeException("Constraints added to an MenuItems Object must extend Constraint. (4th param)");
 		
 		switch(type){
 		case CHECKBOX:
@@ -61,11 +61,20 @@ public class InputFramework implements Serializable{
 		variables.add(variable);
 		constraints.add(constraint);
 		changableElements.add(new Boolean(changable));
+		isEmpty = false;
+	}
+	
+	/**
+	 * Checks to see if this MenuItems is empty
+	 * @return whether or not this MenuItems is empty
+	 */
+	public boolean isEmpty(){
+		return isEmpty;
 	}
 	
 	
 	/**
-	 * Adds a menu entry to the InputFramework, which will eventually be added to the GUI. Follow this step process:
+	 * Adds a menu entry to the MenuItems Object, which will eventually be added to the GUI. Follow this step process:
 	 * 1) Set up your holders (StringHolder, BooleanHolder, etc. all in ui). Giving them initial values will set their
 	 * menu entries to initial values as well.
 	 * 2) Determine the type of menu element you want. This needs to correlate to the Holder you have set up! IE. 
@@ -80,12 +89,12 @@ public class InputFramework implements Serializable{
 	 * @param variable the input variable associated with this menu entry
 	 * @param changable whether this variable can be changed during RunTime
 	 */
-	public void addEntry(String title, EntryType type, Holder variable, boolean changable){
-		addEntry(title,type,variable,null,changable);
+	public void add(String title, EntryType type, Holder variable, boolean changable){
+		add(title,type,variable,null,changable);
 	}
 	
 	/**
-	 * Gets the number of menu items defined by this InputFramework
+	 * Gets the number of menu items defined by this MenuItems Object
 	 * @return the number of menu items
 	 */
 	public int size(){
@@ -139,7 +148,7 @@ public class InputFramework implements Serializable{
 	}
 	
 	/**
-	 * Checks to see if all of the variables associated with this InputFramework are initialized.
+	 * Checks to see if all of the variables associated with this MenuItems Object are initialized.
 	 * This is useful for making sure that all ComboBoxes and Strings have been inputed.
 	 * Recommended: Use in check() to ensure that your variables are valid from the user.
 	 * @return whether or not all of the menu variables have been initialized
@@ -165,16 +174,16 @@ public class InputFramework implements Serializable{
 	}
 	
 	/**
-	 * Gets the variables associated with this InputFramework
-	 * @return the variables associated with this InputFramework
+	 * Gets the variables associated with this MenuItems Object
+	 * @return the variables associated with this MenuItems Object
 	 */
 	public ArrayList<Holder> getVariables(){
 		return variables;
 	}
 	
 	/**
-	 * Gets the variables associated with this InputFramework
-	 * @return the variables associated with this InputFramework
+	 * Gets the variables associated with this MenuItems Object
+	 * @return the variables associated with this MenuItems Object
 	 */
 	public ArrayList<Holder> getVariableClones(){
 		ArrayList<Holder> out = new ArrayList<Holder>();
@@ -185,7 +194,7 @@ public class InputFramework implements Serializable{
 	}
 	
 	/**
-	 * Clears this InputFramework. After this command, the InputFramework will be completely empty of values 
+	 * Clears this MenuItems Object. After this command, the MenuItems Object will be completely empty of values 
 	 * and description.
 	 */
 	public void clear(){
@@ -197,12 +206,12 @@ public class InputFramework implements Serializable{
 	}
 	
 	/**
-	 * Sets the default variables in this InputFramework to the variables of the inputed InputFramework. Note:
-	 * Ensure that these InputFrameworks both describe the same object! The menus MUST match, as this
+	 * Sets the default variables in this MenuItems Object to the variables of the inputed MenuItems Object. Note:
+	 * Ensure that these MenuItems Objects both describe the same object! The menus MUST match, as this
 	 * is meant for menu persistence between objects of the same type.
-	 * @param def the other InputFramework to get default values from
+	 * @param def the other MenuItems Object to get default values from
 	 */
-	public void setDefaults(InputFramework def){
+	public void setDefaults(MenuItems def){
 		ArrayList<Holder> defVariables = def.getVariables();
 		if(size() != def.size()){
 			throw new RuntimeException("Variable array sizes do not match.");
