@@ -33,8 +33,8 @@ public class EATabController extends EATabHolder {
 		
 	}
 	
-	public EATabController(String tabID, FXController fxController, Tab tab, Simulation simulation, Controller controller,  InputFramework evolveFrame, ElementHolder elements, File directory){
-		super(tabID, tab, fxController, simulation, controller, evolveFrame, elements, directory);
+	public EATabController(String tabID, FXController fxController, Tab tab, Simulation simulation, Controller controller,  InputFramework evolveFrame, ElementHolder elements, String[] graphData){
+		super(tabID, tab, fxController, simulation, controller, evolveFrame, elements, graphData);
 		String simClassName = simulation.getClass().getName();
 		String simName = simClassName.substring(simClassName.indexOf(".") + 1);
 		String controllerClassName = controller.getClass().getName();
@@ -158,19 +158,16 @@ public class EATabController extends EATabHolder {
 			ea.setRunning(false);
 			clearButton.setDisable(false);
 			graphClean.setDisable(false);
-			
+			//builder.setChangable(true);
 			elementHolder = ea.getExportedElements();
 			startButton.setText("Start");
 		}
 	}
 	
-	public void saveAll(){
-		if(stopped){
-			super.saveAll(elementHolder);
-		}else{
-			super.saveAll();
-		}
+	public ElementHolder getElementHolder(){
+		return elementHolder;
 	}
+	
 	
 	@Override
 	@FXML 

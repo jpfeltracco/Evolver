@@ -1,5 +1,6 @@
 package ui.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import simulations.Simulation;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
@@ -67,20 +69,71 @@ public class FXController implements Initializable {
 	
 	@FXML
 	private void openEvolution(){
-		final DirectoryChooser directoryChooser = new DirectoryChooser();
-	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
-	    if (selectedDirectory == null) {
-	    	throw new RuntimeException("Directory error.");
-	    }
+		final FileChooser fileChooser = new FileChooser();
+		
+		fileChooser.setTitle("Open Project");
+        fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home"))
+        );   
+        
+        fileChooser.getExtensionFilters().addAll(
+        	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
+        	new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        
+        File selection = fileChooser.showOpenDialog(GUI.stage);
 	    
-	    String dir = selectedDirectory.getAbsolutePath() + "/";
-	    
+        System.out.println(selection.getAbsolutePath());
+        
+        
+        
+        SaveObject save = null;
+        
 	    Simulation sim = null;
 	    Controller control = null;
 	    InputFramework inputF = null;
 	    ElementHolder elements = null;
+	    String[] graphData = null;
 		try{
-			FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
+			FileInputStream fileIn = new FileInputStream(selection);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			save = (SaveObject) in.readObject();
+			in.close();
+			fileIn.close();
+			//---
+			
+			ByteArrayInputStream byteIn = new ByteArrayInputStream(save.controller);
+			in = new ObjectInputStream(byteIn);
+			control = (Controller) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			byteIn = new ByteArrayInputStream(save.simulation);
+			in = new ObjectInputStream(byteIn);
+			sim = (Simulation) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			byteIn = new ByteArrayInputStream(save.elements);
+			in = new ObjectInputStream(byteIn);
+			elements = (ElementHolder) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			byteIn = new ByteArrayInputStream(save.evolve);
+			in = new ObjectInputStream(byteIn);
+			inputF = (InputFramework) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			graphData = new String[save.graph.length];
+			for(int i = 0; i < save.graph.length; i++){
+				graphData[i] = new String(save.graph[i]);
+			}
+			
+			
+			
+			/*FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			sim = (Simulation) in.readObject();
 			in.close();
@@ -102,7 +155,7 @@ public class FXController implements Initializable {
 			in = new ObjectInputStream(fileIn);
 			elements = (ElementHolder) in.readObject();
 			in.close();
-			fileIn.close();
+			fileIn.close();*/
 		}catch(IOException i){
 			i.printStackTrace();
 			return;
@@ -118,7 +171,7 @@ public class FXController implements Initializable {
 	    System.out.println("Simulation HasMenu: " + (sim instanceof HasMenu));
 	    //System.out.println(((HasMenu)sim).getFramework().getVariable(0).getRawVariable());
 	    
-	    EATabController ea = addNewEATab(sim, control, inputF, elements, selectedDirectory);
+	    EATabController ea = addNewEATab(sim, control, inputF, elements, graphData);
 	    //ea.setSimulation(sim);
 	    //ea.setController(control);
 	    
@@ -141,12 +194,12 @@ public class FXController implements Initializable {
 
 	}
 
-	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF, ElementHolder elements, File directory) {
+	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF, ElementHolder elements, String[] graphData) {
 		
 		Tab t = getNewEATab();
 		
 		//Add Tab Pane
-		EATabController tc = new EATabController(t.getId(), this, t, s, c, inputF, elements, directory);
+		EATabController tc = new EATabController(t.getId(), this, t, s, c, inputF, elements, graphData);
 		tabControllers.add(tc);
 		
 		//Show Tab

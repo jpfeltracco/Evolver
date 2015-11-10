@@ -152,6 +152,23 @@ public class Graph {
 		}
 	}
 	
+	public byte[][] streamData(){
+		byte[][] out = new byte[graphSeriesTitles.size()][];
+		for(int i = 0; i < graphSeriesTitles.size(); i++){
+			String s = graphSeriesTitles.get(i);
+			StringBuffer sb = new StringBuffer();
+			sb.append(s + "\n");
+			// TODO: Add axis support here
+			sb.append("Generation,Fitness\n");
+			ObservableList<Data<Number, Number>> series = getSeries(s).getData();
+			for(Data<Number, Number> dat : series){
+				sb.append(dat.getXValue() + "," + dat.getYValue() + "\n");
+			}
+			out[i] = sb.toString().getBytes();
+		}
+		return out;
+	}
+	
 	//PrintWriter out = new PrintWriter(file.getAbsolutePath());
 	
 	

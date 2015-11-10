@@ -1,6 +1,7 @@
 package ui.controllers;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,10 +9,13 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -88,7 +92,7 @@ public abstract class EATabHolder {
 		
 	}
 	
-	public EATabHolder(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, InputFramework inputF, ElementHolder elements, File directory){
+	public EATabHolder(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, InputFramework inputF, ElementHolder elements, String[] graphData){
 		this.tabID = tabID;
 		this.tab = tab;
 		this.fxController = fxController;
@@ -109,29 +113,33 @@ public abstract class EATabHolder {
 			}
 		};
 		
-		File[] files = directory.listFiles(textFilter);
-		for (File file : files) {
-			if (!file.isDirectory()) {
-				String sCurrentLine;
-				BufferedReader br;
-				StringTokenizer st;
-				String series = file.getName().substring(0, file.getName().indexOf("."));
+		for(String s : graphData){
+			String sCurrentLine;
+			BufferedReader br;
+			StringTokenizer st;
+			InputStream is;
+			
+			try {
+				is = new ByteArrayInputStream(s.getBytes());
+				br = new BufferedReader(new InputStreamReader(is));
+				sCurrentLine = br.readLine();
+				String series = sCurrentLine;
 				fitnessGrapher.addSeries(series);
-				try {
-					br = new BufferedReader(new FileReader(file.getAbsolutePath()));
-					sCurrentLine = br.readLine();
-					while ((sCurrentLine = br.readLine()) != null) {
-						st = new StringTokenizer(sCurrentLine, ",");
-						fitnessGrapher.addToSeries(series, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
-						fitnessGrapher.setLoaded(true);
-					}
-					br.close();
-				} catch (IOException e) {
-					throw new RuntimeException("There was an error opening the Elements: " + e);
+				sCurrentLine = br.readLine();
+				while ((sCurrentLine = br.readLine()) != null) {
+					st = new StringTokenizer(sCurrentLine, ",");
+					fitnessGrapher.addToSeries(series, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
+					fitnessGrapher.setLoaded(true);
 				}
+				br.close();
+				is.close();
+			} catch (IOException e) {
+				throw new RuntimeException("There was an error opening the Elements: " + e);
 			}
+			
 		}
 		
+
 		GridPane grid = getNewGrid();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 		
@@ -194,46 +202,58 @@ public abstract class EATabHolder {
 		return tabID;
 	}
 	
-	public void saveAll(ElementHolder elementHolder){	
-		WritableImage image = fitnessGraph.snapshot(new SnapshotParameters(), null);
-		final DirectoryChooser directoryChooser = new DirectoryChooser();
-	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
-	    if (selectedDirectory == null) {
-	    	throw new RuntimeException("Directory error.");
-	    }
-	    String dir = selectedDirectory.getAbsolutePath();
-	    File f = new File(dir + "/output/chart.png");
+	public void saveAll(){
+		ElementHolder elementHolder = getElementHolder();
+		final FileChooser fileChooser = new FileChooser();
+		
+		fileChooser.setTitle("Save Project");
+        fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home"))
+        );   
+        
+        fileChooser.getExtensionFilters().addAll(
+        	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
+        	new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        
+        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+        SaveObject output = new SaveObject();
+        
 	    try {
-			fitnessGrapher.writeData(selectedDirectory);
-			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
+	    	output.graph = fitnessGrapher.streamData();
 			
-			FileOutputStream fileOut = new FileOutputStream(dir + "/output/controller.ser");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	    	ByteArrayOutputStream controllerByteOut = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(controllerByteOut);
 			out.writeObject(controller);
 			out.close();
-			fileOut.close();
-
-			fileOut = new FileOutputStream(dir + "/output/simulation.ser");
-			out = new ObjectOutputStream(fileOut);
+			output.controller = controllerByteOut.toByteArray();
+			
+			ByteArrayOutputStream simulationByteOut = new ByteArrayOutputStream();
+			out = new ObjectOutputStream(simulationByteOut);
 			out.writeObject(simulation);
 			out.close();
-			fileOut.close();
-
-			fileOut = new FileOutputStream(dir + "/output/evolve.ser");
-			out = new ObjectOutputStream(fileOut);
-			out.writeObject(ea.getFramework());
-			out.close();
-			fileOut.close();
-
-			fileOut = new FileOutputStream(dir + "/output/elements.ser");
-			out = new ObjectOutputStream(fileOut);
+			output.simulation = simulationByteOut.toByteArray();
+			
+			ByteArrayOutputStream elementsByteOut = new ByteArrayOutputStream();
+			out = new ObjectOutputStream(elementsByteOut);
 			out.writeObject(elementHolder);
 			out.close();
-			fileOut.close();
-
-
-
-
+			output.elements = elementsByteOut.toByteArray();
+			
+			ByteArrayOutputStream evolveByteOut = new ByteArrayOutputStream();
+			out = new ObjectOutputStream(evolveByteOut);
+			out.writeObject(ea.getFramework());
+			out.close();
+			output.evolve = evolveByteOut.toByteArray();
+			
+			ByteArrayOutputStream saveObject = new ByteArrayOutputStream();
+			out = new ObjectOutputStream(saveObject);
+			out.writeObject(output);
+			out.close();
+			
+			FileOutputStream fos = new FileOutputStream(selectedDirectory);
+			fos.write(saveObject.toByteArray());
+			fos.close();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -241,7 +261,9 @@ public abstract class EATabHolder {
 		}
 	}
 	
-	public void saveAll(){	
+	public abstract ElementHolder getElementHolder();
+	
+	/*public void saveAll(){	
 		WritableImage image = fitnessGraph.snapshot(new SnapshotParameters(), null);
 		final DirectoryChooser directoryChooser = new DirectoryChooser();
 	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
@@ -283,7 +305,7 @@ public abstract class EATabHolder {
 			e.printStackTrace();
 		}
 	    
-	}
+	}*/
 	
 	public void setValidity(boolean val, Object section){
 		
