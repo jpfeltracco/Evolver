@@ -193,69 +193,46 @@ public abstract class EATabHolder {
 	}
 	
 	public void saveAll(ElementHolder elementHolder){	
-		System.out.print("THING");
 		WritableImage image = fitnessGraph.snapshot(new SnapshotParameters(), null);
 		final DirectoryChooser directoryChooser = new DirectoryChooser();
 	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
 	    if (selectedDirectory == null) {
 	    	throw new RuntimeException("Directory error.");
 	    }
-	    String outputName = "output";
 	    String dir = selectedDirectory.getAbsolutePath();
-	    File f = new File(dir + "/"+outputName+"/chart.png");
-	    System.out.print(f.getAbsolutePath() + "\n");
+	    File f = new File(dir + "/output/chart.png");
 	    try {
 			fitnessGrapher.writeData(selectedDirectory);
 			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
 			
-			/*FileOutputStream fileOut = new FileOutputStream(dir + "/"+outputName+"/controller.ser");
+			FileOutputStream fileOut = new FileOutputStream(dir + "/output/controller.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			
-			//out = new ObjectOutputStream(bos);   
-			//out.writeObject(controller);
-			
-			
-			//ZipEntry e = new ZipEntry("controller.ser");
-			
-			
-			
-			FileOutputStream fos = new FileOutputStream(dir + "controller.gz");
-			GZIPOutputStream gz = new GZIPOutputStream(fos);
-
-			ObjectOutputStream oos = new ObjectOutputStream(gz);
-			   
-			oos.writeObject(controller);
-			oos.close();*/
-			
-			FileOutputStream fileOut = new FileOutputStream(dir + "/"+outputName+"/controller.ser");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out = new ObjectOutputStream(fileOut);
 			out.writeObject(controller);
 			out.close();
 			fileOut.close();
-			
-			fileOut = new FileOutputStream(dir + "/"+outputName+"/simulation.ser");
+
+			fileOut = new FileOutputStream(dir + "/output/simulation.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(simulation);
 			out.close();
 			fileOut.close();
-			
-			fileOut = new FileOutputStream(dir + "/"+outputName+"/evolve.ser");
+
+			fileOut = new FileOutputStream(dir + "/output/evolve.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(ea.getFramework());
 			out.close();
 			fileOut.close();
-			
-			fileOut = new FileOutputStream(dir + "/"+outputName+"/elements.ser");
+
+			fileOut = new FileOutputStream(dir + "/output/elements.ser");
 			out = new ObjectOutputStream(fileOut);
 			out.writeObject(elementHolder);
 			out.close();
 			fileOut.close();
-			
-			
-			
-			
-			
+
+
+
+
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
