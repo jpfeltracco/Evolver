@@ -180,12 +180,9 @@ public class EATabController extends EATabHolder {
 	protected void onClearClicked() {
 		InputFramework def = ea.getFramework();
 		
-		if(!fitnessGrapher.getLoaded()){
-			fitnessGrapher.resetGraph();
-		}else{
-			fitnessGrapher.setLoaded(false);
-		}
+		fitnessGrapher.resetGraph();
 		builder.setChangable(true);
+		elementHolder = null;
 		ea = new EvolutionAlgorithm();
 		ea.frameworkInit();
 		ea.getFramework().setDefaults(def);
