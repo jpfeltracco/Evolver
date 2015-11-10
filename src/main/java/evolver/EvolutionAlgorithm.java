@@ -1,5 +1,8 @@
 package evolver;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -310,7 +313,6 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 				
 				//grapher.graphData("Average Fitness", new Number[] {genNum, avg(runningAvg)});
 				grapher.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
-				
 				runningAvg.clear();
 				
 			}
@@ -326,7 +328,6 @@ public class EvolutionAlgorithm implements HasMenu, Runnable {
 				});
 				startFrom = genNum;
 			}*/
-			
 			
 			
 			

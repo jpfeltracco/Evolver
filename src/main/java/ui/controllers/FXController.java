@@ -48,10 +48,20 @@ public class FXController implements Initializable {
 	}
 	
 	@FXML
+	private void onSaveSettings(){
+		for(EATabHolder ea : tabControllers){
+			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+				ea.saveAll(false);
+				break;
+			}
+		}
+	}
+	
+	@FXML
 	private void saveEvolution(){
 		for(EATabHolder ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				ea.saveAll();
+				ea.saveAll(true);
 				break;
 			}
 		}
@@ -78,6 +88,7 @@ public class FXController implements Initializable {
         
         fileChooser.getExtensionFilters().addAll(
         	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
+        	new FileChooser.ExtensionFilter("Evolve Setting", "*.evs"),
         	new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         
@@ -85,7 +96,7 @@ public class FXController implements Initializable {
 	    
         System.out.println(selection.getAbsolutePath());
         
-        
+        boolean settingFile = selection.getName().endsWith("evs");
         
         SaveObject save = null;
         
@@ -93,7 +104,8 @@ public class FXController implements Initializable {
 	    Controller control = null;
 	    InputFramework inputF = null;
 	    ElementHolder elements = null;
-	    String[] graphData = null;
+	    //String[] graphData = null;
+	    byte[][] graphData = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(selection);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -114,11 +126,15 @@ public class FXController implements Initializable {
 			in.close();
 			fileIn.close();
 			
-			byteIn = new ByteArrayInputStream(save.elements);
-			in = new ObjectInputStream(byteIn);
-			elements = (ElementHolder) in.readObject();
-			in.close();
-			fileIn.close();
+			if(!settingFile){
+				byteIn = new ByteArrayInputStream(save.elements);
+				in = new ObjectInputStream(byteIn);
+				elements = (ElementHolder) in.readObject();
+				in.close();
+				fileIn.close();
+				
+				graphData = save.graph;
+			}
 			
 			byteIn = new ByteArrayInputStream(save.evolve);
 			in = new ObjectInputStream(byteIn);
@@ -126,10 +142,12 @@ public class FXController implements Initializable {
 			in.close();
 			fileIn.close();
 			
-			graphData = new String[save.graph.length];
+			/*graphData = new String[save.graph.length];
 			for(int i = 0; i < save.graph.length; i++){
 				graphData[i] = new String(save.graph[i]);
-			}
+			}*/
+			
+			
 			
 			
 			
@@ -194,7 +212,7 @@ public class FXController implements Initializable {
 
 	}
 
-	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF, ElementHolder elements, String[] graphData) {
+	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF, ElementHolder elements, byte[][] graphData) {
 		
 		Tab t = getNewEATab();
 		
@@ -250,6 +268,9 @@ public class FXController implements Initializable {
 	private MenuItem saveProject;
 	
 	@FXML
+	private MenuItem saveSettings;
+	
+	@FXML
 	private MenuItem openProject;
 	
 	@FXML
@@ -270,17 +291,21 @@ public class FXController implements Initializable {
 		EATabs.getSelectionModel().select(1);
 		
 		System.out.println(System.getProperty("os.name"));
+		KeyCombination.Modifier metaDown;
+		KeyCombination.Modifier metaAny;
 		if(System.getProperty("os.name").contains("Mac")){
-			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.META_DOWN));
-			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.META_DOWN));
-			exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.META_DOWN, KeyCombination.SHIFT_DOWN));
-			closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.META_DOWN));
+			metaDown = KeyCombination.META_DOWN;
+			metaAny = KeyCombination.META_ANY;
 		}else{
-			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-			exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
-			closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
+			metaDown = KeyCombination.CONTROL_DOWN;
+			metaAny = KeyCombination.CONTROL_ANY;
 		}
+		
+		saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown));
+		saveSettings.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown, KeyCombination.SHIFT_DOWN));
+		openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, metaDown));
+		exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown, KeyCombination.SHIFT_DOWN));
+		closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, metaDown));
 	}
 
 }

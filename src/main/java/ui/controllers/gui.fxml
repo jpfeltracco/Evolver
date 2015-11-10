@@ -16,6 +16,7 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem fx:id="saveProject" mnemonicParsing="false" onAction="#saveEvolution" text="Save Project" />
+                  <MenuItem fx:id="saveSettings" mnemonicParsing="false" onAction="#onSaveSettings" text="Save Settings" />
                   <MenuItem fx:id="openProject" mnemonicParsing="false" onAction="#openEvolution" text="Open Project" />
                   <MenuItem fx:id="exportController" mnemonicParsing="false" onAction="#onExportController" text="Export Controller" />
               <MenuItem fx:id="closeButton" mnemonicParsing="false" onAction="#onClose" text="Close" />

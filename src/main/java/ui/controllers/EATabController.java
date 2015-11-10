@@ -33,7 +33,7 @@ public class EATabController extends EATabHolder {
 		
 	}
 	
-	public EATabController(String tabID, FXController fxController, Tab tab, Simulation simulation, Controller controller,  InputFramework evolveFrame, ElementHolder elements, String[] graphData){
+	public EATabController(String tabID, FXController fxController, Tab tab, Simulation simulation, Controller controller,  InputFramework evolveFrame, ElementHolder elements, byte[][] graphData){
 		super(tabID, tab, fxController, simulation, controller, evolveFrame, elements, graphData);
 		String simClassName = simulation.getClass().getName();
 		String simName = simClassName.substring(simClassName.indexOf(".") + 1);

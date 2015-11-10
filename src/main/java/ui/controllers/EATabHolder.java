@@ -4,29 +4,14 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.StringTokenizer;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import javax.imageio.ImageIO;
 
-import com.sun.javafx.tk.FileChooserType;
-
 import controllers.Controller;
-import evolver.Element;
 import evolver.ElementHolder;
 import evolver.EvolutionAlgorithm;
 import javafx.embed.swing.SwingFXUtils;
@@ -39,7 +24,6 @@ import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.Chart;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -58,7 +42,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import simulations.Simulation;
 import ui.Builder.Builder;
-import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 import ui.graph.Graph;
 
@@ -92,7 +75,7 @@ public abstract class EATabHolder {
 		
 	}
 	
-	public EATabHolder(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, InputFramework inputF, ElementHolder elements, String[] graphData){
+	public EATabHolder(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, InputFramework inputF, ElementHolder elements, byte[][] graphData){
 		this.tabID = tabID;
 		this.tab = tab;
 		this.fxController = fxController;
@@ -106,37 +89,28 @@ public abstract class EATabHolder {
 		
 		initializeTab();
 		
-		
-		FilenameFilter textFilter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.toLowerCase().endsWith(".txt");
-			}
-		};
-		
-		for(String s : graphData){
-			String sCurrentLine;
-			BufferedReader br;
-			StringTokenizer st;
-			InputStream is;
-			
-			try {
-				is = new ByteArrayInputStream(s.getBytes());
-				br = new BufferedReader(new InputStreamReader(is));
-				sCurrentLine = br.readLine();
-				String series = sCurrentLine;
-				fitnessGrapher.addSeries(series);
-				sCurrentLine = br.readLine();
-				while ((sCurrentLine = br.readLine()) != null) {
-					st = new StringTokenizer(sCurrentLine, ",");
-					fitnessGrapher.addToSeries(series, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
-					fitnessGrapher.setLoaded(true);
+		if(graphData != null && graphData.length != 0){
+			for(byte[] s : graphData){
+				String sCurrentLine;
+				BufferedReader br;
+				StringTokenizer st;
+				try {
+					br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s)));
+					sCurrentLine = br.readLine();
+					String series = sCurrentLine;
+					fitnessGrapher.addSeries(series);
+					sCurrentLine = br.readLine();
+					while ((sCurrentLine = br.readLine()) != null) {
+						st = new StringTokenizer(sCurrentLine, ",");
+						fitnessGrapher.addToSeries(series, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
+						fitnessGrapher.setLoaded(true);
+					}
+					br.close();
+				} catch (IOException e) {
+					throw new RuntimeException("There was an error opening the Elements: " + e);
 				}
-				br.close();
-				is.close();
-			} catch (IOException e) {
-				throw new RuntimeException("There was an error opening the Elements: " + e);
+				
 			}
-			
 		}
 		
 
@@ -202,8 +176,11 @@ public abstract class EATabHolder {
 		return tabID;
 	}
 	
-	public void saveAll(){
-		ElementHolder elementHolder = getElementHolder();
+	public void saveAll(boolean saveElements){
+		ElementHolder elementHolder = null;
+		if(saveElements)
+			 elementHolder = getElementHolder();
+		
 		final FileChooser fileChooser = new FileChooser();
 		
 		fileChooser.setTitle("Save Project");
@@ -211,16 +188,21 @@ public abstract class EATabHolder {
             new File(System.getProperty("user.home"))
         );   
         
-        fileChooser.getExtensionFilters().addAll(
-        	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
-        	new FileChooser.ExtensionFilter("All Files", "*.*")
-        );
+        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+        if(saveElements)
+        	extensions[0] = new FileChooser.ExtensionFilter("Evolve Project", "*.evo");
+        else
+        	extensions[0] = new FileChooser.ExtensionFilter("Evolve Settings", "*.evs");
+        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+    	
+        fileChooser.getExtensionFilters().addAll(extensions);
         
         File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
         SaveObject output = new SaveObject();
         
 	    try {
-	    	output.graph = fitnessGrapher.streamData();
+	    	if(saveElements)
+	    		output.graph = fitnessGrapher.streamData();
 			
 	    	ByteArrayOutputStream controllerByteOut = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(controllerByteOut);
@@ -234,11 +216,13 @@ public abstract class EATabHolder {
 			out.close();
 			output.simulation = simulationByteOut.toByteArray();
 			
-			ByteArrayOutputStream elementsByteOut = new ByteArrayOutputStream();
-			out = new ObjectOutputStream(elementsByteOut);
-			out.writeObject(elementHolder);
-			out.close();
-			output.elements = elementsByteOut.toByteArray();
+			if(saveElements){
+				ByteArrayOutputStream elementsByteOut = new ByteArrayOutputStream();
+				out = new ObjectOutputStream(elementsByteOut);
+				out.writeObject(elementHolder);
+				out.close();
+				output.elements = elementsByteOut.toByteArray();
+			}
 			
 			ByteArrayOutputStream evolveByteOut = new ByteArrayOutputStream();
 			out = new ObjectOutputStream(evolveByteOut);
@@ -250,6 +234,10 @@ public abstract class EATabHolder {
 			out = new ObjectOutputStream(saveObject);
 			out.writeObject(output);
 			out.close();
+			
+//			    16		1	 ..
+//			[CHECKSUM][CMD][STUFF]
+			
 			
 			FileOutputStream fos = new FileOutputStream(selectedDirectory);
 			fos.write(saveObject.toByteArray());
