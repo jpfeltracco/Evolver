@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.encog.neural.networks.BasicNetwork;
@@ -11,11 +12,12 @@ import com.badlogic.gdx.math.MathUtils;
 import evolver.Element;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
+import ui.Builder.InputFramework.EntryType;
+import util.StringHolder;
 
 public class EncogMLP extends Controller implements HasMenu {
 	BasicNetwork net;
 	Random r = new Random();
-	int size = 0;
 	
 	@Override
 	public double[] calculate(double... in) {
@@ -26,24 +28,22 @@ public class EncogMLP extends Controller implements HasMenu {
 
 	@Override
 	public void setConfig(Element e) {
-		double[] weights = new double[size];
-		net.encodeToArray(weights);
-		e.config = weights;
+		element = e;
+		net.decodeFromArray(e.config);
 	}
 
 	@Override
 	public int getConfigSize() {
-		return size;
+		return net.encodedArrayLength();
 	}
 
 	@Override
 	public Element generateRandomConfig() {
-		double[] out = new double[size];
-		for (int i = 0; i < size; i++) {
-			out[i] = r.nextGaussian();
-		}
 		Element e = new Element();
-		e.config = out;
+		e.config = new double[net.encodedArrayLength()];
+		for (int i = 0; i < net.encodedArrayLength(); i++) {
+			e.config[i] = r.nextGaussian();
+		}
 		return e;
 	}
 
@@ -58,8 +58,9 @@ public class EncogMLP extends Controller implements HasMenu {
 	@Override
 	public Controller clone() {
 		EncogMLP en = new EncogMLP();
-		en.size = size;
 		en.net = (BasicNetwork) net.clone();
+		en.setInOut(this.numIn, this.numOut);
+		HasMenu.migrate(inputF, en);
 		return en;
 	}
 
@@ -84,34 +85,71 @@ public class EncogMLP extends Controller implements HasMenu {
 		return null;
 	}
 
+	InputFramework inputF = new InputFramework();
+	StringHolder internalSize = new StringHolder("3, 3, 3");
+	
+	private int[] netDim;
+	private int[] dims;
+	
 	@Override
 	public void frameworkInit() {
-		// TODO Auto-generated method stub
-		
+		inputF.addEntry("Net Dim", EntryType.TEXT, internalSize, false);
 	}
 
 	@Override
 	public InputFramework getFramework() {
-		// TODO Auto-generated method stub
-		return null;
+		return inputF;
 	}
-
+	
 	@Override
 	public boolean check() {
-		// TODO Auto-generated method stub
-		return false;
+		ArrayList<Integer> internalSizeArray;
+		if(!inputF.checkAllInit())
+			return false;
+		
+		String[] arr = internalSize.getValue().split(",");
+		internalSizeArray = new ArrayList<Integer>(arr.length);
+		for(int i = 0; i < arr.length; i++){
+			if(arr[i].trim().length() > 0){
+				try{
+					internalSizeArray.add(Integer.parseInt(arr[i].trim()));
+				}catch(Exception e){
+					System.out.println("Error in numerical input");
+					return false;
+				}
+			}
+		}
+		
+		if(internalSizeArray.size() == 0)
+			return false;
+		
+		netDim = new int[internalSizeArray.size()];
+		for(int i = 0; i < internalSizeArray.size(); i++){
+			this.netDim[i] = internalSizeArray.get(i);
+		}
+		
+		return true;
 	}
-
+	
 	@Override
 	public void confirmMenu() {
+		dims = calculateDimArray();
+		
 		net = new BasicNetwork();
-		net.addLayer(new BasicLayer(2));
-		net.addLayer(new BasicLayer(3));
-		net.addLayer(new BasicLayer(1));
+		for (int i : dims)
+			net.addLayer(new BasicLayer(i));
 		net.getStructure().finalizeStructure();
 		net.reset();
-		
-		size = net.calculateNeuronCount();
+	}
+	
+	//Helper Methods:
+	private int[] calculateDimArray(){
+		int[] dims = new int[netDim.length + 2];
+		dims[0] = numIn;
+		dims[dims.length - 1] = numOut;
+		for (int i = 1; i < dims.length - 1; i++)
+			dims[i] = netDim[i - 1];
+		return dims;
 	}
 	
 }
