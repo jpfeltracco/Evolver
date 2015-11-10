@@ -43,7 +43,7 @@ public class Memory extends Simulation {
 	}
 
 	@Override
-	public Simulation cloneSimulation() {
+	public Simulation copy() {
 		return new Memory();
 	}
 

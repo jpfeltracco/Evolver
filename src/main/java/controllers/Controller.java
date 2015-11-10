@@ -73,13 +73,18 @@ public abstract class Controller extends TabMenu implements Serializable{
 	/**
 	 * Return a Controller that operates in the exact same manor as this Controller. This is used
 	 * to make all of the controllers in this whole program, so ensure that all the proper variables
-	 * are passed. NOTE: No need to pass variables that you didn't add. 
+	 * are passed. NOTE: No need to pass variables that you didn't add. NOTE: EVERY VARIABLE used
+	 * in the menuInit(MenuItems menu) function HAVE ALREADY BEEN MOVED. NO NEED TO MOVE THOSE. 
 	 * @return A Simulation of this type that is identical but not the same instance
 	 */
-	public abstract Controller cloneController();
+	public abstract Controller copy();
 	
+	/**
+	 * Clones this Controller and returns it.
+	 * @return the cloned Controller
+	 */
 	public Controller clone(){
-		Controller c = cloneController();
+		Controller c = copy();
 		c.setInOut(this.numIn, this.numOut);
 		migrateVariablesTo(c);
 		return c;
@@ -108,13 +113,22 @@ public abstract class Controller extends TabMenu implements Serializable{
 	 */
 	public abstract String[] getExtension();
 	
-	
-	
+	/**
+	 * This method is ran once the Start button has been pressed. Manage anything that needs to be
+	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
+	 * DO NOT override.
+	 */
 	public void start(){
-		confirmMenu(this.numIn, this.numOut);
+		start(this.numIn, this.numOut);
 	}
 	
-	public abstract void confirmMenu(int numIn, int numOut);
+	/**
+	 * This method is ran once the Start button has been pressed. Manage anything that needs to be
+	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
+	 * @param numIn the number of inputs to the Controller
+	 * @param numOut the number of expected outputs to the Controller
+	 */
+	public abstract void start(int numIn, int numOut);
 	
 
 	//-------------------------------------------------------------------

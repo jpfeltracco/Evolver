@@ -60,7 +60,7 @@ public class MLP extends Controller {
 	}
 
 	@Override
-	public Controller cloneController() {
+	public Controller copy() {
 		return new MLP();
 	}
 	
@@ -150,7 +150,7 @@ public class MLP extends Controller {
 	}
 
 	@Override
-	public void confirmMenu(int numIn, int numOut) {
+	public void start(int numIn, int numOut) {
 		System.out.println("\n--------------NEW MLP--------------");
 		dims = calculateDimArray(numIn, numOut);
 		f = ((TransferFunctionType)transferType.getFocusObject());

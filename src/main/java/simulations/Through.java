@@ -31,7 +31,7 @@ public class Through extends Simulation {
 	}
 
 	@Override
-	public Simulation cloneSimulation() {
+	public Simulation copy() {
 		return new Through();
 	}
 	

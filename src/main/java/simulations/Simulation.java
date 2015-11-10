@@ -58,13 +58,18 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 	/**
 	 * Return a Simulation that operates in the exact same manor as this Simulation. This is used
 	 * to make all of the simulations in this whole program, so ensure that all the proper variables
-	 * are passed. NOTE: No need to pass variables that you didn't add. 
+	 * are passed. NOTE: No need to pass variables that you didn't add. NOTE: EVERY VARIABLE used
+	 * in the menuInit(MenuItems menu) function HAVE ALREADY BEEN MOVED. NO NEED TO MOVE THOSE. 
 	 * @return A Simulation of this type that is identical but not the same instance
 	 */
-	public abstract Simulation cloneSimulation();
+	public abstract Simulation copy();
 	
+	/**
+	 * Clones this Simulation and returns it.
+	 * @return the cloned simulation
+	 */
 	public Simulation clone(){
-		Simulation s = cloneSimulation();
+		Simulation s = copy();
 		migrateVariablesTo(s);
 		return s;
 	}

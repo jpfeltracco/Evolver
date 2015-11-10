@@ -26,20 +26,11 @@ public abstract class TabMenu {
 	 */
 	public abstract void menuInit(MenuItems menu);
 	
+	/**
+	 * Initializes this TabMenu. Do not override, use menuInit(MenuItems menu).
+	 */
 	public void menuInit(){
 		menuInit(menuItems);
-	}
-
-	/**
-	 * Clears this MenuItems Object that is passed in. After this command, the MenuItems Object 
-	 * will be completely empty of values and description.
-	 */
-	public void clearMenuItems(MenuItems menuItems){
-		menuItems.clear();
-	}
-	
-	public void clearMenuItems(){
-		menuItems.clear();
 	}
 	
 	/**

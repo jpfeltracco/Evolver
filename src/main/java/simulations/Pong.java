@@ -24,7 +24,7 @@ public class Pong extends Simulation {
 	}
 
 	@Override
-	public Simulation cloneSimulation() {
+	public Simulation copy() {
 		return new Pong();
 	}
 

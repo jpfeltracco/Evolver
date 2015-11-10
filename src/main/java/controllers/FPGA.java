@@ -38,7 +38,7 @@ public class FPGA extends Controller {
 	}
 
 	@Override
-	public Controller cloneController() {
+	public Controller copy() {
 		return new FPGA();
 	}
 
@@ -61,7 +61,7 @@ public class FPGA extends Controller {
 	}
 
 	@Override
-	public void confirmMenu(int numIn, int numOut) {
+	public void start(int numIn, int numOut) {
 		// TODO Auto-generated method stub
 		
 	}
