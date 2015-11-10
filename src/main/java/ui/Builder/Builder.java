@@ -13,8 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Popup;
 import ui.controllers.GUI;
-import ui.controllers.EATabController;
-import ui.controllers.EATabHolder;
+import ui.controllers.EATab;
 import util.BooleanHolder;
 import util.ComboHolder;
 import util.DoubleHolder;
@@ -23,14 +22,14 @@ import util.StringHolder;
 
 public class Builder {
 	
-	private final EATabHolder tabController;
+	private final EATab tabController;
 	private static ArrayList<Control> constants = new ArrayList<Control>();
 	
 	/**
 	 * Makes a new Builder for this controller.
 	 * @param tabController the Controller that made this Builder
 	 */
-	public Builder(EATabHolder tabController){
+	public Builder(EATab tabController){
 		this.tabController = tabController;
 	}
 	

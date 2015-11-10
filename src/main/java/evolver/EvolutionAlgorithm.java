@@ -1,8 +1,5 @@
 package evolver;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,16 +9,13 @@ import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
 import controllers.LimitedControllers;
-import javafx.application.Platform;
 import simulations.Simulation;
 import ui.Builder.Constraint;
 import ui.Builder.HasMenu;
 import ui.Builder.InputFramework;
 import ui.Builder.InputFramework.EntryType;
-import ui.controllers.EATabController;
 import ui.controllers.GUI;
 import ui.graph.Graph;
-import ui.graph.GraphData;
 import util.*;
 
 public class EvolutionAlgorithm implements HasMenu, Runnable {
