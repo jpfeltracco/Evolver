@@ -86,7 +86,19 @@ public abstract class Controller implements Serializable{
 	 */
 	public abstract boolean isSame(Element e1, Element e2);
 	
+	/**
+	 * Save the current configuration to the File specified. Do not add extensions or change the name,
+	 * as this has already been set up.
+	 * @param loc the File location of this save file
+	 */
 	public abstract void saveConfig(File loc);
+	
+	/**
+	 * Gets the preferred extensions for outputting the configuration file. 
+	 * IE. If a .txt is preferred, an output would be "txt".
+	 * @return the preferred extensions for output configurations
+	 */
+	public abstract String[] getExtension();
 	
 
 	//-------------------------------------------------------------------

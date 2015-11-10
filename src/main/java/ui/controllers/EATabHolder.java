@@ -19,6 +19,8 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
+import com.sun.javafx.tk.FileChooserType;
+
 import controllers.Controller;
 import evolver.Element;
 import evolver.ElementHolder;
@@ -422,12 +424,28 @@ public abstract class EATabHolder {
 	public abstract boolean close();
 	
 	public synchronized void exportController(){
-		final DirectoryChooser directoryChooser = new DirectoryChooser();
-	    File selectedDirectory = directoryChooser.showDialog(GUI.stage);
+		// TODO: Make this save the last place something was saved, and then set the initial directory to there
+		
+		final FileChooser fileChooser = new FileChooser();
+		Controller c = ea.getBestElement();
+		
+		fileChooser.setTitle("Save Controller");
+        fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home"))
+        );   
+        
+        String[] exts = c.getExtension();
+        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[exts.length+1];
+        for(int i = 0; i < exts.length; i++){
+        	extensions[i] = new FileChooser.ExtensionFilter(exts[i].toUpperCase(), "*." + exts[i]);
+        }
+        extensions[exts.length] = new FileChooser.ExtensionFilter("All Files", "*.*");
+        fileChooser.getExtensionFilters().addAll(extensions);
+        
+	    File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
 	    if (selectedDirectory == null) {
 	    	throw new RuntimeException("Directory error.");
 	    }else{
-	    	Controller c = ea.getBestElement();
 			c.saveConfig(selectedDirectory);
 	    }
 	}

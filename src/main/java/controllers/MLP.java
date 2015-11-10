@@ -83,8 +83,8 @@ public class MLP extends Controller implements HasMenu{
 	
 	//Initializations:
 	InputFramework inputF = new InputFramework();
-	StringHolder internalSize = new StringHolder("2, 2");
-	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.LINEAR);
+	StringHolder internalSize = new StringHolder("3, 3, 3");
+	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.TANH);
 	
 	private TransferFunctionType f;
 	private int[] netDim;
@@ -158,8 +158,13 @@ public class MLP extends Controller implements HasMenu{
 
 	@Override
 	public void saveConfig(File loc) {
-		System.out.println(loc.getAbsolutePath() + "/config.nnet");
-		mlpNet.save(loc.getAbsolutePath() + "/config.nnet");
+		System.out.println(loc.getAbsolutePath());
+		mlpNet.save(loc.getAbsolutePath());
+	}
+
+	@Override
+	public String[] getExtension() {
+		return new String[] {"nnet"};
 	}
 
 	//------------------------------------------------------------------------------------------

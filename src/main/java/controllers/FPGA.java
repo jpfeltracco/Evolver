@@ -53,6 +53,12 @@ public class FPGA extends Controller {
 		
 	}
 
+	@Override
+	public String[] getExtension() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 }
