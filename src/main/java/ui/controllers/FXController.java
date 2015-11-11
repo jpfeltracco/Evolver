@@ -61,6 +61,9 @@ public class FXController implements Initializable {
 	@FXML
 	private Tab addEAButton;
 	
+	@FXML
+    private MenuBar menuBar;
+	
 	//-----------------------------FXML Functions----------------------------
 	
 	@FXML
@@ -319,10 +322,12 @@ public class FXController implements Initializable {
 		if(System.getProperty("os.name").contains("Mac")){
 			metaDown = KeyCombination.META_DOWN;
 			//metaAny = KeyCombination.META_ANY;
+			menuBar.setUseSystemMenuBar(true);
 		}else{
 			metaDown = KeyCombination.CONTROL_DOWN;
 			//metaAny = KeyCombination.CONTROL_ANY;
 		}
+		
 		
 		
 		saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown));
