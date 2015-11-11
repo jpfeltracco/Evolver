@@ -218,10 +218,10 @@ public class FXController implements Initializable {
 			return;
 		}
 	    
-		if(!settingFile)
+		//if(!settingFile)
 			addNewEATab(sim, control, inputF, elements, graphData);
-		else
-			new VDriver(sim, control, inputF, elements);
+		//else
+			//new VDriver(sim, control, inputF, elements);
 	    
 	}
 

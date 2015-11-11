@@ -17,37 +17,48 @@ import ui.graph.DataBridge;
 
 public class VTab {
 	
-	final EvolutionAlgorithm ea;
-	final Controller controller;
-	final Simulation simulation;
-	
+	EvolutionAlgorithm ea;
+	Controller controller;
+	Simulation simulation;
+	boolean active;
 	ElementHolder elements;
 	final DataBridge grapher;
 
-	public VTab(Simulation simulation, Controller controller, MenuItems eaMenuItems, ElementHolder elements, DataBridge grapher) {
+	public VTab(Simulation simulation, Controller controller, EvolutionAlgorithm ea, MenuItems eaMenuItems, ElementHolder elements, DataBridge grapher) {
 		this.controller = controller;
 		this.simulation = simulation;
 		this.grapher = grapher;
+		this.ea = ea;
 		
-		System.out.println("Creating EA...");
-		ea = new EvolutionAlgorithm();
+		if(eaMenuItems != null)
+			ea.getMenuItems().setDefaults(eaMenuItems);
+		
+		System.out.println("Initializing EA...");
 		ea.menuInit();
-		ea.getMenuItems().setDefaults(eaMenuItems);
-		ea.readElementHolder(elements);
 		
-		//Set up grapher
 		ea.setGrapher(grapher);
 		if(elements == null)
 			grapher.setGeneration(0);
-		else
+		else{
+			ea.readElementHolder(elements);
 			grapher.setGeneration(elements.getGen());
+		}
 		
 		//------
-		
+	}
+	
+	public VTab(Simulation simulation, Controller controller, EvolutionAlgorithm ea, MenuItems eaMenuItems, DataBridge grapher) {
+		this(simulation, controller, ea, eaMenuItems, null, grapher);
+	}
+	
+	public void updateComponents(Simulation simulation, Controller controller, EvolutionAlgorithm ea){
+		this.simulation = simulation;
+		this.controller = controller;
+		this.ea = ea;
 	}
 	
 	public void start() {
-
+		active = true;
 		System.out.println("Starting EA...");
 		controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
 		
@@ -63,6 +74,7 @@ public class VTab {
 	}
 	
 	public void stop() {
+		active = false;
 		System.out.println("Shutting down EA...");
 		ea.setRunning(false);
 		System.out.println("Gathering Elements...");
@@ -71,6 +83,10 @@ public class VTab {
 	
 	public ElementHolder getElements(){
 		return elements;
+	}
+	
+	public boolean getActive(){
+		return active;
 	}
 
 }

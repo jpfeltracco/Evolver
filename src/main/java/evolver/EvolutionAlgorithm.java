@@ -144,6 +144,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		System.out.println("\tnumThreads: " + numThreads);
 		System.out.println("\tavailableControllers: " + availableControllers);
 		
+		check();
+		
 		
 		//this.running = false;
 		
@@ -274,7 +276,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			if(genNum%graphAmt.getValue() == 0){	
 				//System.out.println("Gen: " + genNum + "\tElement: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness() + "\tReproduction: " + reproductionType);
-				System.out.println("SYS: Gen: " + genNum + "\tFitness: " + bestElement.getFitness() + "\tAvg: " + avg(runningAvg));
+				//System.out.println("SYS: Gen: " + genNum + "\tFitness: " + bestElement.getFitness() + "\tAvg: " + avg(runningAvg));
 				/*Platform.runLater(new Runnable() {
 					  @Override
 					  public void run() {
@@ -332,11 +334,15 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			if(dataBridge.isVirtual())
 				dataBridge.check();
 			
-			try {
-				Thread.sleep(delayAmt.getValue());
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			int delay = delayAmt.getValue();
+			
+			if(delay != 0){
+				try {
+					Thread.sleep(delay);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 			//System.out.println("2Element: " + elements[0].id + "\t Fitness: " + elements[0].getFitness());
@@ -455,15 +461,17 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	
 	@Override
-	public boolean check() {
+	public synchronized boolean check() {
 		if(!menuItems.checkAllInit())
 			return false;
-//		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
-//		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
-//		System.out.println("M Rate:\t" + menuMutationRate.getValue());
-//		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
-//		System.out.println("Mutiplier:\t" + menuMult.getValue());
-//		System.out.println("Games Per:\t" + menuGamePerElement.getValue());
+		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
+		System.out.println("M Rate:\t" + menuMutationRate.getValue());
+		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
+		System.out.println("Delay:\t" + delayAmt.getValue());
+		System.out.println("Graph Amt:\t" + graphAmt.getValue());
 		return true;
 	}
 

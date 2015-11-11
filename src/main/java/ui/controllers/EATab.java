@@ -60,6 +60,7 @@ public class EATab {
 	Controller controller;
 	ElementHolder elementHolder;
 	boolean status[] = new boolean[3];
+	VTab vTab;
 	
 	
 	public EATab(String tabID, Tab tab, FXController fxController){
@@ -82,7 +83,7 @@ public class EATab {
 		changeController(controller);
 		original = true;
 		
-		
+		//vTab = new VTab(simulation, controller, ea, null, fitnessGrapher);
 		
 	}
 	
@@ -92,11 +93,11 @@ public class EATab {
 		this.fxController = fxController;
 		this.simulation = simulation;
 		this.controller = controller;
-		
+		this.elementHolder = elements;
 		ea.getMenuItems().clear();
 		ea.menuInit();
 		ea.getMenuItems().setDefaults(inputF);
-		ea.readElementHolder(elements);
+		//ea.readElementHolder(elements);
 		
 		initializeTab();
 		
@@ -154,6 +155,8 @@ public class EATab {
 		changeSim(simulation);
 		changeController(controller);
 		original = true;
+		
+		//vTab = new VTab(simulation, controller, null, elements, fitnessGrapher);
 		
 	}
 	
@@ -226,24 +229,35 @@ public class EATab {
 			builder.setChangable(false);
 			//System.out.println("STARTING SIMULATION");
 			//System.out.println("SIM NUM IN: " + simulation.getNumInputs() + "\tNUM OUT: " + simulation.getNumOutputs());
-			controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
-			if(simulation instanceof TabMenu)
-				((TabMenu)simulation).start();
-			if(controller instanceof TabMenu)
-				((TabMenu)controller).start();
-			ea.readElementHolder(elementHolder);
-			ea.setSimAndController(simulation,controller);
-			((TabMenu)ea).start();
-			ea.setRunning(true);
-			(new Thread(ea)).start();
+			//controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
+			//if(simulation instanceof TabMenu)
+				//((TabMenu)simulation).start();
+			//if(controller instanceof TabMenu)
+				//((TabMenu)controller).start();
+			//ea.readElementHolder(elementHolder);
+			//ea.setSimAndController(simulation,controller);
+			//((TabMenu)ea).start();
+			//ea.setRunning(true);
+			//(new Thread(ea)).start();
+			
+			//vTab.updateComponents(simulation, controller, ea);
+			//vTab.re
+			vTab = new VTab(simulation, controller, ea, null, elementHolder, fitnessGrapher);
+			vTab.start();
+			
 			startButton.setText("Stop");
+			
+			
 		} else {
 			stopped = true;
-			ea.setRunning(false);
+			//ea.setRunning(false);
 			clearButton.setDisable(false);
 			graphClean.setDisable(false);
 			//builder.setChangable(true);
 			elementHolder = ea.getExportedElements();
+			
+			vTab.stop();
+			
 			startButton.setText("Start");
 		}
 	}
@@ -284,7 +298,7 @@ public class EATab {
 		//Set up grapher
 		System.out.println("GRAPH: " + fitnessGraph);
 		fitnessGrapher = new DataBridge(fitnessGraph, this);
-		ea.setGrapher(fitnessGrapher);
+		//ea.setGrapher(fitnessGrapher);
 		
 		//Set the initial button enables
 		startButton.setDisable(true);

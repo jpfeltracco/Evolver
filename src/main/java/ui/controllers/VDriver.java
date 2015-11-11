@@ -2,6 +2,7 @@ package ui.controllers;
 
 import controllers.Controller;
 import evolver.ElementHolder;
+import evolver.EvolutionAlgorithm;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
 import simulations.Simulation;
@@ -19,15 +20,17 @@ public class VDriver {
 		this.elements = elements;
 		running = true;
 		System.out.println("Creating VTab...");
-		vTab = new VTab(simulation, controller, eaMenuItems, elements, dataBridge);
+
+		vTab = new VTab(simulation, controller, new EvolutionAlgorithm(), eaMenuItems, elements, dataBridge);
 		vTab.start();
 	}
 	
 	public  void check(){
+		if(!running)
+			return;
 		ObservableList<Data<Number,Number>> dat = dataBridge.getSeries(0).getData();
 		if(Math.abs((double)dat.get(dat.size()-1).getYValue()) < 0.5){
 			System.out.println("VDriver Complete. Shutting down VTab...");
-			vTab.stop();
 			elements = vTab.getElements();
 			System.out.println("Last Fitness: " + dat.get(dat.size()-1).getYValue());
 			running = false;
