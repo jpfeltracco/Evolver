@@ -3,15 +3,18 @@ package ui.graph;
 import javafx.application.Platform;
 
 public class GraphData implements Runnable{
-	private final Graph graph;
+	private final DataBridge graph;
 	private final Number[] data;
 	private final String series;
 	
-	public GraphData(Graph graph, String series, Number[] data){
+	public GraphData(DataBridge graph, String series, Number[] data){
 		this.graph = graph;
 		this.data = data;
 		this.series = series;
-		Platform.runLater(this);
+		if(!graph.isVirtual())
+			Platform.runLater(this);
+		else
+			graph.addToSeries(series, data);
 	}
 
 	@Override

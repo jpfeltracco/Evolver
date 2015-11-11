@@ -1,34 +1,23 @@
 package ui.controllers;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Properties;
 import java.util.ResourceBundle;
-
-import com.badlogic.gdx.Gdx;
 
 import controllers.Controller;
 import evolver.ElementHolder;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.Mnemonic;
 import javafx.stage.FileChooser;
 import simulations.Simulation;
 import ui.Builder.MenuItems;
@@ -229,7 +218,10 @@ public class FXController implements Initializable {
 			return;
 		}
 	    
-	    addNewEATab(sim, control, inputF, elements, graphData);
+		if(!settingFile)
+			addNewEATab(sim, control, inputF, elements, graphData);
+		else
+			new VDriver(sim, control, inputF, elements);
 	    
 	}
 

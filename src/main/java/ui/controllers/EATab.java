@@ -44,7 +44,7 @@ import simulations.Simulation;
 import ui.Builder.Builder;
 import ui.Builder.TabMenu;
 import ui.Builder.MenuItems;
-import ui.graph.Graph;
+import ui.graph.DataBridge;
 
 public class EATab {
 	
@@ -52,7 +52,7 @@ public class EATab {
 	final Tab tab;
 	final FXController fxController;
 	final String FXMLTYPE = "eaTab.fxml";
-	public Graph fitnessGrapher;
+	public DataBridge fitnessGrapher;
 	Builder builder = new Builder(this);
 	EvolutionAlgorithm ea = new EvolutionAlgorithm();
 	boolean original = true;
@@ -283,7 +283,7 @@ public class EATab {
 		
 		//Set up grapher
 		System.out.println("GRAPH: " + fitnessGraph);
-		fitnessGrapher = new Graph(fitnessGraph, this);
+		fitnessGrapher = new DataBridge(fitnessGraph, this);
 		ea.setGrapher(fitnessGrapher);
 		
 		//Set the initial button enables

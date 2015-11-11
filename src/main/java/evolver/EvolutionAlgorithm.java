@@ -15,7 +15,7 @@ import ui.Builder.TabMenu;
 import ui.Builder.MenuItems;
 import ui.Builder.MenuItems.EntryType;
 import ui.controllers.GUI;
-import ui.graph.Graph;
+import ui.graph.DataBridge;
 import util.*;
 
 public class EvolutionAlgorithm extends TabMenu implements Runnable {
@@ -46,14 +46,14 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	private Element bestElement;
 	
-	private Graph grapher;
+	private DataBridge dataBridge;
 	
 	private Vector<Float> avgFit = new Vector<Float>();
 	
 	public int genNum = 0;
 	
-	public void setGrapher(Graph g){
-		grapher = g;
+	public void setGrapher(DataBridge g){
+		dataBridge = g;
 	}
 	
 	public synchronized void setRunning(boolean running) {
@@ -287,7 +287,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				});*/
 				
 				//grapher.graphData("Average Fitness", new Number[] {genNum, avg(runningAvg)});
-				grapher.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
+				dataBridge.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
 				runningAvg.clear();
 				
 			}
@@ -326,8 +326,11 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			genNum++;
 			
-			grapher.setGeneration(genNum);
+			dataBridge.setGeneration(genNum);
 			elements = nextGen;
+			
+			if(dataBridge.isVirtual())
+				dataBridge.check();
 			
 			try {
 				Thread.sleep(delayAmt.getValue());
