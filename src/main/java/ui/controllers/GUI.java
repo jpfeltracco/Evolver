@@ -51,6 +51,7 @@ public class GUI extends Application {
     	
     	initFiles();
     	
+    	//TESTING
     	
     	
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
