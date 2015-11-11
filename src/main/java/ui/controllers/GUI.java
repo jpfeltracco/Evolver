@@ -1,5 +1,12 @@
 package ui.controllers;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.neuroph.util.TransferFunctionType;
 
 import com.badlogic.gdx.Gdx;
@@ -24,13 +31,21 @@ public class GUI extends Application {
 	Thread eaThread;
 	public static Stage stage;
 	public static boolean running = true;
-
+	public static File lastFileSystemLoc = new File(System.getProperty("user.dir") + "/assets/fileloc.dat");
+	public static File lastFileLocation;
+	
     public static void run() {
         launch();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+    	
+    	
+    	initFiles();
+    	
+    	
+    	
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
 
         Scene scene = new Scene(root, 750, 600);
@@ -44,6 +59,42 @@ public class GUI extends Application {
     @Override
     public void stop() {
     	System.out.println("GUI Stop");
+    	setFileLoc();
     	running = false;
     }
+    
+    private void initFiles(){
+    	if(!lastFileSystemLoc.exists()){
+			lastFileLocation = new File(System.getProperty("user.home"));
+			try {
+				PrintWriter pw = new PrintWriter(lastFileSystemLoc);
+				pw.write(lastFileLocation.getAbsolutePath());
+				pw.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}else{
+			try {
+				FileReader fr = new FileReader(lastFileSystemLoc);
+				BufferedReader br = new BufferedReader(fr);
+				//System.out.println(br.readLine());
+				lastFileLocation = new File(br.readLine());
+				br.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e2){
+				e2.printStackTrace();
+			}
+		}
+    }
+    
+    public void setFileLoc(){
+		try {
+			PrintWriter pw = new PrintWriter(lastFileSystemLoc);
+			pw.write(lastFileLocation.getAbsolutePath());
+			pw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }

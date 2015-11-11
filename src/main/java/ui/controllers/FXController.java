@@ -1,16 +1,22 @@
 package ui.controllers;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Properties;
 import java.util.ResourceBundle;
+
+import com.badlogic.gdx.Gdx;
 
 import controllers.Controller;
 import evolver.ElementHolder;
@@ -68,8 +74,25 @@ public class FXController implements Initializable {
 	private void onSaveSettings(){
 		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				ea.saveAll(false);
-				break;
+				
+				final FileChooser fileChooser = new FileChooser();
+				
+				fileChooser.setTitle("Save Project");
+				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		        
+		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+		        extensions[0] = new FileChooser.ExtensionFilter("Evolve Settings", "*.evs");
+		        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+		        fileChooser.getExtensionFilters().addAll(extensions);
+		        
+		        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+		        if(selectedDirectory == null){
+		        	System.out.println("Save Failed");
+		        	return;
+		        }
+		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
+				ea.saveAll(false, selectedDirectory);
+				return;
 			}
 		}
 	}
@@ -78,8 +101,28 @@ public class FXController implements Initializable {
 	private void saveEvolution(){
 		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				ea.saveAll(true);
-				break;
+				final FileChooser fileChooser = new FileChooser();
+				
+				
+				fileChooser.setTitle("Save Project");
+				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		        
+		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+		        extensions[0] = new FileChooser.ExtensionFilter("Evolve Project", "*.evo");
+		        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+		        fileChooser.getExtensionFilters().addAll(extensions);
+		        
+		        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+		        if(selectedDirectory == null){
+		        	System.out.println("Save Failed");
+		        	return;
+		        }
+		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
+		        
+		        
+		        
+				ea.saveAll(true, selectedDirectory);
+				return;
 			}
 		}
 	}
@@ -88,7 +131,23 @@ public class FXController implements Initializable {
 	private void onExportController(){
 		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				ea.exportController();
+				final FileChooser fileChooser = new FileChooser();
+				Controller c = ea.ea.getBestElement();
+				fileChooser.setTitle("Save Controller");
+		        fileChooser.setInitialDirectory(
+		            new File(System.getProperty("user.home"))
+		        );   
+		        
+		        String[] exts = c.getExtension();
+		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[exts.length+1];
+		        for(int i = 0; i < exts.length; i++){
+		        	extensions[i] = new FileChooser.ExtensionFilter(exts[i].toUpperCase(), "*." + exts[i]);
+		        }
+		        extensions[exts.length] = new FileChooser.ExtensionFilter("All Files", "*.*");
+		        fileChooser.getExtensionFilters().addAll(extensions);
+		        
+			    File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+				ea.exportController(selectedDirectory);
 				break;
 			}
 		}
@@ -98,17 +157,22 @@ public class FXController implements Initializable {
 	private void openEvolution(){
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Project");
-        fileChooser.setInitialDirectory(
-            new File(System.getProperty("user.home"))
-        );
-        
+        fileChooser.setInitialDirectory(GUI.lastFileLocation);
+       
         fileChooser.getExtensionFilters().addAll(
+        	new FileChooser.ExtensionFilter("Evolve Files", new String[] {"*.evo", "*.evs"}),
         	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
         	new FileChooser.ExtensionFilter("Evolve Setting", "*.evs"),
         	new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         
         File selection = fileChooser.showOpenDialog(GUI.stage);
+        if(selection == null){
+        	System.out.println("Open Failed");
+        	return;
+        }
+        GUI.lastFileLocation = new File(selection.getParent());
+        
         boolean settingFile = selection.getName().endsWith("evs");
         
         int index = 0;
@@ -154,7 +218,7 @@ public class FXController implements Initializable {
 			in.close();
 			fileIn.close();
 		}catch(IOException i){
-			i.printStackTrace();
+			System.out.println("Open Failed: " + i.getMessage());
 			return;
 		}catch(ClassNotFoundException c){
 			System.out.println("Class not found.");
@@ -237,6 +301,7 @@ public class FXController implements Initializable {
 				return 0;
 		}
 	}
+	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -244,7 +309,11 @@ public class FXController implements Initializable {
 		addNewEATab();
 		EATabs.getSelectionModel().select(1);
 		
+		
 		System.out.println(System.getProperty("os.name"));
+		
+		
+		
 		KeyCombination.Modifier metaDown;
 		//KeyCombination.Modifier metaAny;
 		if(System.getProperty("os.name").contains("Mac")){

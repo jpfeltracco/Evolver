@@ -128,7 +128,10 @@ public class EATab {
 		GridPane grid = getNewGrid();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 		
-		fitnessGrapher.setGeneration(elements.getGen());
+		if(elements == null)
+			fitnessGrapher.setGeneration(0);
+		else
+			fitnessGrapher.setGeneration(elements.getGen());
 		
 		//------
 		
@@ -304,32 +307,14 @@ public class EATab {
 		return tabID;
 	}
 	
-	public void saveAll(boolean saveElement){
-		saveAll(saveElement, new SaveObject(), 0);
+	public void saveAll(boolean saveElement, File file){
+		saveAll(saveElement, file, new SaveObject(), 0);
 	}
 	
-	public void saveAll(boolean saveElements, SaveObject output, int index){
+	public void saveAll(boolean saveElements, File selectedDirectory, SaveObject output, int index){
 		ElementHolder elementHolder = null;
 		if(saveElements)
 			 elementHolder = getElementHolder();
-		
-		final FileChooser fileChooser = new FileChooser();
-		
-		fileChooser.setTitle("Save Project");
-        fileChooser.setInitialDirectory(
-            new File(System.getProperty("user.home"))
-        );   
-        
-        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
-        if(saveElements)
-        	extensions[0] = new FileChooser.ExtensionFilter("Evolve Project", "*.evo");
-        else
-        	extensions[0] = new FileChooser.ExtensionFilter("Evolve Settings", "*.evs");
-        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
-    	
-        fileChooser.getExtensionFilters().addAll(extensions);
-        
-        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
         
 	    try {
 	    	if(saveElements)
@@ -470,26 +455,9 @@ public class EATab {
 	    
 	}
 	
-	public synchronized void exportController(){
+	public synchronized void exportController(File selectedDirectory){
 		// TODO: Make this save the last place something was saved, and then set the initial directory to there
-		
-		final FileChooser fileChooser = new FileChooser();
 		Controller c = ea.getBestElement();
-		
-		fileChooser.setTitle("Save Controller");
-        fileChooser.setInitialDirectory(
-            new File(System.getProperty("user.home"))
-        );   
-        
-        String[] exts = c.getExtension();
-        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[exts.length+1];
-        for(int i = 0; i < exts.length; i++){
-        	extensions[i] = new FileChooser.ExtensionFilter(exts[i].toUpperCase(), "*." + exts[i]);
-        }
-        extensions[exts.length] = new FileChooser.ExtensionFilter("All Files", "*.*");
-        fileChooser.getExtensionFilters().addAll(extensions);
-        
-	    File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
 	    if (selectedDirectory == null) {
 	    	throw new RuntimeException("Directory error.");
 	    }else{
