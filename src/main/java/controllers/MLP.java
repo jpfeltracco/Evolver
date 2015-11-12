@@ -47,7 +47,7 @@ public class MLP extends Controller {
 		for (int j = 0; j < getConfigSize(); j++) {
 //			e.config[j] = r.getRandomGenerator().nextDouble();
 			e.config[j] = r.nextGaussian();
-			System.out.println(e.config[j]);
+			//System.out.println(e.config[j]);
 		}	
 		return e;
 	}
@@ -151,16 +151,16 @@ public class MLP extends Controller {
 
 	@Override
 	public void start(int numIn, int numOut) {
-		System.out.println("\n--------------NEW MLP--------------");
+		//System.out.println("\n--------------NEW MLP--------------");
 		dims = calculateDimArray(numIn, numOut);
 		f = ((TransferFunctionType)transferType.getFocusObject());
-		System.out.print("Dim Array:\t");
-		for(int s : dims){
-			System.out.print("" + s + " ");
-		}
-		System.out.println("\nTransferType:\t" + f);
+		//System.out.print("Dim Array:\t");
+		//for(int s : dims){
+			//System.out.print("" + s + " ");
+		//}
+		//System.out.println("\nTransferType:\t" + f);
 		mlpNet = new MultiLayerPerceptron(f, dims);
-		System.out.println("-----------------------------------\n");
+		//System.out.println("-----------------------------------\n");
 	}
 
 

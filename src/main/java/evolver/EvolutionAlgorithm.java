@@ -15,7 +15,7 @@ import ui.Builder.TabMenu;
 import ui.Builder.MenuItems;
 import ui.Builder.MenuItems.EntryType;
 import ui.controllers.GUI;
-import ui.graph.Graph;
+import ui.graph.DataBridge;
 import util.*;
 
 public class EvolutionAlgorithm extends TabMenu implements Runnable {
@@ -46,14 +46,14 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	private Element bestElement;
 	
-	private Graph grapher;
+	private DataBridge dataBridge;
 	
 	private Vector<Float> avgFit = new Vector<Float>();
 	
 	public int genNum = 0;
 	
-	public void setGrapher(Graph g){
-		grapher = g;
+	public void setGrapher(DataBridge g){
+		dataBridge = g;
 	}
 	
 	public synchronized void setRunning(boolean running) {
@@ -143,6 +143,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		System.out.println("\tcontrolPerSim: " + controlPerSim);
 		System.out.println("\tnumThreads: " + numThreads);
 		System.out.println("\tavailableControllers: " + availableControllers);
+		
+		check();
 		
 		
 		//this.running = false;
@@ -274,7 +276,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			if(genNum%graphAmt.getValue() == 0){	
 				//System.out.println("Gen: " + genNum + "\tElement: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness() + "\tReproduction: " + reproductionType);
-				System.out.println("SYS: Gen: " + genNum + "\tFitness: " + bestElement.getFitness() + "\tAvg: " + avg(runningAvg));
+				//System.out.println("SYS: Gen: " + genNum + "\tFitness: " + bestElement.getFitness() + "\tAvg: " + avg(runningAvg));
 				/*Platform.runLater(new Runnable() {
 					  @Override
 					  public void run() {
@@ -287,7 +289,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				});*/
 				
 				//grapher.graphData("Average Fitness", new Number[] {genNum, avg(runningAvg)});
-				grapher.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
+				dataBridge.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
 				runningAvg.clear();
 				
 			}
@@ -326,14 +328,21 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			genNum++;
 			
-			grapher.setGeneration(genNum);
+			dataBridge.setGeneration(genNum);
 			elements = nextGen;
 			
-			try {
-				Thread.sleep(delayAmt.getValue());
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			if(dataBridge.isVirtual())
+				dataBridge.check();
+			
+			int delay = delayAmt.getValue();
+			
+			if(delay != 0){
+				try {
+					Thread.sleep(delay);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 			//System.out.println("2Element: " + elements[0].id + "\t Fitness: " + elements[0].getFitness());
@@ -452,15 +461,17 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	
 	@Override
-	public boolean check() {
+	public synchronized boolean check() {
 		if(!menuItems.checkAllInit())
 			return false;
-//		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
-//		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
-//		System.out.println("M Rate:\t" + menuMutationRate.getValue());
-//		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
-//		System.out.println("Mutiplier:\t" + menuMult.getValue());
-//		System.out.println("Games Per:\t" + menuGamePerElement.getValue());
+		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
+		System.out.println("M Rate:\t" + menuMutationRate.getValue());
+		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
+		System.out.println("Delay:\t" + delayAmt.getValue());
+		System.out.println("Graph Amt:\t" + graphAmt.getValue());
 		return true;
 	}
 

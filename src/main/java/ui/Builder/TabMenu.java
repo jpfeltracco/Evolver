@@ -16,6 +16,7 @@ package ui.Builder;
 public abstract class TabMenu {
 	
 	protected MenuItems menuItems = new MenuItems();
+	protected boolean initialized = false;
 	
 	/**
 	 * This method is for initializing the MenuItems Object "inputF" for this object. Define all variables
@@ -30,7 +31,10 @@ public abstract class TabMenu {
 	 * Initializes this TabMenu. Do not override, use menuInit(MenuItems menu).
 	 */
 	public void menuInit(){
-		menuInit(menuItems);
+		if(!initialized){
+			menuInit(menuItems);
+			initialized = true;
+		}
 	}
 	
 	/**
