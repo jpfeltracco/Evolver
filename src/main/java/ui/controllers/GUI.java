@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 
@@ -23,10 +24,12 @@ import evolver.EvolutionAlgorithm.Type;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import simulations.Simulation;
 import simulations.XOR;
@@ -40,6 +43,8 @@ public class GUI extends Application {
 	public static Stage stage;
 	public static boolean running = true;
 	public static File lastFileLocation;
+	public static String lastFileName;
+	public URL fileLocURL = getClass().getResource("/assets/fileloc.dat");
 	
     public static void run() {
         launch();
@@ -52,10 +57,18 @@ public class GUI extends Application {
     	initFiles();
     	
     	
+    	
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
 
-        Scene scene = new Scene(root, 750, 600);
+        Scene scene = new Scene(root, 750, 600); 
         stage = primaryStage;
+        
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        
+        stage.setX(primaryScreenBounds.getMinX());
+        stage.setY(primaryScreenBounds.getMinY());
+        stage.setWidth(primaryScreenBounds.getWidth());
+        stage.setHeight(primaryScreenBounds.getHeight());
         
         try {
 			Image img = new Image(new FileInputStream(getClass().getResource("/assets/icon.png").getPath()));
@@ -90,16 +103,16 @@ public class GUI extends Application {
     private void initFiles(){
     	//System.out.println("FILE: " + getClass().getResource("/assets/fileloc.dat").toString());
     	//System.out.println("EXISTS: " + lastFileSystemLoc.exists());
-    	
-    	
+
 		try {
-			String pathName = getClass().getResource("/assets/fileloc.dat").getPath();
-			//System.out.println("POINTS: " + pathName.indexOf("!"));
+			String pathName = fileLocURL.getPath();
 			//if(pathName.indexOf("!") != -1)
 				//pathName = pathName.substring(0, pathName.indexOf("!")) + pathName.substring(pathName.indexOf("!") + 1);
 			FileReader fr = new FileReader(pathName);
 			BufferedReader br = new BufferedReader(fr);
 			String path = br.readLine();
+			lastFileName = br.readLine();
+			System.out.println(path + "\t" +  lastFileName);
 			if(path == null || path.length() == 0){
 				lastFileLocation = new File(System.getProperty("user.home"));
 			}else{
@@ -122,13 +135,15 @@ public class GUI extends Application {
     }
     
     public void setFileLoc(){
-		try {
-			PrintWriter pw = new PrintWriter(getClass().getResource("/assets/fileloc.dat").getPath());
-			pw.write(lastFileLocation.getAbsolutePath());
-			pw.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		
+		try (PrintWriter pw = new PrintWriter(fileLocURL.getPath())) {
+			pw.println(lastFileLocation.getAbsolutePath());
+			if(lastFileName != null)
+				pw.println(lastFileName);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+
+	    }
 	}
     
 }
