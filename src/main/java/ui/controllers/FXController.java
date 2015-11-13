@@ -8,9 +8,12 @@ import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import controllers.Controller;
+//import de.codecentric.centerdevice.platform.osx.NSMenuBarAdapter;
+//import de.codecentric.centerdevice.platform.osx.NativeMenuBar;
 import evolver.ElementHolder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,7 +30,10 @@ public class FXController implements Initializable {
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
 	ArrayList<EATab> tabControllers = new ArrayList<EATab>();
 	int eaCount = 0;
-
+	boolean recentItemsExist = false;
+	MenuItem clearRecent;
+	MenuItem noRecentItems;
+	SeparatorMenuItem recentSep;
 	
 	//----------------------------FXML Objects----------------------------
 	@FXML
@@ -88,7 +94,7 @@ public class FXController implements Initializable {
 				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
 				
 				String exts[] = new String[] {".evs"};
-				if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
+				if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && GUI.checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
 					fileChooser.setInitialFileName(GUI.lastFileName);
 				
 		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
@@ -103,7 +109,9 @@ public class FXController implements Initializable {
 		        }
 		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
 		        GUI.lastFileName = selectedDirectory.getName();
-				ea.saveAll(false, selectedDirectory);
+				if(ea.saveAll(false, selectedDirectory)){
+					addRecentFile(selectedDirectory);
+				}
 				return;
 			}
 		}
@@ -122,7 +130,7 @@ public class FXController implements Initializable {
 				System.out.println(GUI.lastFileName);
 				
 				String exts[] = new String[] {".evo"};
-				if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
+				if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && GUI.checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
 					fileChooser.setInitialFileName(GUI.lastFileName);
 				
 		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
@@ -140,19 +148,15 @@ public class FXController implements Initializable {
 		        GUI.lastFileName = selectedDirectory.getName();
 		        System.out.println(GUI.lastFileName);
 		        
-				ea.saveAll(true, selectedDirectory);
+				if(ea.saveAll(true, selectedDirectory)){
+					addRecentFile(selectedDirectory);
+				}
 				return;
 			}
 		}
 	}
 	
-	private boolean checkExt(String ext, String[] exts){
-		for(String s : exts){
-			if(s.equals(ext))
-				return true;
-		}
-		return false;
-	}
+	
 	
 	@FXML
 	private void onExportController(){
@@ -184,7 +188,6 @@ public class FXController implements Initializable {
 		fileChooser.setTitle("Open Project");
         fileChooser.setInitialDirectory(GUI.lastFileLocation);
         
-        
         fileChooser.getExtensionFilters().addAll(
         	new FileChooser.ExtensionFilter("Evolve Files", new String[] {"*.evo", "*.evs"}),
         	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
@@ -192,16 +195,34 @@ public class FXController implements Initializable {
         	new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         
-        File selection = fileChooser.showOpenDialog(GUI.stage);
+        List<File> selection = fileChooser.showOpenMultipleDialog(GUI.stage);
         if(selection == null){
         	System.out.println("Open Failed");
         	return;
         }
-        GUI.lastFileLocation = new File(selection.getParent());
-        GUI.lastFileName = selection.getName();
-        System.out.println(GUI.lastFileName);
+        GUI.lastFileLocation = new File(selection.get(0).getParent());
+        GUI.lastFileName = selection.get(0).getName();
         
-        boolean settingFile = selection.getName().endsWith("evs");
+        for(File f : selection){
+        	openFile(f);
+        }
+	    
+	}
+	
+	public void openFile(File selection){
+		String name = selection.getName().substring(0,selection.getName().indexOf("."));
+		addRecentFile(selection);
+		for(Tab t : EATabs.getTabs()){
+			if(t.getId().indexOf("FILE") == -1)
+				continue;
+			System.out.println(t.getId().substring(5) + "\tvs.\t" + selection.getAbsolutePath());
+			if(t.getId().substring(5).equals(selection.getAbsolutePath())){
+				EATabs.getSelectionModel().select(t);
+				return;
+			}
+		}
+		
+		boolean settingFile = selection.getName().endsWith("evs");
         
         int index = 0;
         
@@ -255,10 +276,10 @@ public class FXController implements Initializable {
 		}
 	    
 		//if(!settingFile)
-			addNewEATab(sim, control, inputF, elements, graphData);
+			addNewEATab(name, selection, sim, control, inputF, elements, graphData);
 		//else
 			//new VDriver(sim, control, inputF, elements);
-	    
+			
 	}
 
 	@FXML
@@ -285,9 +306,9 @@ public class FXController implements Initializable {
 
 	}
 
-	public void addNewEATab(Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData) {
+	public void addNewEATab(String name, File file, Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData) {
 		
-		Tab t = getNewEATab();
+		Tab t = getNewEATab(name, file);
 		
 		//Add Tab Pane
 		EATab tc = new EATab(t.getId(), t, this, s, c, inputF, elements, graphData);
@@ -298,6 +319,53 @@ public class FXController implements Initializable {
 		EATabs.getTabs().sort(new TabOrder());
 		EATabs.getSelectionModel().select(t);
 	
+	}
+	
+	public void addRecentFile(File f){
+		
+		if(!recentItemsExist){
+			openRecent.getItems().add(recentSep);
+			openRecent.getItems().add(clearRecent);
+			openRecent.getItems().remove(noRecentItems);
+			recentItemsExist = true;
+		}
+		
+	
+		MenuItem newItem = GUI.addRecentFile(f);
+		if(newItem == null){
+			for(MenuItem m : openRecent.getItems()){
+				if(m.getText().equals(f.getAbsolutePath())){
+					openRecent.getItems().remove(m);
+					openRecent.getItems().add(0, m);
+					return;
+				}
+			}
+			return;
+		}
+		
+		newItem.setOnAction((event) -> {
+			openFile(new File(newItem.getText()));
+		});
+		
+		openRecent.getItems().add(0,newItem);
+		String remove = GUI.getRemovedItem();
+		if(remove == null)
+			return;
+		
+		for(MenuItem m : openRecent.getItems()){
+			if(m.getText().equals(remove)){
+				openRecent.getItems().remove(m);
+				return;
+			}
+		}
+	}
+
+	
+	public void clearRecentItems(){
+		openRecent.getItems().clear();
+		GUI.recentFiles.clear();
+		openRecent.getItems().add(noRecentItems);
+		recentItemsExist = false;
 	}
 	
 	public Tab getNewEATab(){
@@ -321,6 +389,12 @@ public class FXController implements Initializable {
 			eaCount++;
 		}
 		t.setId("" + tabID);
+		return t;
+	}
+	
+	public Tab getNewEATab(String name, File file){
+		Tab t = new Tab(name);
+		t.setId("FILE-" + file.getAbsolutePath());
 		return t;
 	}
 	
@@ -360,6 +434,33 @@ public class FXController implements Initializable {
 			//metaAny = KeyCombination.CONTROL_ANY;
 		}
 		
+		for(File f : GUI.recentFiles){
+			MenuItem m = new MenuItem();
+			m.setText(f.getAbsolutePath());
+			m.setOnAction((event) -> {
+				openFile(new File(m.getText()));
+			});
+			openRecent.getItems().add(0,m);
+			recentItemsExist = true;
+		}
+		clearRecent = new MenuItem();
+		clearRecent.setText("Clear Items");
+		clearRecent.setOnAction((event) -> {
+			clearRecentItems();
+		});
+		
+		noRecentItems = new MenuItem();
+		noRecentItems.setText("No Recent Items");
+		noRecentItems.setDisable(true);
+		recentSep = new SeparatorMenuItem();
+		
+		if(recentItemsExist){
+			openRecent.getItems().add(recentSep);
+			openRecent.getItems().add(clearRecent);
+		}else{
+			openRecent.getItems().add(noRecentItems);
+		}
+		
 		
 		/*NativeMenuBar adapter = new NSMenuBarAdapter();
 
@@ -374,7 +475,7 @@ public class FXController implements Initializable {
 		openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, metaDown));
 		exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown));
 		closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, metaDown));
-		newProject.setAccelerator(new KeyCodeCombination(KeyCode.T, metaDown));
+		newProject.setAccelerator(new KeyCodeCombination(KeyCode.N, metaDown));
 		duplicateTab.setAccelerator(new KeyCodeCombination(KeyCode.D, metaDown));
 	}
 
