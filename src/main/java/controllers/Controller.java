@@ -134,7 +134,7 @@ public abstract class Controller extends TabMenu implements Serializable{
 	//-------------------------------------------------------------------
 	// TODO Create a better way of doing this!
 	//-------------------------------------------------------------------
-	static String[] names = new String[] {"MLP","FPGA"};
+	static String[] names = new String[] {"MLP","FPGA","EncogMLP"};
 	public static String[] getTypeOfControllers(){
 		return names;
 	}
@@ -154,6 +154,8 @@ public abstract class Controller extends TabMenu implements Serializable{
 			return (Controller)(new MLP());
 		case "FPGA":
 			return (Controller)(new FPGA());
+		case "EncogMLP":
+			return (Controller)(new EncogMLP());
 		}
 		return null;
 	}
