@@ -1,45 +1,71 @@
 package ui.controllers;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Properties;
 import java.util.ResourceBundle;
+
+import com.badlogic.gdx.Gdx;
 
 import controllers.Controller;
 import evolver.ElementHolder;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.stage.DirectoryChooser;
+import javafx.scene.input.Mnemonic;
 import javafx.stage.FileChooser;
 import simulations.Simulation;
-import ui.Builder.HasMenu;
-import ui.Builder.InputFramework;
+import ui.Builder.MenuItems;
 
 public class FXController implements Initializable {
-	boolean startClicked;
-
-	// ArrayList<EvolutionAlgorithm> eas = new ArrayList<EvolutionAlgorithm>();
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
-	ArrayList<EATabHolder> tabControllers = new ArrayList<EATabHolder>();
-	
+	ArrayList<EATab> tabControllers = new ArrayList<EATab>();
 	int eaCount = 0;
 
+	
+	//----------------------------FXML Objects----------------------------
+	@FXML
+	private MenuItem saveProject;
+	
+	@FXML
+	private MenuItem saveSettings;
+	
+	@FXML
+	private MenuItem openProject;
+	
+	@FXML
+	private MenuItem exportController;
+	
+	@FXML
+	private MenuItem closeButton;
+	
 	@FXML
 	public TabPane EATabs;
 
-	// Tab that adds an EA to the list
 	@FXML
 	private Tab addEAButton;
-
+	
+	@FXML
+    private MenuBar menuBar;
+	
+	//-----------------------------FXML Functions----------------------------
+	
 	@FXML
 	private void addTab() {
 		if (addEAButton.isSelected()) {
@@ -48,20 +74,83 @@ public class FXController implements Initializable {
 	}
 	
 	@FXML
-	private void saveEvolution(){
-		for(EATabHolder ea : tabControllers){
+	private void onSaveSettings(){
+		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				ea.saveAll();
-				break;
+				
+				final FileChooser fileChooser = new FileChooser();
+				
+				fileChooser.setTitle("Save Project");
+				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		        
+		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+		        extensions[0] = new FileChooser.ExtensionFilter("Evolve Settings", "*.evs");
+		        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+		        fileChooser.getExtensionFilters().addAll(extensions);
+		        
+		        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+		        if(selectedDirectory == null){
+		        	System.out.println("Save Failed");
+		        	return;
+		        }
+		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
+				ea.saveAll(false, selectedDirectory);
+				return;
+			}
+		}
+	}
+	
+	@FXML
+	private void saveEvolution(){
+		for(EATab ea : tabControllers){
+			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+				final FileChooser fileChooser = new FileChooser();
+				
+				
+				fileChooser.setTitle("Save Project");
+				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		        
+		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+		        extensions[0] = new FileChooser.ExtensionFilter("Evolve Project", "*.evo");
+		        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+		        fileChooser.getExtensionFilters().addAll(extensions);
+		        
+		        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+		        if(selectedDirectory == null){
+		        	System.out.println("Save Failed");
+		        	return;
+		        }
+		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
+		        
+		        
+		        
+				ea.saveAll(true, selectedDirectory);
+				return;
 			}
 		}
 	}
 	
 	@FXML
 	private void onExportController(){
-		for(EATabHolder ea : tabControllers){
+		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				ea.exportController();
+				final FileChooser fileChooser = new FileChooser();
+				Controller c = ea.ea.getBestElement();
+				fileChooser.setTitle("Save Controller");
+		        fileChooser.setInitialDirectory(
+		            new File(System.getProperty("user.home"))
+		        );   
+		        
+		        String[] exts = c.getExtension();
+		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[exts.length+1];
+		        for(int i = 0; i < exts.length; i++){
+		        	extensions[i] = new FileChooser.ExtensionFilter(exts[i].toUpperCase(), "*." + exts[i]);
+		        }
+		        extensions[exts.length] = new FileChooser.ExtensionFilter("All Files", "*.*");
+		        fileChooser.getExtensionFilters().addAll(extensions);
+		        
+			    File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+				ea.exportController(selectedDirectory);
 				break;
 			}
 		}
@@ -70,144 +159,113 @@ public class FXController implements Initializable {
 	@FXML
 	private void openEvolution(){
 		final FileChooser fileChooser = new FileChooser();
-		
 		fileChooser.setTitle("Open Project");
-        fileChooser.setInitialDirectory(
-            new File(System.getProperty("user.home"))
-        );   
-        
+        fileChooser.setInitialDirectory(GUI.lastFileLocation);
+       
         fileChooser.getExtensionFilters().addAll(
+        	new FileChooser.ExtensionFilter("Evolve Files", new String[] {"*.evo", "*.evs"}),
         	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
+        	new FileChooser.ExtensionFilter("Evolve Setting", "*.evs"),
         	new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         
         File selection = fileChooser.showOpenDialog(GUI.stage);
-	    
-        System.out.println(selection.getAbsolutePath());
+        if(selection == null){
+        	System.out.println("Open Failed");
+        	return;
+        }
+        GUI.lastFileLocation = new File(selection.getParent());
         
+        boolean settingFile = selection.getName().endsWith("evs");
         
+        int index = 0;
         
         SaveObject save = null;
-        
 	    Simulation sim = null;
 	    Controller control = null;
-	    InputFramework inputF = null;
+	    MenuItems inputF = null;
 	    ElementHolder elements = null;
-	    String[] graphData = null;
+	    byte[][] graphData = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(selection);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			save = (SaveObject) in.readObject();
 			in.close();
 			fileIn.close();
-			//---
 			
-			ByteArrayInputStream byteIn = new ByteArrayInputStream(save.controller);
+			ByteArrayInputStream byteIn = new ByteArrayInputStream(save.controller[index]);
 			in = new ObjectInputStream(byteIn);
 			control = (Controller) in.readObject();
 			in.close();
 			fileIn.close();
 			
-			byteIn = new ByteArrayInputStream(save.simulation);
+			byteIn = new ByteArrayInputStream(save.simulation[index]);
 			in = new ObjectInputStream(byteIn);
 			sim = (Simulation) in.readObject();
 			in.close();
 			fileIn.close();
 			
-			byteIn = new ByteArrayInputStream(save.elements);
-			in = new ObjectInputStream(byteIn);
-			elements = (ElementHolder) in.readObject();
-			in.close();
-			fileIn.close();
-			
-			byteIn = new ByteArrayInputStream(save.evolve);
-			in = new ObjectInputStream(byteIn);
-			inputF = (InputFramework) in.readObject();
-			in.close();
-			fileIn.close();
-			
-			graphData = new String[save.graph.length];
-			for(int i = 0; i < save.graph.length; i++){
-				graphData[i] = new String(save.graph[i]);
+			if(!settingFile){
+				byteIn = new ByteArrayInputStream(save.elements[index]);
+				in = new ObjectInputStream(byteIn);
+				elements = (ElementHolder) in.readObject();
+				in.close();
+				fileIn.close();
+				
+				graphData = save.graph[index];
 			}
 			
-			
-			
-			/*FileInputStream fileIn = new FileInputStream(dir + "simulation.ser");
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-			sim = (Simulation) in.readObject();
+			byteIn = new ByteArrayInputStream(save.evolve[index]);
+			in = new ObjectInputStream(byteIn);
+			inputF = (MenuItems) in.readObject();
 			in.close();
 			fileIn.close();
-			
-			fileIn = new FileInputStream(dir + "controller.ser");
-			in = new ObjectInputStream(fileIn);
-			control = (Controller) in.readObject();
-			in.close();
-			fileIn.close();
-			
-			fileIn = new FileInputStream(dir + "evolve.ser");
-			in = new ObjectInputStream(fileIn);
-			inputF = (InputFramework) in.readObject();
-			in.close();
-			fileIn.close();
-			
-			fileIn = new FileInputStream(dir + "elements.ser");
-			in = new ObjectInputStream(fileIn);
-			elements = (ElementHolder) in.readObject();
-			in.close();
-			fileIn.close();*/
 		}catch(IOException i){
-			i.printStackTrace();
+			System.out.println("Open Failed: " + i.getMessage());
 			return;
 		}catch(ClassNotFoundException c){
-			System.out.println("Employee class not found");
+			System.out.println("Class not found.");
 			c.printStackTrace();
 			return;
 		}
-		
-		
 	    
-	    
-	    System.out.println("Simulation HasMenu: " + (sim instanceof HasMenu));
-	    //System.out.println(((HasMenu)sim).getFramework().getVariable(0).getRawVariable());
-	    
-	    EATabController ea = addNewEATab(sim, control, inputF, elements, graphData);
-	    //ea.setSimulation(sim);
-	    //ea.setController(control);
+	    addNewEATab(sim, control, inputF, elements, graphData);
 	    
 	}
 
-	public EATabController addNewEATab() {
-		
+	@FXML
+	public void onClose(){
+		GUI.stage.close();
+	}
+	
+	//----------------------------Normal Functions----------------------------
+	
+	public void addNewEATab() {
 		Tab t = getNewEATab();
 		
 		//Add Tab Pane
-		EATabController tc = new EATabController(t.getId(), this, t);
+		EATab tc = new EATab(t.getId(), t, this);
 		tabControllers.add(tc);
 		
 		//Show Tab
 		EATabs.getTabs().add(t);
 		EATabs.getTabs().sort(new TabOrder());
 		EATabs.getSelectionModel().select(t);
-		
-		return tc;
 
 	}
 
-	public EATabController addNewEATab(Simulation s, Controller c, InputFramework inputF, ElementHolder elements, String[] graphData) {
+	public void addNewEATab(Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData) {
 		
 		Tab t = getNewEATab();
 		
 		//Add Tab Pane
-		EATabController tc = new EATabController(t.getId(), this, t, s, c, inputF, elements, graphData);
+		EATab tc = new EATab(t.getId(), t, this, s, c, inputF, elements, graphData);
 		tabControllers.add(tc);
 		
 		//Show Tab
 		EATabs.getTabs().add(t);
 		EATabs.getTabs().sort(new TabOrder());
 		EATabs.getSelectionModel().select(t);
-		
-		return tc;
 	
 	}
 	
@@ -234,6 +292,7 @@ public class FXController implements Initializable {
 		t.setId("" + tabID);
 		return t;
 	}
+	
 
 	class TabOrder implements Comparator<Tab> {
 		public int compare(Tab a, Tab b) {
@@ -246,22 +305,6 @@ public class FXController implements Initializable {
 		}
 	}
 	
-	@FXML
-	private MenuItem saveProject;
-	
-	@FXML
-	private MenuItem openProject;
-	
-	@FXML
-	private MenuItem exportController;
-	
-	@FXML
-	private MenuItem closeButton;
-	
-	@FXML
-	public void onClose(){
-		GUI.stage.close();
-	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -269,18 +312,29 @@ public class FXController implements Initializable {
 		addNewEATab();
 		EATabs.getSelectionModel().select(1);
 		
+		
 		System.out.println(System.getProperty("os.name"));
+		
+		
+		
+		KeyCombination.Modifier metaDown;
+		//KeyCombination.Modifier metaAny;
 		if(System.getProperty("os.name").contains("Mac")){
-			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.META_DOWN));
-			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.META_DOWN));
-			exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.META_DOWN, KeyCombination.SHIFT_DOWN));
-			closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.META_DOWN));
+			metaDown = KeyCombination.META_DOWN;
+			//metaAny = KeyCombination.META_ANY;
+			menuBar.setUseSystemMenuBar(true);
 		}else{
-			saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-			openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-			exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
-			closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
+			metaDown = KeyCombination.CONTROL_DOWN;
+			//metaAny = KeyCombination.CONTROL_ANY;
 		}
+		
+		
+		
+		saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown));
+		saveSettings.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown, KeyCombination.SHIFT_DOWN));
+		openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, metaDown));
+		exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown, KeyCombination.SHIFT_DOWN));
+		closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, metaDown));
 	}
 
 }

@@ -11,11 +11,12 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controllers.FXController">
    <children>
-      <MenuBar prefWidth="968.0">
+      <MenuBar fx:id="menuBar" prefWidth="968.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem fx:id="saveProject" mnemonicParsing="false" onAction="#saveEvolution" text="Save Project" />
+                  <MenuItem fx:id="saveSettings" mnemonicParsing="false" onAction="#onSaveSettings" text="Save Settings" />
                   <MenuItem fx:id="openProject" mnemonicParsing="false" onAction="#openEvolution" text="Open Project" />
                   <MenuItem fx:id="exportController" mnemonicParsing="false" onAction="#onExportController" text="Export Controller" />
               <MenuItem fx:id="closeButton" mnemonicParsing="false" onAction="#onClose" text="Close" />

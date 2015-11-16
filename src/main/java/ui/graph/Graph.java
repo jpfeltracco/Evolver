@@ -1,7 +1,6 @@
 package ui.graph;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -13,23 +12,21 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import ui.controllers.EATabController;
-import ui.controllers.EATabHolder;
+import ui.controllers.EATab;
 
 public class Graph {
 	LineChart<Number, Number> chart;
 	ArrayList<String> graphSeriesTitles = new ArrayList<String>();
 	ObservableList<Series<Number, Number>> graphSeries = FXCollections.observableArrayList();
-	EATabHolder EAController;
+	EATab EAController;
 	boolean setLoaded = false;
-	public Graph(LineChart<Number, Number> chart, EATabHolder EAController){
+	public Graph(LineChart<Number, Number> chart, EATab EAController){
 		this.EAController = EAController;
 		this.chart = chart;
 		//EAController.addSeries(graphSeries);
 		System.out.println("Thing: " + chart);
 		chart.setData(graphSeries);
 		chart.setCreateSymbols(false);
-		//chart.setData(graphSeries);
 	}
 	
 	public void graphData(String series, Number[] data){
@@ -169,19 +166,5 @@ public class Graph {
 		return out;
 	}
 	
-	//PrintWriter out = new PrintWriter(file.getAbsolutePath());
-	
-	
-	
-	/*
-	 
-	Platform.runLater(new Runnable() {
-		@Override
-		public void run() {
-	
-		}
-	});
-	
-	*/
 
 }

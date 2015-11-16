@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.Serializable;
 
 import evolver.Element;
+import ui.Builder.TabMenu;
 
-public abstract class Controller implements Serializable{
+public abstract class Controller extends TabMenu implements Serializable{
 	protected int numIn;
 	protected int numOut;
 	double[] output;
@@ -72,10 +73,22 @@ public abstract class Controller implements Serializable{
 	/**
 	 * Return a Controller that operates in the exact same manor as this Controller. This is used
 	 * to make all of the controllers in this whole program, so ensure that all the proper variables
-	 * are passed. NOTE: No need to pass variables that you didn't add. 
+	 * are passed. NOTE: No need to pass variables that you didn't add. NOTE: EVERY VARIABLE used
+	 * in the menuInit(MenuItems menu) function HAVE ALREADY BEEN MOVED. NO NEED TO MOVE THOSE. 
 	 * @return A Simulation of this type that is identical but not the same instance
 	 */
-	public abstract Controller clone();
+	public abstract Controller copy();
+	
+	/**
+	 * Clones this Controller and returns it.
+	 * @return the cloned Controller
+	 */
+	public Controller clone(){
+		Controller c = copy();
+		c.setInOut(this.numIn, this.numOut);
+		migrateVariablesTo(c);
+		return c;
+	}
 	
 	/**
 	 * Determine if these two Elements are the same by this controller's standards. This can be
@@ -100,6 +113,23 @@ public abstract class Controller implements Serializable{
 	 */
 	public abstract String[] getExtension();
 	
+	/**
+	 * This method is ran once the Start button has been pressed. Manage anything that needs to be
+	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
+	 * DO NOT override.
+	 */
+	public void start(){
+		start(this.numIn, this.numOut);
+	}
+	
+	/**
+	 * This method is ran once the Start button has been pressed. Manage anything that needs to be
+	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
+	 * @param numIn the number of inputs to the Controller
+	 * @param numOut the number of expected outputs to the Controller
+	 */
+	public abstract void start(int numIn, int numOut);
+	
 
 	//-------------------------------------------------------------------
 	// TODO Create a better way of doing this!
@@ -109,7 +139,7 @@ public abstract class Controller implements Serializable{
 		return names;
 	}
 	
-	public static boolean check(String name){
+	public static boolean checkExists(String name){
 		for(String s : names){
 			if(s.equals(name)){
 				return true;

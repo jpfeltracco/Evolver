@@ -11,13 +11,13 @@ import org.neuroph.util.random.GaussianRandomizer;
 import com.badlogic.gdx.math.MathUtils;
 
 import evolver.Element;
-import ui.Builder.HasMenu;
-import ui.Builder.InputFramework;
-import ui.Builder.InputFramework.EntryType;
+import ui.Builder.TabMenu;
+import ui.Builder.MenuItems;
+import ui.Builder.MenuItems.EntryType;
 import util.ComboHolder;
 import util.StringHolder;
 
-public class MLP extends Controller implements HasMenu{
+public class MLP extends Controller {
 	MultiLayerPerceptron mlpNet;
 	private static Random r = new Random();
 	
@@ -60,11 +60,8 @@ public class MLP extends Controller implements HasMenu{
 	}
 
 	@Override
-	public Controller clone() {
-		MLP c = new MLP();
-		c.setInOut(this.numIn, this.numOut);
-		HasMenu.migrate(inputF, c);
-		return c;
+	public Controller copy() {
+		return new MLP();
 	}
 	
 	@Override
@@ -82,30 +79,29 @@ public class MLP extends Controller implements HasMenu{
 	//------------------------------------------------------------------------------------------
 	
 	//Initializations:
-	InputFramework inputF = new InputFramework();
 	StringHolder internalSize = new StringHolder("3, 3, 3");
 	ComboHolder transferType = new ComboHolder(TransferFunctionType.values(),TransferFunctionType.TANH);
 	
 	private TransferFunctionType f;
-	private int[] netDim;
-	private int[] dims;
 
 
 	@Override
-	public void frameworkInit() {
-		inputF.addEntry("Net Dim", EntryType.TEXT, internalSize, false);
-		inputF.addEntry("TransType", EntryType.COMBOBOX, transferType, false);
+	public void menuInit(MenuItems menu) {
+		menu.add("Net Dim", EntryType.TEXT, internalSize, false);
+		menu.add("TransType", EntryType.COMBOBOX, transferType, false);
 	}
 
 	@Override
-	public InputFramework getFramework() {
-		return inputF;
+	public MenuItems getMenuItems() {
+		return menuItems;
 	}
 	
 	ArrayList<Integer> internalSizeArray;
+	int[] netDim;
+	int[] dims;
 	@Override
 	public boolean check() {
-		if(!inputF.checkAllInit())
+		if(!menuItems.checkAllInit())
 			return false;
 		
 		String[] arr = internalSize.getValue().split(",");
@@ -131,23 +127,9 @@ public class MLP extends Controller implements HasMenu{
 		
 		return true;
 	}
-
-	@Override
-	public void confirmMenu() {
-		System.out.println("\n--------------NEW MLP--------------");
-		dims = calculateDimArray();
-		f = ((TransferFunctionType)transferType.getFocusObject());
-		System.out.print("Dim Array:\t");
-		for(int s : dims){
-			System.out.print("" + s + " ");
-		}
-		System.out.println("\nTransferType:\t" + f);
-		mlpNet = new MultiLayerPerceptron(f, dims);
-		System.out.println("-----------------------------------\n");
-	}
 	
 	//Helper Methods:
-	private int[] calculateDimArray(){
+	private int[] calculateDimArray(int numIn, int numOut){
 		int[] dims = new int[netDim.length + 2];
 		dims[0] = numIn;
 		dims[dims.length - 1] = numOut;
@@ -166,6 +148,21 @@ public class MLP extends Controller implements HasMenu{
 	public String[] getExtension() {
 		return new String[] {"nnet"};
 	}
+
+	@Override
+	public void start(int numIn, int numOut) {
+		System.out.println("\n--------------NEW MLP--------------");
+		dims = calculateDimArray(numIn, numOut);
+		f = ((TransferFunctionType)transferType.getFocusObject());
+		System.out.print("Dim Array:\t");
+		for(int s : dims){
+			System.out.print("" + s + " ");
+		}
+		System.out.println("\nTransferType:\t" + f);
+		mlpNet = new MultiLayerPerceptron(f, dims);
+		System.out.println("-----------------------------------\n");
+	}
+
 
 	//------------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------------------------

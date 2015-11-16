@@ -2,6 +2,7 @@ package simulations;
 
 import com.badlogic.gdx.math.MathUtils;
 import controllers.Controller;
+import ui.Builder.MenuItems;
 
 public class Through extends Simulation {
 	
@@ -30,14 +31,27 @@ public class Through extends Simulation {
 	}
 
 	@Override
-	public Simulation clone() {
-		Through r = new Through();
-		return r;
+	public Simulation copy() {
+		return new Through();
 	}
 	
 	@Override
 	public String toString() {
 		return "Through Simulation";
+	}
+
+	@Override
+	public void menuInit(MenuItems inputF) {
+	}
+
+	@Override
+	public boolean check() {
+		return true;
+	}
+
+	@Override
+	public void start() {
+		
 	}
 
 }

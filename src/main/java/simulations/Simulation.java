@@ -5,9 +5,10 @@ import java.io.Serializable;
 import controllers.Controller;
 import evolver.Element;
 import evolver.EvolutionAlgorithm;
-import ui.Builder.InputFramework;
+import ui.Builder.TabMenu;
+import ui.Builder.MenuItems;
 
-public abstract class Simulation implements Runnable,Serializable{
+public abstract class Simulation extends TabMenu implements Runnable, Serializable{
 	
 	public boolean verbose = false;
 	protected EvolutionAlgorithm ea;
@@ -57,11 +58,21 @@ public abstract class Simulation implements Runnable,Serializable{
 	/**
 	 * Return a Simulation that operates in the exact same manor as this Simulation. This is used
 	 * to make all of the simulations in this whole program, so ensure that all the proper variables
-	 * are passed. NOTE: No need to pass variables that you didn't add. 
+	 * are passed. NOTE: No need to pass variables that you didn't add. NOTE: EVERY VARIABLE used
+	 * in the menuInit(MenuItems menu) function HAVE ALREADY BEEN MOVED. NO NEED TO MOVE THOSE. 
 	 * @return A Simulation of this type that is identical but not the same instance
 	 */
-	public abstract Simulation clone();
+	public abstract Simulation copy();
 	
+	/**
+	 * Clones this Simulation and returns it.
+	 * @return the cloned simulation
+	 */
+	public Simulation clone(){
+		Simulation s = copy();
+		migrateVariablesTo(s);
+		return s;
+	}
 	/**
 	 * Produce a string that tells some general information about this Simulation.
 	 * @return a String about this Simulation
@@ -89,14 +100,13 @@ public abstract class Simulation implements Runnable,Serializable{
 	}
 	
 	
-	
 	//-------------------------------------------------------------------
 	static String[] names = new String[] {"Memory","Pong","Round","Through","XOR"};
 	public static String[] getTypeOfSimulations(){
 		return names;
 	}
 	
-	public static boolean check(String name){
+	public static boolean checkExists(String name){
 		for(String s : names){
 			if(s.equals(name)){
 				return true;

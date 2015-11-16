@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * The Constraint class ensures that a Slider will keep its numerical values in the proper range.
- * Used with InputFrameworks.
+ * Used with MenuItems Objects.
  * @author Keenan Nicholson
  *
  */
