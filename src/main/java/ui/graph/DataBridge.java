@@ -13,15 +13,21 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import ui.controllers.EATab;
+import ui.controllers.GoalChecker;
+import ui.controllers.VDriver;
 
-public class Graph {
+public class DataBridge {
 	LineChart<Number, Number> chart;
 	ArrayList<String> graphSeriesTitles = new ArrayList<String>();
 	ObservableList<Series<Number, Number>> graphSeries = FXCollections.observableArrayList();
-	EATab EAController;
+	EATab eaTab;
+	VDriver vDriver;
+	final boolean virtual;
 	boolean setLoaded = false;
-	public Graph(LineChart<Number, Number> chart, EATab EAController){
-		this.EAController = EAController;
+	int generation = 0;
+	public DataBridge(LineChart<Number, Number> chart, EATab eaTab){
+		virtual = false;
+		this.eaTab = eaTab;
 		this.chart = chart;
 		//EAController.addSeries(graphSeries);
 		System.out.println("Thing: " + chart);
@@ -29,8 +35,34 @@ public class Graph {
 		chart.setCreateSymbols(false);
 	}
 	
-	public void graphData(String series, Number[] data){
-		new GraphData(this, series, data);
+	public DataBridge(VDriver vDriver){
+		virtual = true;
+		this.vDriver = vDriver;
+	}
+	
+	public boolean isVirtual(){
+		return virtual;
+	}
+	
+	public void check(){
+		new Thread(new GoalChecker(vDriver)).start();;
+	}
+	
+	public synchronized Series<Number, Number> getSeries(int index){
+		return graphSeries.get(index);
+	}
+	
+	public void setChart(LineChart<Number, Number> chart){
+		this.chart = chart;
+		chart.setData(graphSeries);
+		chart.setCreateSymbols(false);
+	}
+	
+	public synchronized void graphData(String series, Number[] data){
+		if(!virtual)
+			new GraphData(this, series, data);
+		else
+			addToSeries(series, data);
 	}
 	
 	public void setLoaded(boolean val){
@@ -126,12 +158,19 @@ public class Graph {
 	}
 	
 	public void setGeneration(int g){
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				EAController.setGeneration(g);
-			}
-		});
+		generation = g;
+		if(!virtual){
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					eaTab.setGeneration(g);
+				}
+			});
+		}
+	}
+
+	public int getGeneration(){
+		return generation;
 	}
 	
 	public void writeData(File f) throws IOException{

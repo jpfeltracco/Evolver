@@ -214,7 +214,7 @@ public class MenuItems implements Serializable{
 	public void setDefaults(MenuItems def){
 		ArrayList<Holder> defVariables = def.getVariables();
 		if(size() != def.size()){
-			throw new RuntimeException("Variable array sizes do not match.");
+			throw new RuntimeException("Variable array sizes do not match. Current size: " + size() + "  Other: " + def.size());
 		}
 		for(int i = 0; i < defVariables.size(); i++){
 			variables.get(i).setRawVariable(defVariables.get(i).getRawVariable());

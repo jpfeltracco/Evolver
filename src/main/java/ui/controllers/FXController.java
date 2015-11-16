@@ -1,37 +1,27 @@
 package ui.controllers;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Properties;
 import java.util.ResourceBundle;
-
-import com.badlogic.gdx.Gdx;
 
 import controllers.Controller;
 import evolver.ElementHolder;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.Mnemonic;
 import javafx.stage.FileChooser;
 import simulations.Simulation;
 import ui.Builder.MenuItems;
+//import osx.*;
 
 public class FXController implements Initializable {
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
@@ -56,6 +46,15 @@ public class FXController implements Initializable {
 	private MenuItem closeButton;
 	
 	@FXML
+	private MenuItem newProject;
+	
+	@FXML
+	private MenuItem duplicateTab;
+	
+	@FXML
+	private Menu openRecent;
+	
+	@FXML
 	public TabPane EATabs;
 
 	@FXML
@@ -65,6 +64,11 @@ public class FXController implements Initializable {
     private MenuBar menuBar;
 	
 	//-----------------------------FXML Functions----------------------------
+	
+	@FXML
+	private void onDuplicateTab(){
+		
+	}
 	
 	@FXML
 	private void addTab() {
@@ -82,7 +86,11 @@ public class FXController implements Initializable {
 				
 				fileChooser.setTitle("Save Project");
 				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
-		        
+				
+				String exts[] = new String[] {".evs"};
+				if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
+					fileChooser.setInitialFileName(GUI.lastFileName);
+				
 		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
 		        extensions[0] = new FileChooser.ExtensionFilter("Evolve Settings", "*.evs");
 		        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
@@ -94,6 +102,7 @@ public class FXController implements Initializable {
 		        	return;
 		        }
 		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
+		        GUI.lastFileName = selectedDirectory.getName();
 				ea.saveAll(false, selectedDirectory);
 				return;
 			}
@@ -109,11 +118,18 @@ public class FXController implements Initializable {
 				
 				fileChooser.setTitle("Save Project");
 				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
-		        
+				
+				System.out.println(GUI.lastFileName);
+				
+				String exts[] = new String[] {".evo"};
+				if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
+					fileChooser.setInitialFileName(GUI.lastFileName);
+				
 		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
 		        extensions[0] = new FileChooser.ExtensionFilter("Evolve Project", "*.evo");
 		        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
 		        fileChooser.getExtensionFilters().addAll(extensions);
+		        
 		        
 		        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
 		        if(selectedDirectory == null){
@@ -121,13 +137,21 @@ public class FXController implements Initializable {
 		        	return;
 		        }
 		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
-		        
-		        
+		        GUI.lastFileName = selectedDirectory.getName();
+		        System.out.println(GUI.lastFileName);
 		        
 				ea.saveAll(true, selectedDirectory);
 				return;
 			}
 		}
+	}
+	
+	private boolean checkExt(String ext, String[] exts){
+		for(String s : exts){
+			if(s.equals(ext))
+				return true;
+		}
+		return false;
 	}
 	
 	@FXML
@@ -137,10 +161,8 @@ public class FXController implements Initializable {
 				final FileChooser fileChooser = new FileChooser();
 				Controller c = ea.ea.getBestElement();
 				fileChooser.setTitle("Save Controller");
-		        fileChooser.setInitialDirectory(
-		            new File(System.getProperty("user.home"))
-		        );   
-		        
+				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+				
 		        String[] exts = c.getExtension();
 		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[exts.length+1];
 		        for(int i = 0; i < exts.length; i++){
@@ -161,7 +183,8 @@ public class FXController implements Initializable {
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Project");
         fileChooser.setInitialDirectory(GUI.lastFileLocation);
-       
+        
+        
         fileChooser.getExtensionFilters().addAll(
         	new FileChooser.ExtensionFilter("Evolve Files", new String[] {"*.evo", "*.evs"}),
         	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
@@ -175,6 +198,8 @@ public class FXController implements Initializable {
         	return;
         }
         GUI.lastFileLocation = new File(selection.getParent());
+        GUI.lastFileName = selection.getName();
+        System.out.println(GUI.lastFileName);
         
         boolean settingFile = selection.getName().endsWith("evs");
         
@@ -229,13 +254,19 @@ public class FXController implements Initializable {
 			return;
 		}
 	    
-	    addNewEATab(sim, control, inputF, elements, graphData);
+		//if(!settingFile)
+			addNewEATab(sim, control, inputF, elements, graphData);
+		//else
+			//new VDriver(sim, control, inputF, elements);
 	    
 	}
 
 	@FXML
 	public void onClose(){
-		GUI.stage.close();
+		Tab t = EATabs.getSelectionModel().getSelectedItem();
+		if(!t.getId().equals("SYSTEM") && !t.getId().equals("NEW"))
+			EATabs.getTabs().remove(t);
+		//GUI.stage.close();
 	}
 	
 	//----------------------------Normal Functions----------------------------
@@ -323,18 +354,28 @@ public class FXController implements Initializable {
 			metaDown = KeyCombination.META_DOWN;
 			//metaAny = KeyCombination.META_ANY;
 			menuBar.setUseSystemMenuBar(true);
+			menuBar.useSystemMenuBarProperty().set(true);
 		}else{
 			metaDown = KeyCombination.CONTROL_DOWN;
 			//metaAny = KeyCombination.CONTROL_ANY;
 		}
 		
 		
+		/*NativeMenuBar adapter = new NSMenuBarAdapter();
+
+		MenuBar menuBar = adapter.getMenuBar();
+		menuBar.getMenus().get(0).setText("Hello World");
+		menuBar.getMenus().get(0).getItems().get(0).setText("Yeeha");
+		adapter.setMenuBar(menuBar);*/
+		
 		
 		saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown));
 		saveSettings.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown, KeyCombination.SHIFT_DOWN));
 		openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, metaDown));
-		exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown, KeyCombination.SHIFT_DOWN));
+		exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown));
 		closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, metaDown));
+		newProject.setAccelerator(new KeyCodeCombination(KeyCode.T, metaDown));
+		duplicateTab.setAccelerator(new KeyCodeCombination(KeyCode.D, metaDown));
 	}
 
 }
