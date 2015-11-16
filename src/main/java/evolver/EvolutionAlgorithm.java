@@ -22,7 +22,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	public boolean running = true;
 
 	public enum Type {
-		HALF, RANDOM
+		HALF, RANDOM, NONE
 	}
 
 	private Type reproductionType = Type.HALF;
@@ -411,7 +411,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			if (e2Ind == elements.length) e2Ind--;
 		}while(e1Ind == e2Ind);
 		Element e2 = elements[e2Ind];
-		return reproduce(e1, e2);
+		return reproduce(e1.clone(), e2.clone());
 	}
 	
 	
@@ -428,6 +428,9 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				weights[i] = e1.config[i];
 			for(int i = cut; i < e1.config.length; i++)
 				weights[i] = e2.config[i];
+			break;
+		case NONE:
+			weights = e1.config;
 			break;
 		}
 		tmp.config = weights;

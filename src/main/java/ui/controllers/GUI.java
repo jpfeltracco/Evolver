@@ -75,8 +75,8 @@ public class GUI extends Application {
 			GUI.stage.getIcons().add(img);
 			if(System.getProperty("os.name").contains("Mac")){
 				java.awt.Image img2 = new ImageIcon(getClass().getResource("/assets/icon.png").getPath()).getImage();
-				com.apple.eawt.Application.getApplication().setDockIconImage(img2);
-				com.apple.eawt.Application.getApplication().setDockIconBadge("Testing");
+//				com.apple.eawt.Application.getApplication().setDockIconImage(img2);
+//				com.apple.eawt.Application.getApplication().setDockIconBadge("Testing");
 			}
 			//com.apple.eawt.Application.getApplication().
 		} catch (FileNotFoundException e) {
