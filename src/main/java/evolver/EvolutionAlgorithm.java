@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 
 import controllers.Controller;
 import controllers.LimitedControllers;
+import simulations.Renderable;
 import simulations.Simulation;
 import ui.Builder.Constraint;
 import ui.Builder.TabMenu;
@@ -47,6 +48,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	private Element bestElement;
 	
 	private DataBridge dataBridge;
+	private boolean renderNextGen = false;
 	
 	private Vector<Float> avgFit = new Vector<Float>();
 	
@@ -92,36 +94,6 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	public synchronized Vector<Float> getAvgFit() {
 		return avgFit;
 	}
-
-	//public EvolutionAlgorithm(Simulation sim, Controller controller){
-		//this.simType = sim;
-		//this.controllerType = controller;
-		
-		//controlPerSim = simType.getControlPerSim();
-		//availableControllers = controllerType.getAvailableControllers();
-		
-		
-//		numThreads = availableControllers / controlPerSim; 
-//		numPerGen = mult * (numThreads * controlPerSim);
-//		
-//		System.out.println("numThreads: " + numThreads);
-//		System.out.println("controlPerSim: " + controlPerSim);
-//		System.out.println("NumPerGen: " + numPerGen);
-//		
-//		elements = new Element[numPerGen];
-//		
-//		controllers = new Controller[availableControllers];
-//
-//		for(int i = 0; i < availableControllers; i++)
-//			controllers[i] = controllerType.clone();
-//		
-//		Element.numElements = 0;
-//		for (int i = 0; i < elements.length; i++)
-//			elements[i] = controllerType.generateRandomConfig();
-		
-	//}
-	
-	
 	
 	ArrayList<Double> runningAvg = new ArrayList<Double>();
 	int startFrom = 0;
@@ -162,6 +134,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 					elementHolder.add(elements[i]);
 			
 			Collections.shuffle(elementHolder);
+			
+			System.out.println(elementHolder.size());
 
 			
 			Element[] appliedElements = new Element[gamesPerElement * elements.length];
@@ -181,16 +155,12 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				Controller[] appliedControllers = new Controller[controlPerSim];
 				for(int j = 0; j < controlPerSim; j++)
 					appliedControllers[j] = controllers[i*controlPerSim + j];
-				
 				sims[i].setControllers(appliedControllers);
-				
-				
 				int val = appliedElements.length / numThreads;
 				
 				Element[] el = Arrays.copyOfRange(appliedElements, i*val, (i+1)*val);
 				
 				sims[i].setElements(el);
-				
 			}
 			
 			
@@ -209,29 +179,16 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			Arrays.sort(elements);
 			
-			/*if (elements[elements.length - 1].getFitness() > -1f) {
-//				System.out.println("----");
-				for(int i = 0; i < 3; i++){
-					Simulation s = simType.clone();
-					s.setControllers(new Controller[] {controllers[0]});
-					s.setElements(new Element[] {elements[elements.length - 1]});
-					s.verbose = false;
-					new Thread(s).start();
-				}
-			}*/
-			
 			
 			//InsertionSort(elements);
 			
 			int numRepeat = 0;
 			int split = elements.length - 1;
 			while (controllerType.isSame(elements[elements.length - 1], elements[split]) && split >= 1) {
-//				System.out.print("IsSame");
 				numRepeat++;
 				split--;
 			}
-//			System.out.println();
-//			System.out.println(split);
+			
 			for (int j = split; j < elements.length - 1; j++) {
 			
 				if (numRepeat / (float) elements.length > foundersPercent) {
@@ -244,74 +201,20 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				}
 			}
 			
-			/*for(Element e : elements)
-				System.out.print(e.id + "\t");
-			System.out.println();
-			for(Element e : elements)
-				System.out.print(e.getFitness() + "\t");
-			System.out.println();*/
-			
-
-//			if(Math.abs(elements[elements.length-1].getFitness()) < 0.1)
-//				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
-//			
-//			if(genNum%500==0){
-//				System.out.println("Element: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness());
-//				System.out.println(genNum);
-//			}
-
 			Element.numElements = 0;
 			Element[] nextGen = new Element[elements.length];
-			
-//			try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 			
 			runningAvg.add(elements[elements.length-1].getFitness());
 			
 			bestElement = elements[elements.length-1];
 			
 			if(genNum%graphAmt.getValue() == 0){	
-				//System.out.println("Gen: " + genNum + "\tElement: " + elements[elements.length-1].id + "\t Fitness: " + elements[elements.length-1].getFitness() + "\tReproduction: " + reproductionType);
-				//System.out.println("SYS: Gen: " + genNum + "\tFitness: " + bestElement.getFitness() + "\tAvg: " + avg(runningAvg));
-				/*Platform.runLater(new Runnable() {
-					  @Override
-					  public void run() {
-						  System.out.println("THR: Gen: " + genNum + "\tFitness: " + elements[elements.length-1].getFitness() + "\tAvg: " + avg(runningAvg));
-						  grapher.addToSeries("Fitness Avg", new Number[] {genNum, avg(runningAvg)});
-						  grapher.addToSeries("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
-						  runningAvg.clear();
-						  
-					  }
-				});*/
-				
-				//grapher.graphData("Average Fitness", new Number[] {genNum, avg(runningAvg)});
+
 				dataBridge.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
 				runningAvg.clear();
 				
 			}
-			
-			/*if(genNum%2000 == 0){
-				final Integer input = startFrom;
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						grapher.simplifyData("Fitness", 10, input);
-						grapher.simplifyData("Average Fitness", 10, input);
-					}
-				});
-				startFrom = genNum;
-			}*/
-			
-			
-			
-			
-			
-			//grapher.addToSeries("Fitness", new Number[] {genNum, elements[elements.length-1].getFitness()});
-			
+
 			//Elitism
 			nextGen[0] = elements[elements.length-1];
 			nextGen[0].setFitness(0);
@@ -345,22 +248,18 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				}
 			}
 			
-			//System.out.println("2Element: " + elements[0].id + "\t Fitness: " + elements[0].getFitness());
-			//for(Element e : elements)
-				//System.out.print(e.id + "\t");
-			//System.out.println();
-			
-			/*for(Element e : elements)
-				System.out.print(e.id + "\t");
-			System.out.println();
-			for(Element e : elements)
-				System.out.print(e.getFitness() + "\t");
-			System.out.println();*/
-			
 		}
 		
 		System.out.println("EA stopped");
 		
+	}
+	
+	public synchronized void renderBest() {
+		this.running = false;
+		if (simType instanceof Renderable) {
+			Simulation watchSim = simType.copy();
+			watchSim.setControllers(controllers);
+		}
 	}
 	
 	public synchronized Controller getBestElement(){
@@ -440,28 +339,6 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		
 		return tmp;
 	}
-	
-	
-	public static void InsertionSort(Element[] e){
-	     boolean notDone = true;
-	     while(notDone){
-	    	 notDone = false;
-	    	 //for(Element el : e){
-	    		// System.out.print(el.id + ", ");
-	    	 //}
-	    	 //System.out.println();
-		     for(int i = 0; i < e.length-1; i++){
-		    	 if(e[i].getFitness() - 0.01 > e[i+1].getFitness()){
-		    		 notDone = true;
-		    		 Element tmp = e[i+1];
-		    		 e[i+1]=e[i];
-		    		 e[i] = tmp;
-		    	 }
-		     }
-	     }
-	}
-
-	
 	
 	@Override
 	public synchronized boolean check() {

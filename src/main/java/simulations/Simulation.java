@@ -5,8 +5,8 @@ import java.io.Serializable;
 import controllers.Controller;
 import evolver.Element;
 import evolver.EvolutionAlgorithm;
+import simulations.pong.PongSim;
 import ui.Builder.TabMenu;
-import ui.Builder.MenuItems;
 
 public abstract class Simulation extends TabMenu implements Runnable, Serializable{
 	
@@ -128,14 +128,14 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 		switch(sim){
 		case "Memory":
 			return (Simulation)(new Memory());
-		case "Pong":
-			return (Simulation)(new Pong());
 		case "Round":
 			return (Simulation)(new Round());
 		case "Through":
 			return (Simulation)(new Through());
 		case "XOR":
 			return (Simulation)(new XOR());
+		case "Pong":
+			return (Simulation)(new PongSim());
 		}
 		return null;
 	}
