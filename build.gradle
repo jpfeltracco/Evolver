@@ -40,7 +40,14 @@ dependencies {
         //compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         
         compile "org.neuroph:neuroph-core:2.9"
+        
+        compile "com.apple:AppleJavaExtensions:1.4"
+        //compile "org.eclipse.swt:org.eclipse.swt.cocoa.macosx.x86_64:4.3"
+        //compile "de.codecentric.centerdevice:centerdevice-nsmenufx:1.0.0"
+        
+        //compile "org.controlsfx:fxsampler:1.0.9"
         compile "org.encog:encog-core:3.3.0"
+
 }
 
 project.ext.mainClassName = "main.Main"

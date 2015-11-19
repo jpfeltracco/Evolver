@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
@@ -28,6 +29,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -45,6 +47,10 @@ public class GUI extends Application {
 	public static File lastFileLocation;
 	public static String lastFileName;
 	public URL fileLocURL = getClass().getResource("/assets/fileloc.dat");
+	
+	private static final int MAXRECENTFILES = 7;
+	static ArrayList<File> recentFiles = new ArrayList<File>(MAXRECENTFILES + 1);
+	public static String[] allowedExts = new String[] {".evs", ".evo"};
 	
     public static void run() {
         launch();
@@ -121,6 +127,12 @@ public class GUI extends Application {
 					lastFileLocation = new File(System.getProperty("user.home"));
 				}
 			}
+			String line;
+			while((line = br.readLine()) != null){
+				File tmp = new File(line.trim());
+				if(tmp.exists())// && checkExt(tmp.getName().substring(tmp.getName().indexOf(".")), allowedExts))
+					addRecentFile(tmp);
+			}
 			br.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -140,10 +152,49 @@ public class GUI extends Application {
 			pw.println(lastFileLocation.getAbsolutePath());
 			if(lastFileName != null)
 				pw.println(lastFileName);
+			else
+				pw.println();
+			
+			for(File f : recentFiles){
+				System.out.println(f.getAbsolutePath());
+				pw.println(f.getAbsolutePath());
+			}
 	    } catch (IOException e) {
 	        e.printStackTrace();
 
 	    }
 	}
+    
+    public static boolean checkExt(String ext, String[] exts){
+		for(String s : exts){
+			if(s.equals(ext))
+				return true;
+		}
+		return false;
+	}
+    
+    public static String removeMenuItem;
+    public static MenuItem addRecentFile(File f){
+    	removeMenuItem = null;
+    	for(File file : recentFiles)
+    		if(file.getAbsolutePath().equals(f.getAbsolutePath()))
+    			return null;
+    	System.out.println("Added: " + f.getAbsolutePath());
+    	recentFiles.add(f);
+    	if(recentFiles.size() > MAXRECENTFILES){
+    		System.out.println("Removed: " + recentFiles.get(0).getAbsolutePath());
+    		removeMenuItem = recentFiles.get(0).getAbsolutePath();
+    		recentFiles.remove(0);
+    	}
+    	MenuItem m = new MenuItem();
+		m.setText(f.getAbsolutePath());
+		return m;
+    }
+    
+    public static String getRemovedItem(){
+    	return removeMenuItem;
+    }
+    
+ 
     
 }

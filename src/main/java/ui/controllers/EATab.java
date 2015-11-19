@@ -26,10 +26,12 @@ import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.Chart;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -47,6 +49,7 @@ import ui.Builder.Builder;
 import ui.Builder.MenuItems;
 import ui.Builder.TabMenu;
 import ui.graph.DataBridge;
+
 
 public class EATab {
 	
@@ -311,7 +314,8 @@ public class EATab {
 			@Override
 			public void handle(Event t) {
 				if(close()){
-					fxController.EATabsArray.set(fxController.EATabsArray.indexOf(t.getSource()), null);
+					if(!tab.getId().contains("FILE"))
+						fxController.EATabsArray.set(fxController.EATabsArray.indexOf(t.getSource()), null);
 					fxController.tabControllers.remove(this);
 				}else
 					t.consume();
@@ -329,6 +333,13 @@ public class EATab {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		/*final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Generation");
+        yAxis.setLabel("Fitness");
+	    fitnessGraph = new LineChart<Number,Number>(xAxis,yAxis);
+	    fitnessGraph.setTitle(tab.getText() + " Fitness Graph");*/
 		
 		//Set up grapher
 		System.out.println("GRAPH: " + fitnessGraph);
@@ -357,15 +368,14 @@ public class EATab {
 		return tabID;
 	}
 	
-	public void saveAll(boolean saveElement, File file){
-		saveAll(saveElement, file, new SaveObject(), 0);
+	public boolean saveAll(boolean saveElement, File file){
+		return saveAll(saveElement, file, new SaveObject(), 0);
 	}
 	
-	public void saveAll(boolean saveElements, File selectedDirectory, SaveObject output, int index){
+	public boolean saveAll(boolean saveElements, File selectedDirectory, SaveObject output, int index){
 		ElementHolder elementHolder = null;
 		if(saveElements)
 			 elementHolder = getElementHolder();
-        
 	    try {
 	    	if(saveElements)
 	    		output.graph[index] = fitnessGrapher.streamData();
@@ -408,7 +418,17 @@ public class EATab {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
+	    String name = selectedDirectory.getName().substring(0,selectedDirectory.getName().indexOf("."));
+	    tab.setText(name);
+	    if(!tab.getId().contains("FILE")){
+	    	fxController.EATabsArray.set(fxController.EATabsArray.indexOf(tab), null);
+	    }
+	    tab.setId("FILE-" + selectedDirectory.getAbsolutePath());
+	    
+	    return true;
+	    
 	}
 	
 	public void setValidity(boolean val, Object section){
@@ -462,13 +482,29 @@ public class EATab {
 	}
 	
 	public void setGeneration(int g){
-		generationTag.setText("Generation: " + g);
+		generationTag.setText("" + g);
 	}
 	
-	public void saveChartAsPng(Chart graph) {
+	public void saveChartAsPng(LineChart<Number,Number> graph) {
 		// TODO: Review this process
+		
+		
+		
+		/*final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Generation");
+        yAxis.setLabel("Fitness");
+        LineChart<Number,Number> outGraph = new LineChart<Number,Number>(xAxis,yAxis);
+        outGraph.setTitle(tab.getText() + " Fitness Graph");
+	    
+	    outGraph.setData(graph.getData());
+	    outGraph.setMinWidth(720);
+	    outGraph.setMinHeight(720);*/
+		
+		
 	    WritableImage image = graph.snapshot(new SnapshotParameters(), null);
-
+	    
+	    
 	    final DirectoryChooser directoryChooser = new DirectoryChooser();
 	    final File selectedDirectory = directoryChooser.showDialog(GUI.stage);
 	    if (selectedDirectory == null) {
@@ -515,10 +551,15 @@ public class EATab {
 	    }
 	}
 	
+
 	public boolean close(){
+
 		System.out.println("Closing tabID: " + tabID);
 		ea.setRunning(false);
 		return true;
+	
+		
+		
 	}
 	
 	public ElementHolder getElementHolder(){
