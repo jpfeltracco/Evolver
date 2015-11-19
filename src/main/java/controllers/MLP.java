@@ -150,7 +150,7 @@ public class MLP extends Controller {
 	}
 
 	@Override
-	public void start(int numIn, int numOut) {
+	public boolean start(int numIn, int numOut) {
 		//System.out.println("\n--------------NEW MLP--------------");
 		dims = calculateDimArray(numIn, numOut);
 		f = ((TransferFunctionType)transferType.getFocusObject());
@@ -161,6 +161,7 @@ public class MLP extends Controller {
 		//System.out.println("\nTransferType:\t" + f);
 		mlpNet = new MultiLayerPerceptron(f, dims);
 		//System.out.println("-----------------------------------\n");
+		return true;
 	}
 
 

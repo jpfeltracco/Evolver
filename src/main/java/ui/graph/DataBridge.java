@@ -73,6 +73,24 @@ public class DataBridge {
 		return setLoaded;
 	}
 	
+	public void setProgress(double d, long timeAtStart){
+		eaTab.progressBar.setProgress(d);
+		eaTab.progressLabel.setText(updateProgress(d, timeAtStart));
+	}
+	
+	public void setProgress(double d){
+		eaTab.progressBar.setProgress(d);
+		eaTab.progressLabel.setText(updateProgress(d, -1));
+	}
+	
+	public synchronized void updateProgressLater(double d, long timeAtStart){
+		new UpdateProgress(this,d, timeAtStart);
+	}
+	
+	public synchronized void updateProgressLater(double d){
+		new UpdateProgress(this,d, -1);
+	}
+	
 	public synchronized void addSeries(String name){
 		graphSeriesTitles.add(name);
 		Series<Number, Number> s = new Series<Number, Number>();
@@ -204,6 +222,15 @@ public class DataBridge {
 		}
 		return out;
 	}
+	
+	 public String updateProgress(double progressPercentage, long timeAtStart) {
+		 if(timeAtStart == -1)
+			 return "--";
+		 long elapsedTime = System.nanoTime() - timeAtStart;
+		 double secRemaining = (double)elapsedTime / progressPercentage / 1000000000.0 - (double)elapsedTime / 1000000000.0;
+		 String out = (int)(progressPercentage*100) + "%, est " + (int)secRemaining + "s";
+		 return out;
+	 }
 	
 
 }

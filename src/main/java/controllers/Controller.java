@@ -118,8 +118,8 @@ public abstract class Controller extends TabMenu implements Serializable{
 	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
 	 * DO NOT override.
 	 */
-	public void start(){
-		start(this.numIn, this.numOut);
+	public boolean start(){
+		return start(this.numIn, this.numOut);
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public abstract class Controller extends TabMenu implements Serializable{
 	 * @param numIn the number of inputs to the Controller
 	 * @param numOut the number of expected outputs to the Controller
 	 */
-	public abstract void start(int numIn, int numOut);
+	public abstract boolean start(int numIn, int numOut);
 	
 
 	//-------------------------------------------------------------------

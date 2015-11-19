@@ -81,6 +81,6 @@ public abstract class TabMenu {
 	 * This method is ran once the Start button has been pressed. Manage anything that needs to be
 	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
 	 */
-	public abstract void start();
+	public abstract boolean start();
 	
 }

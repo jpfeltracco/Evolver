@@ -67,8 +67,9 @@ public class Round extends Simulation {
 	}
 
 	@Override
-	public void start() {
+	public boolean start() {
 		trialCount = numTrials.getValue();
+		return true;
 	}
 
 	IntegerHolder numTrials = new IntegerHolder(5);

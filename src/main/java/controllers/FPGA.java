@@ -61,8 +61,9 @@ public class FPGA extends Controller {
 	}
 
 	@Override
-	public void start(int numIn, int numOut) {
+	public boolean start(int numIn, int numOut) {
 		// TODO Auto-generated method stub
+		return false;
 		
 	}
 
