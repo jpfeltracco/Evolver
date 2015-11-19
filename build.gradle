@@ -46,6 +46,8 @@ dependencies {
         //compile "de.codecentric.centerdevice:centerdevice-nsmenufx:1.0.0"
         
         //compile "org.controlsfx:fxsampler:1.0.9"
+        compile "org.encog:encog-core:3.3.0"
+
 }
 
 project.ext.mainClassName = "main.Main"

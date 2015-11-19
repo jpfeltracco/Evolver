@@ -17,7 +17,7 @@
                      <children>
                         <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
                       <Button fx:id="clearButton" mnemonicParsing="false" onAction="#onClearClicked" text="Clear" />
-                        <Button fx:id="renderbutton" mnemonicParsing="false" text="Render" />
+                        <Button fx:id="renderButton" mnemonicParsing="false" onAction="#onRenderClicked" text="Render" />
                         <Button fx:id="graphClean" mnemonicParsing="false" onAction="#checkGraphClean" text="Clean" />
                      </children>
                   </HBox>

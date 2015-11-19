@@ -8,7 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.StringTokenizer;
+
 import javax.imageio.ImageIO;
 
 import controllers.Controller;
@@ -41,11 +43,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
+import simulations.Renderable;
 import simulations.Simulation;
 import ui.Builder.Builder;
-import ui.Builder.TabMenu;
 import ui.Builder.MenuItems;
+import ui.Builder.TabMenu;
 import ui.graph.DataBridge;
 
 
@@ -64,6 +66,7 @@ public class EATab {
 	ElementHolder elementHolder;
 	boolean status[] = new boolean[3];
 	VTab vTab;
+	boolean rendering = false;
 	
 	
 	public EATab(String tabID, Tab tab, FXController fxController){
@@ -188,6 +191,36 @@ public class EATab {
 	}
 	
 	@FXML
+	protected void onRenderClicked() {
+		if (rendering) {
+			rendering = false;
+			renderButton.setText("Render");
+			vTab.start();
+		} else {
+			vTab.stop();
+			renderButton.setText("Stop Render");
+			stopped = true;
+			rendering = true;
+			
+			elementHolder = ea.getExportedElements();
+			Arrays.sort(elementHolder.getElements());
+			
+			Controller[] controllers = new Controller[vTab.simulation.getControlPerSim()];
+			for (int i = 0; i < vTab.simulation.getControlPerSim(); i++) {
+				controllers[i] = vTab.controller.clone();
+				controllers[i].setConfig(elementHolder.getElements()[elementHolder.getElements().length - 1 - i].clone());
+			}
+			
+			Simulation sim = vTab.simulation.clone();
+			// TODO Make controllers accessible to Pong directly so we don't have to pass into render
+			sim.setControllers(controllers);
+			((Renderable) sim).render(controllers);
+			
+			
+		}
+	}
+	
+	@FXML
 	protected void checkGraphClean(){
 		if(fitnessGrapher != null && fitnessGrapher.size("Fitness")>4)
 			fitnessGrapher.simplifyData("Fitness", 2);
@@ -230,6 +263,7 @@ public class EATab {
 			clearButton.setDisable(true);
 			graphClean.setDisable(true);
 			builder.setChangable(false);
+			renderButton.setDisable(false);
 			//System.out.println("STARTING SIMULATION");
 			//System.out.println("SIM NUM IN: " + simulation.getNumInputs() + "\tNUM OUT: " + simulation.getNumOutputs());
 			//controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
@@ -253,7 +287,8 @@ public class EATab {
 			
 		} else {
 			stopped = true;
-			//ea.setRunning(false);
+			renderButton.setDisable(true);
+			ea.setRunning(false);
 			clearButton.setDisable(false);
 			graphClean.setDisable(false);
 			//builder.setChangable(true);
@@ -315,6 +350,7 @@ public class EATab {
 		startButton.setDisable(true);
 		clearButton.setDisable(true);
 		graphClean.setDisable(false);
+		renderButton.setDisable(true);
 			
 		//Sets Non-changeable items
 		builder.addNonChangable(simType);
