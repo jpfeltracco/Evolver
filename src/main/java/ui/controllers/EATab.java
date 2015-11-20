@@ -122,7 +122,6 @@ public class EATab {
 					while ((sCurrentLine = br.readLine()) != null) {
 						st = new StringTokenizer(sCurrentLine, ",");
 						fitnessGrapher.addToSeries(series, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
-						fitnessGrapher.setLoaded(true);
 					}
 					br.close();
 				} catch (IOException e) {
@@ -223,7 +222,7 @@ public class EATab {
 	
 	@FXML
 	protected void checkGraphClean(){
-		if(fitnessGrapher != null && fitnessGrapher.size("Fitness")>4)
+		if(fitnessGrapher != null && fitnessGrapher.getGraphSize("Fitness")>4)
 			fitnessGrapher.simplifyData("Fitness", 2);
 	}
 	
@@ -247,7 +246,7 @@ public class EATab {
 		ea = new EvolutionAlgorithm();
 		ea.menuInit();
 		ea.getMenuItems().setDefaults(def);
-		ea.setGrapher(fitnessGrapher);
+		ea.setDataBridge(fitnessGrapher);
 		GridPane grid = getNewGrid();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 		clearButton.setDisable(true);

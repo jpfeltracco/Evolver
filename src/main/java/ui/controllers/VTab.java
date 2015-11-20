@@ -1,29 +1,31 @@
 package ui.controllers;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-
 import controllers.Controller;
 import evolver.ElementHolder;
 import evolver.EvolutionAlgorithm;
-import javafx.scene.layout.GridPane;
 import simulations.Simulation;
 import ui.Builder.MenuItems;
-import ui.Builder.TabMenu;
 import ui.graph.DataBridge;
 
 public class VTab implements Runnable{
 	
+	final DataBridge grapher;
+	boolean active;
 	EvolutionAlgorithm ea;
 	Controller controller;
 	Simulation simulation;
-	boolean active;
 	ElementHolder elements;
-	final DataBridge grapher;
 
+	/**
+	 * Creates a new VTab with the provided inputs, and loads the elements
+	 * from the provided ElementHolder
+	 * @param simulation the Simulation to use in this VTab
+	 * @param controller the Controller to use in this VTab
+	 * @param ea the EvolutionAlgorithm to use in this VTab
+	 * @param eaMenuItems the MenuItems to use in this VTab
+	 * @param elements the Elements to load from
+	 * @param grapher the DataBridge to use in this VTab
+	 */
 	public VTab(Simulation simulation, Controller controller, EvolutionAlgorithm ea, MenuItems eaMenuItems, ElementHolder elements, DataBridge grapher) {
 		this.controller = controller;
 		this.simulation = simulation;
@@ -36,31 +38,51 @@ public class VTab implements Runnable{
 		System.out.println("Initializing EA...");
 		ea.menuInit();
 		
-		ea.setGrapher(grapher);
+		ea.setDataBridge(grapher);
 		if(elements == null)
 			grapher.setGeneration(0);
 		else{
 			ea.readElementHolder(elements);
 			grapher.setGeneration(elements.getGen());
 		}
-		
-		//------
 	}
 	
+	/**
+	 * Creates a new VTab with the provided inputs.
+	 * @param simulation the Simulation to use in this VTab
+	 * @param controller the Controller to use in this VTab
+	 * @param ea the EvolutionAlgorithm to use in this VTab
+	 * @param eaMenuItems the MenuItems to use in this VTab
+	 * @param grapher the DataBridge to use in this VTab
+	 */
 	public VTab(Simulation simulation, Controller controller, EvolutionAlgorithm ea, MenuItems eaMenuItems, DataBridge grapher) {
 		this(simulation, controller, ea, eaMenuItems, null, grapher);
 	}
 	
+	/**
+	 * Updates the components of this VTab.
+	 * @param simulation the Simulation to use in this VTab
+	 * @param controller the Controller to use in this VTab
+	 * @param ea the EvolutionAlgorithm to use in this VTab
+	 */
 	public void updateComponents(Simulation simulation, Controller controller, EvolutionAlgorithm ea){
 		this.simulation = simulation;
 		this.controller = controller;
 		this.ea = ea;
 	}
 	
+	/**
+	 * Starts the VTab. This function automatically makes a new thread that 
+	 * initializes everything.
+	 */
 	public void activate() {
 		(new Thread(this)).start();
 	}
 	
+	/**
+	 * Do not run this function: call activate() instead. This function is only
+	 * public because it is inherited from Runnable.
+	 */
 	public void run(){
 		active = true;
 		System.out.println("Starting EA...");
@@ -74,6 +96,7 @@ public class VTab implements Runnable{
 		ea.setSimAndController(simulation,controller);
 		ea.setRunning(true);
 		
+		//Failed to start IE. The stop button was clicked before the Controllers could init.
 		if(!ea.start()){
 			ea.setRunning(false);
 			return;
@@ -82,6 +105,9 @@ public class VTab implements Runnable{
 		(new Thread(ea)).start();
 	}
 	
+	/**
+	 * Stops this VTab.
+	 */
 	public void stop() {
 		active = false;
 		System.out.println("Shutting down EA...");
@@ -90,10 +116,18 @@ public class VTab implements Runnable{
 		elements = ea.getExportedElements();
 	}
 	
+	/**
+	 * Gets the elements produced by this VTab.
+	 * @return the elements
+	 */
 	public ElementHolder getElements(){
 		return elements;
 	}
 	
+	/**
+	 * Returns whether or not this VTab is active or not. IE. Has stop() been called yet?
+	 * @return
+	 */
 	public boolean getActive(){
 		return active;
 	}

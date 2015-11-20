@@ -10,9 +10,8 @@ import ui.Builder.MenuItems;
 import ui.graph.DataBridge;
 
 public class VDriver {
-	//TESTING
-	DataBridge dataBridge = new DataBridge(this);
 	final VTab vTab;
+	DataBridge dataBridge = new DataBridge(this);
 	ElementHolder elements;
 	boolean running;
 	public VDriver(Simulation simulation, Controller controller, MenuItems eaMenuItems, ElementHolder elements)  {
@@ -25,7 +24,7 @@ public class VDriver {
 		vTab.activate();
 	}
 	
-	public  void check(){
+	public void check(){
 		if(!running)
 			return;
 		ObservableList<Data<Number,Number>> dat = dataBridge.getSeries(0).getData();

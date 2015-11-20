@@ -54,7 +54,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	public int genNum = 0;
 	
-	public void setGrapher(DataBridge g){
+	public void setDataBridge(DataBridge g){
 		dataBridge = g;
 	}
 	
@@ -238,17 +238,20 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			dataBridge.setGeneration(genNum);
 			elements = nextGen;
 			
+			//TODO: Finish this section. Goal is to implement goals here, via the DateBridge.
 			if(dataBridge.isVirtual())
 				dataBridge.check();
 			
-			int delay = delayAmt.getValue();
-			
-			if(delay != 0){
-				try {
-					Thread.sleep(delay);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+			//Delay amount specified by the GUI
+			if(!dataBridge.isVirtual()){
+				int delay = delayAmt.getValue();
+				if(delay != 0){
+					try {
+						Thread.sleep(delay);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 			
@@ -394,22 +397,22 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		
 		System.out.println("Initializing...");
 		long startTime = System.nanoTime();
-		dataBridge.updateProgressLater(0);
+		dataBridge.setProgress(0);
 		if(failedToStart || !setValues){
 			elements = new Element[numPerGen];			
 			Element.numElements = 0;
 			for (int i = 0; i < elements.length; i++){
 				elements[i] = controllerType.generateRandomConfig();
-				dataBridge.updateProgressLater(((double)i / (double)elements.length),startTime);
+				dataBridge.setProgress(((double)i / (double)elements.length),startTime);
 				if(!this.running){
 					failedToStart = true;
-					dataBridge.updateProgressLater(0);
+					dataBridge.setProgress(0);
 					return false;
 				}
 			}
 		}
 		
-		dataBridge.updateProgressLater(1);
+		dataBridge.setProgress(0);
 		System.out.println();
 		failedToStart = false;
 		return true;

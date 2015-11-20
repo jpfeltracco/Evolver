@@ -1,4 +1,6 @@
-package ui.controllers;
+package ui.graph;
+
+import ui.controllers.VDriver;
 
 public class GoalChecker implements Runnable{
 
