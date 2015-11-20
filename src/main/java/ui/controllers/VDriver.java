@@ -22,7 +22,7 @@ public class VDriver {
 		System.out.println("Creating VTab...");
 
 		vTab = new VTab(simulation, controller, new EvolutionAlgorithm(), eaMenuItems, elements, dataBridge);
-		vTab.start();
+		vTab.activate();
 	}
 	
 	public  void check(){

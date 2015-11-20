@@ -137,13 +137,14 @@ public class EncogMLP extends Controller {
 	}
 
 	@Override
-	public void start(int numIn, int numOut) {
+	public boolean start(int numIn, int numOut) {
 		dims = calculateDimArray();	
 		net = new BasicNetwork();
 		for (int i : dims)
 			net.addLayer(new BasicLayer(i));
 		net.getStructure().finalizeStructure();
 		net.reset();
+		return true;
 	}
 
 	@Override

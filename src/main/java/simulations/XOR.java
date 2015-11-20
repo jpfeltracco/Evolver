@@ -73,6 +73,8 @@ public class XOR extends Simulation{
 
 
 	@Override
-	public void start() { }
+	public boolean start() {
+		return true;
+	}
 
 }

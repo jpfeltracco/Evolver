@@ -33,6 +33,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
@@ -195,7 +196,7 @@ public class EATab {
 		if (rendering) {
 			rendering = false;
 			renderButton.setText("Render");
-			vTab.start();
+			vTab.activate();
 		} else {
 			vTab.stop();
 			renderButton.setText("Stop Render");
@@ -250,6 +251,7 @@ public class EATab {
 		GridPane grid = getNewGrid();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 		clearButton.setDisable(true);
+		fitnessGrapher.setProgress(0);
 		
 	}
 	
@@ -280,7 +282,7 @@ public class EATab {
 			//vTab.updateComponents(simulation, controller, ea);
 			//vTab.re
 			vTab = new VTab(simulation, controller, ea, null, elementHolder, fitnessGrapher);
-			vTab.start();
+			vTab.activate();
 			
 			startButton.setText("Stop");
 			
@@ -683,5 +685,12 @@ public class EATab {
 	
 	@FXML
 	protected StackPane SimComboBox;
+	
+	@FXML
+	public ProgressBar progressBar;
+	
+	@FXML
+	public Label progressLabel;
+	
 	
 }

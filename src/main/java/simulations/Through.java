@@ -50,8 +50,8 @@ public class Through extends Simulation {
 	}
 
 	@Override
-	public void start() {
-		
+	public boolean start() {
+		return true;
 	}
 
 }

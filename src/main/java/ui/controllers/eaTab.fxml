@@ -9,7 +9,7 @@
 
 <SplitPane dividerPositions="0.4397993311036789" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
   <items>
-      <VBox maxWidth="300.0" prefWidth="240.0" spacing="10.0">
+      <VBox maxWidth="300.0" prefWidth="240.0">
          <children>
             <ToolBar prefHeight="40.0">
               <items>
@@ -58,8 +58,11 @@
                      </children>
                   </HBox>
                </children>
+               <padding>
+                  <Insets bottom="5.0" top="5.0" />
+               </padding>
             </StackPane>
-            <Accordion fx:id="accordion">
+            <Accordion fx:id="accordion" VBox.vgrow="ALWAYS">
               <panes>
                 <TitledPane fx:id="simPane" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" text="Simulation">
                      <graphic>
@@ -143,6 +146,37 @@
                 </TitledPane>
               </panes>
             </Accordion>
+            <HBox>
+               <children>
+                  <StackPane alignment="BOTTOM_CENTER" prefHeight="20.0">
+                     <children>
+                        <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0">
+                           <StackPane.margin>
+                              <Insets bottom="3.0" />
+                           </StackPane.margin>
+                        </ProgressBar>
+                     </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </StackPane>
+                  <StackPane alignment="CENTER_LEFT" minWidth="60.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="progressLabel" text="--">
+                           <StackPane.margin>
+                              <Insets bottom="5.0" />
+                           </StackPane.margin>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </StackPane>
+               </children>
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </HBox>
          </children>
       </VBox>
       <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="15.0" tabMaxWidth="50.0" tabMinWidth="10.0">

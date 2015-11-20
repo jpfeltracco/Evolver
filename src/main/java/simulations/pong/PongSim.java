@@ -97,7 +97,8 @@ public class PongSim extends Simulation implements Renderable {
 	}
 
 	@Override
-	public void start() {
+	public boolean start() {
+		return true;
 	}
 
 	@Override

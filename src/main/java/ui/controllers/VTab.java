@@ -15,7 +15,7 @@ import ui.Builder.MenuItems;
 import ui.Builder.TabMenu;
 import ui.graph.DataBridge;
 
-public class VTab {
+public class VTab implements Runnable{
 	
 	EvolutionAlgorithm ea;
 	Controller controller;
@@ -57,7 +57,11 @@ public class VTab {
 		this.ea = ea;
 	}
 	
-	public void start() {
+	public void activate() {
+		(new Thread(this)).start();
+	}
+	
+	public void run(){
 		active = true;
 		System.out.println("Starting EA...");
 		controller.setInOut(simulation.getNumInputs(), simulation.getNumOutputs());
@@ -68,8 +72,13 @@ public class VTab {
 		controller.start();
 		ea.readElementHolder(elements);
 		ea.setSimAndController(simulation,controller);
-		ea.start();
 		ea.setRunning(true);
+		
+		if(!ea.start()){
+			ea.setRunning(false);
+			return;
+		}
+		
 		(new Thread(ea)).start();
 	}
 	

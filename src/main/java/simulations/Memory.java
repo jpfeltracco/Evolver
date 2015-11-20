@@ -61,6 +61,8 @@ public class Memory extends Simulation {
 	}
 
 	@Override
-	public void start() { }
+	public boolean start() { 
+		return true;
+	}
 
 }

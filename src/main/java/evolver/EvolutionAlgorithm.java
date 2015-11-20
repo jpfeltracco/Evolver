@@ -100,6 +100,10 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	@Override
 	public void run() {
+		
+		if(!this.running)
+			return;
+		
 		System.out.println("EA started");
 		System.out.println("Variable List:");
 		System.out.println("\treproductionType: " + reproductionType);
@@ -274,6 +278,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	boolean setValues = false;
 	public void readElementHolder(ElementHolder eh){
+		System.out.println("readElementHolder------------------------------------------------------------------");
 		if(eh != null && eh.getElements() != null){
 			elements = eh.getElements();
 			Element.numElements = elements.length;
@@ -355,8 +360,10 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		return true;
 	}
 
+	boolean failedToStart = false;
 	@Override
-	public void start() {
+	public boolean start() {
+		System.out.println("Starting EA Thing");
 		setReproductionType((Type)menuReproductionType.getFocusObject());
 		setMutationAmt((float)menuMutationAmt.getValue());
 		setMutationRate((float)menuMutationRate.getValue());
@@ -385,13 +392,27 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		for(int i = 0; i < availableControllers; i++)
 			controllers[i] = controllerType.clone();
 		
-		if(!setValues){
+		System.out.println("Initializing...");
+		long startTime = System.nanoTime();
+		dataBridge.updateProgressLater(0);
+		if(failedToStart || !setValues){
 			elements = new Element[numPerGen];			
 			Element.numElements = 0;
-			for (int i = 0; i < elements.length; i++)
+			for (int i = 0; i < elements.length; i++){
 				elements[i] = controllerType.generateRandomConfig();
+				dataBridge.updateProgressLater(((double)i / (double)elements.length),startTime);
+				if(!this.running){
+					failedToStart = true;
+					dataBridge.updateProgressLater(0);
+					return false;
+				}
+			}
 		}
 		
+		dataBridge.updateProgressLater(1);
+		System.out.println();
+		failedToStart = false;
+		return true;
 	}
 	
 	public void setSimAndController(Simulation sim, Controller controller){
