@@ -285,7 +285,7 @@ public class FXController implements Initializable {
 	@FXML
 	public void onClose(){
 		Tab t = EATabs.getSelectionModel().getSelectedItem();
-		if(!t.getId().equals("SYSTEM") && !t.getId().equals("NEW"))
+		if(!t.getId().equals("SYSTEM") && !t.getId().equals("NEW") )
 			EATabs.getTabs().remove(t);
 		//GUI.stage.close();
 	}
