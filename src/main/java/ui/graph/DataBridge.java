@@ -44,8 +44,10 @@ public class DataBridge {
 		return virtual;
 	}
 	
+	
+	
 	public void check(){
-		new Thread(new GoalChecker(vDriver)).start();;
+		//new Thread(new GoalChecker(vDriver)).start();
 	}
 	
 	public synchronized Series<Number, Number> getSeries(int index){
@@ -223,7 +225,7 @@ public class DataBridge {
 		return out;
 	}
 	
-	 public String updateProgress(double progressPercentage, long timeAtStart) {
+	public String updateProgress(double progressPercentage, long timeAtStart) {
 		 if(timeAtStart == -1)
 			 return "--";
 		 long elapsedTime = System.nanoTime() - timeAtStart;

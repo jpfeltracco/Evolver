@@ -74,6 +74,7 @@ public class VTab implements Runnable{
 		ea.setSimAndController(simulation,controller);
 		ea.setRunning(true);
 		
+		//Failed to start IE. The stop button was clicked before the Controllers could init.
 		if(!ea.start()){
 			ea.setRunning(false);
 			return;

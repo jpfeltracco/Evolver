@@ -409,7 +409,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			}
 		}
 		
-		dataBridge.updateProgressLater(1);
+		dataBridge.updateProgressLater(0);
 		System.out.println();
 		failedToStart = false;
 		return true;
