@@ -26,13 +26,13 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		HALF, RANDOM, NONE
 	}
 
-	private Type reproductionType = Type.HALF;
-	private float mutationAmt = 0.13f;
-	private float mutationRate = 0.15f;
-	private float foundersPercent = 0.5f;
-	private int mult = 10;
-	private int gamesPerElement = 5;
-	private int numControllers = 5;
+	private Type reproductionType;
+	private float mutationAmt;
+	private float mutationRate;
+	private float foundersPercent;
+	private int mult;
+	private int gamesPerElement;
+	private int numControllers;
 	
 	private  int numPerGen;
 	private  Simulation simType;
@@ -60,35 +60,6 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	public synchronized void setRunning(boolean running) {
 		this.running = running;
-	}
-	
-	
-	public void setReproductionType(Type t){
-		this.reproductionType = t;
-	}
-	
-	public void setMutationAmt(float mutationAmt){
-		this.mutationAmt = mutationAmt;
-	}
-	
-	public void setMutationRate(float mutationRate){
-		this.mutationRate = mutationRate;
-	}
-	
-	public void setFoundersPercent(float foundersPercent){
-		this.foundersPercent = foundersPercent;
-	}
-	
-	public void setGenerationMultiplier(int mult){
-		this.mult = mult;
-	}
-	
-	public void setGamesPerElement(int gamesPerElement){
-		this.gamesPerElement = gamesPerElement;
-	}
-	
-	public void setPreferedNumberOfControllers(int i){
-		numControllers = i;
 	}
 	
 	public synchronized Vector<Float> getAvgFit() {
@@ -124,8 +95,9 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		
 		
 		//this.running = false;
-		
+		long timeTaken;
 		while (GUI.running && this.running) {
+			timeTaken = System.nanoTime();
 			// Setup simulations
 			
 			/*for(int i = 0; i < elements.length; i++)
@@ -139,7 +111,6 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			Collections.shuffle(elementHolder);
 			
-			System.out.println(elementHolder.size());
 
 			
 			Element[] appliedElements = new Element[gamesPerElement * elements.length];
@@ -215,6 +186,12 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			if(genNum%graphAmt.getValue() == 0){	
 
 				dataBridge.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
+				double fit = 0.0;
+				for(Element e : elements){
+					fit += e.getFitness();
+				}
+				fit /= elements.length;
+				dataBridge.graphData("Average Population Fitness", new Number[] {genNum, fit});
 				runningAvg.clear();
 				
 			}
@@ -233,6 +210,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			avgFit.add(totalFitness / elements.length);
 			
+			//dataBridge.graphData("Time Per Gen", new Number[] {genNum, (System.nanoTime() - timeTaken) / 1000000000.0});
+			
 			genNum++;
 			
 			dataBridge.setGeneration(genNum);
@@ -241,6 +220,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			//TODO: Finish this section. Goal is to implement goals here, via the DateBridge.
 			if(dataBridge.isVirtual())
 				dataBridge.check();
+			
 			
 			//Delay amount specified by the GUI
 			if(!dataBridge.isVirtual()){
@@ -364,16 +344,33 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	}
 
 	boolean failedToStart = false;
+	
+	/*
+	 * private Type reproductionType;
+	private float mutationAmt;
+	private float mutationRate;
+	private float foundersPercent;
+	private int mult;
+	private int gamesPerElement;
+	private int numControllers;
+	
+	private  int numPerGen;
+	private  Simulation simType;
+	private  int controlPerSim;
+	private  int numThreads;(non-Javadoc)
+	 * @see ui.Builder.TabMenu#start()
+	 */
 	@Override
 	public boolean start() {
 		System.out.println("Starting EA Thing");
-		setReproductionType((Type)menuReproductionType.getFocusObject());
-		setMutationAmt((float)menuMutationAmt.getValue());
-		setMutationRate((float)menuMutationRate.getValue());
-		setFoundersPercent((float)menuFoundersPercent.getValue());
-		setGenerationMultiplier(menuMult.getValue());
-		setGamesPerElement(menuGamePerElement.getValue());
-		setPreferedNumberOfControllers(preferedControllers.getValue());
+		
+		reproductionType = (Type)menuReproductionType.getFocusObject();
+		mutationAmt = menuMutationAmt.getFloat();
+		mutationRate = menuMutationRate.getFloat();
+		foundersPercent = menuFoundersPercent.getFloat();
+		mult = menuMult.getValue();
+		gamesPerElement = menuGamePerElement.getValue();
+		numControllers = preferedControllers.getValue();
 		
 		controlPerSim = simType.getControlPerSim();
 		
@@ -436,16 +433,16 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	IntegerHolder delayAmt = new IntegerHolder(0);
 
 	@Override
-	public void menuInit(MenuItems inputF) {
-		inputF.add("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
-		inputF.add("Delay", EntryType.SLIDER, delayAmt, new Constraint(0,1000), true);
-		inputF.add("Graph Frequancy (/GEN)", EntryType.SLIDER, graphAmt, new Constraint(1,1000),true);
-		inputF.add("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
-		inputF.add("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
-		inputF.add("Founders %", EntryType.SLIDER, menuFoundersPercent, new Constraint(0,1,4),true);
-		inputF.add("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
-		inputF.add("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
-		inputF.add("Controller #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
+	public void menuInit(MenuItems menu) {
+		menu.add("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
+		menu.add("Delay", EntryType.SLIDER, delayAmt, new Constraint(0,1000), true);
+		menu.add("Graph Frequancy (/GEN)", EntryType.SLIDER, graphAmt, new Constraint(1,1000),true);
+		menu.add("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
+		menu.add("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
+		menu.add("Founders %", EntryType.SLIDER, menuFoundersPercent, new Constraint(0,1,4),true);
+		menu.add("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
+		menu.add("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
+		menu.add("Controller #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
 	}
 
 

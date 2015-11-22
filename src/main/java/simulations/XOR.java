@@ -16,7 +16,8 @@ public class XOR extends Simulation{
 	MenuItems inputF;
 	
 	@Override
-	public void simulate(Controller[] c) {
+	public double[] simulate(Controller[] c) {
+		double[] fitnesses = new double[] {0};
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
 				int rand1 = i * 2 - 1;
@@ -30,9 +31,10 @@ public class XOR extends Simulation{
 					expected = 1;
 				}
 				error = Math.abs(expected - out);
-				c[0].addFitness(-error);
+				fitnesses[0] += -error;
 			}
 		}
+		return fitnesses;
 	}
 	
 	

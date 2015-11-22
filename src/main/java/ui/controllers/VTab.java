@@ -59,13 +59,15 @@ public class VTab implements Runnable{
 		this(simulation, controller, ea, eaMenuItems, null, grapher);
 	}
 	
+	//------Not Sure if this works-------
 	/**
-	 * Updates the components of this VTab.
+	 * Updates the components of this VTab. NOTE: UNTESTED
 	 * @param simulation the Simulation to use in this VTab
 	 * @param controller the Controller to use in this VTab
 	 * @param ea the EvolutionAlgorithm to use in this VTab
 	 */
 	public void updateComponents(Simulation simulation, Controller controller, EvolutionAlgorithm ea){
+		//TODO: Make sure this actually works
 		this.simulation = simulation;
 		this.controller = controller;
 		this.ea = ea;

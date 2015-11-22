@@ -9,6 +9,8 @@ import simulations.pong.PongSim;
 import ui.Builder.TabMenu;
 
 public abstract class Simulation extends TabMenu implements Runnable, Serializable{
+
+	protected static final long serialVersionUID = -4923422975459226356L;
 	
 	public boolean verbose = false;
 	protected EvolutionAlgorithm ea;
@@ -20,17 +22,21 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 			for(int j = 0; j < getControlPerSim(); j++){
 				controllers[j].setConfig(elements[j + i*getControlPerSim()]);
 			}
-			simulate(controllers);
+			double[] fitnesses = simulate(controllers);
+			for(int z = 0; z < fitnesses.length; z++){
+				controllers[z].addFitness(fitnesses[z]);
+			}
 		}
 	}
 	
 	/**
 	 * This is an iteration of the simulation. Take in the array of controllers supplied and
-	 * process the simulation using the controllers. Set the new fitness weights and the rest
-	 * will be done for you.
+	 * process the simulation using the controllers. Return the new fitness weights and the rest
+	 * will be done for you. NOTE: Larger fitnesses means a better element performance.
 	 * @param c the Controller array to be used for this simulation. IE: The 'Players' in the game.
+	 * @return a double array with the new fitnesses for each controller. 
 	 */
-	public abstract void simulate(Controller[] c);
+	public abstract double[] simulate(Controller[] c);
 	
 	/**
 	 * Return the number of inputs the controller needs to take in for this particular simulation.
@@ -59,7 +65,7 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 	 * Return a Simulation that operates in the exact same manor as this Simulation. This is used
 	 * to make all of the simulations in this whole program, so ensure that all the proper variables
 	 * are passed. NOTE: No need to pass variables that you didn't add. NOTE: EVERY VARIABLE used
-	 * in the menuInit(MenuItems menu) function HAVE ALREADY BEEN MOVED. NO NEED TO MOVE THOSE. 
+	 * in the menuInit(MenuItems menu) function HAS ALREADY BEEN MOVED. NO NEED TO MOVE THOSE. 
 	 * @return A Simulation of this type that is identical but not the same instance
 	 */
 	public abstract Simulation copy();
@@ -101,7 +107,7 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 	
 	
 	//-------------------------------------------------------------------
-	static String[] names = new String[] {"Memory","Pong","Round","Through","XOR"};
+	static String[] names = new String[] {"XOR","Pong","Round","Through","Memory", "TruthTable"};
 	public static String[] getTypeOfSimulations(){
 		return names;
 	}
@@ -136,6 +142,8 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 			return (Simulation)(new XOR());
 		case "Pong":
 			return (Simulation)(new PongSim());
+		case "TruthTable":
+			return (Simulation)(new TruthTable());
 		}
 		return null;
 	}

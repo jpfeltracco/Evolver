@@ -281,17 +281,18 @@ public class DataBridge {
 	 * @throws IOException
 	 */
 	public void writeData(File f) throws IOException{
-		new File(f+"/output/").mkdir();
 		System.out.print(f.getAbsolutePath());
+		PrintWriter out = new PrintWriter(f);
 		for(String s : graphSeriesTitles){
-			PrintWriter out = new PrintWriter(f.getAbsolutePath() + "/output/" + s + ".txt");
-			out.println("Generation,Fitness");
+			out.println(s);
+			out.println("Generation,Value");
 			ObservableList<Data<Number, Number>> series = getSeries(s).getData();
 			for(Data<Number, Number> dat : series){
 				out.println(dat.getXValue() + "," + dat.getYValue());
 			}
-			out.close();
+			out.println("");
 		}
+		out.close();
 	}
 	
 	/**

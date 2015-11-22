@@ -42,6 +42,22 @@ public class DoubleHolder implements Holder{
 	public String toString(){
 		return "" + val;
 	}
+	
+	/**
+	 * Gets this DoubleHolder's value
+	 * @return this DoubleHolder's value
+	 */
+	public double getDouble(){
+		return val;
+	}
+	
+	/**
+	 * Gets this DoubleHolder's value in float form
+	 * @return this DoubleHolder's value in float form
+	 */
+	public float getFloat(){
+		return (float)val;
+	}
 
 	@Override
 	public void setRawVariable(Object o) {
