@@ -1,5 +1,7 @@
 package ui.Builder;
 
+import ui.Builder.MenuItems.EntryType;
+
 /**
  * HasMenu enables objects to produce a menu that Builder will populate into a Pane. Use
  * MenuItems Objects to manage the specifics of the menu, and define Holder variables to pass
@@ -19,11 +21,13 @@ public abstract class TabMenu {
 	protected boolean initialized = false;
 	
 	/**
-	 * This method is for initializing the MenuItems Object "inputF" for this object. Define all variables
-	 * and apply them to inputF by calling addEntry(). This function will get called
-	 * automatically.
+	 * Add menu sections to the provided menu in this function. This will create the link
+	 * between the Holder variables in your implementation and the menu that is shown to
+	 * the user.
 	 * 
-	 * NOTE: The MenuItems Object has already been initialized as "inputF"
+	 * SAMPLE:
+	 * menu.add("Set Variable", EntryType.CHECKBOX, variableToBindTo, true);
+	 * @param menu the MenuItems variable to add menu sections to
 	 */
 	public abstract void menuInit(MenuItems menu);
 	
@@ -50,7 +54,7 @@ public abstract class TabMenu {
 	 * Migrates one object's variables to another instance of the same object. Useful for cloning and 
 	 * other transfer methods. After this method is called, every variable that is dependent on menu
 	 * choices should be initialized in the new object.
-	 * @param menuItems the MenuItems Object of the original object.
+	 * @param menuItems the MenuItems Object of the original object
 	 * @param in the object to migrate this MenuItems Object to
 	 */
 	public void migrateVariablesTo(Object in){
@@ -73,13 +77,14 @@ public abstract class TabMenu {
 	 * MenuItems Object inputF.checkAllInit() to see if all the menu items have been initialize IE.
 	 * a ComboBox is not initialized unless a value is selected, or a default value was originally
 	 * provided.
-	 * @return whether or not all menu values are valid.
+	 * @return whether or not all menu values are valid
 	 */
 	public abstract boolean check();
 	
 	/**
 	 * This method is ran once the Start button has been pressed. Manage anything that needs to be
 	 * done after the menu is fixed here, such as transferring variables to their non-holder counterparts.
+	 * @return whether or not the start was successful
 	 */
 	public abstract boolean start();
 	

@@ -44,6 +44,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import simulations.Renderable;
 import simulations.Simulation;
 import ui.Builder.Builder;
@@ -241,7 +242,7 @@ public class EATab {
 		MenuItems def = ea.getMenuItems();
 		
 		fitnessGrapher.resetGraph();
-		builder.setChangable(true);
+		builder.setChangeable(true);
 		elementHolder = null;
 		ea = new EvolutionAlgorithm();
 		ea.menuInit();
@@ -263,7 +264,7 @@ public class EATab {
 			
 			clearButton.setDisable(true);
 			graphClean.setDisable(true);
-			builder.setChangable(false);
+			builder.setChangeable(false);
 			renderButton.setDisable(false);
 			//System.out.println("STARTING SIMULATION");
 			//System.out.println("SIM NUM IN: " + simulation.getNumInputs() + "\tNUM OUT: " + simulation.getNumOutputs());
@@ -300,6 +301,11 @@ public class EATab {
 			startButton.setText("Start");
 		}
 	}
+	
+	@FXML
+	void toggleGraphAnimate() {
+		fitnessGraph.setAnimated(!fitnessGraph.animatedProperty().get());
+    }
 	
 	//----------------------------Normal Functions-----------------------------
 	
@@ -506,12 +512,21 @@ public class EATab {
 	    WritableImage image = graph.snapshot(new SnapshotParameters(), null);
 	    
 	    
-	    final DirectoryChooser directoryChooser = new DirectoryChooser();
-	    final File selectedDirectory = directoryChooser.showDialog(GUI.stage);
-	    if (selectedDirectory == null) {
-	    	throw new RuntimeException("Directory error.");
-	    }
-	    File file = new File(selectedDirectory.getAbsolutePath() + "/chart.png");
+	    final FileChooser fileChooser = new FileChooser();
+		
+		fileChooser.setTitle("Save Graph Image");
+		fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		
+		String exts[] = new String[] {".png"};
+		if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && GUI.checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
+			fileChooser.setInitialFileName(GUI.lastFileName);
+		
+        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+        extensions[0] = new FileChooser.ExtensionFilter("PNG Image", "*.png");
+        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+        fileChooser.getExtensionFilters().addAll(extensions);
+        
+        File file = fileChooser.showSaveDialog(GUI.stage);
 
 	    try {
 	        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
@@ -522,22 +537,27 @@ public class EATab {
 	
 	public void saveChartAsXML(Chart graph) {
 		// TODO: Review this process
-
-		WritableImage image = graph.snapshot(new SnapshotParameters(), null);
-	    final DirectoryChooser directoryChooser = new DirectoryChooser();
-	    final File selectedDirectory = directoryChooser.showDialog(GUI.stage);
-	    if (selectedDirectory == null) {
-	    	throw new RuntimeException("Directory error.");
-	    }
-
-	    File f = new File(selectedDirectory.getAbsolutePath() + "/output/chart.png");
+		
+		final FileChooser fileChooser = new FileChooser();
+			
+		fileChooser.setTitle("Save Graph Data");
+		fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		
+		String exts[] = new String[] {".txt"};
+		if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && GUI.checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
+			fileChooser.setInitialFileName(GUI.lastFileName);
+		
+		FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+		extensions[0] = new FileChooser.ExtensionFilter("TEXT File", "*.txt");
+		extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+		fileChooser.getExtensionFilters().addAll(extensions);
+		
+		File file = fileChooser.showSaveDialog(GUI.stage);
 	    
 	    try {
-			fitnessGrapher.writeData(selectedDirectory);
-			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", f);
+			fitnessGrapher.writeData(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO: handle exception here
 		}
 	    
 	}
@@ -690,6 +710,7 @@ public class EATab {
 	
 	@FXML
 	public Label progressLabel;
+	
 	
 	
 }

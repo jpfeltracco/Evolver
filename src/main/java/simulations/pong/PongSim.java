@@ -14,7 +14,7 @@ public class PongSim extends Simulation implements Renderable {
 	float spf = 1 / 60f;
 
 	@Override
-	public void simulate(Controller[] c) {
+	public double[] simulate(Controller[] c) {
 		// c[0] will be our left paddle
 		// c[1] will be our right paddle
 
@@ -49,8 +49,7 @@ public class PongSim extends Simulation implements Renderable {
 
 		}
 
-		c[0].addFitness(world.scoreP1);
-		c[1].addFitness(world.scoreP2);
+		return new double[] {world.scoreP1, world.scoreP2};
 	}
 
 	private double normPos(double val, double maxVal) {

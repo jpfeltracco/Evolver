@@ -7,11 +7,11 @@ import ui.Builder.MenuItems;
 public class Through extends Simulation {
 	
 	@Override
-	public void simulate(Controller[] c) {
+	public double[] simulate(Controller[] c) {
 		double in = MathUtils.random() * 2 - 1;//i;
 		double out = c[0].calculate(in)[0];
 		double error = Math.abs(out * .5 - in);
-		c[0].addFitness(-error);
+		return new double[] {-error};
 			
 	}		
 	

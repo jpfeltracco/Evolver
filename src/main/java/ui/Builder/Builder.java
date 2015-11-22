@@ -1,7 +1,9 @@
 package ui.Builder;
 
+import java.awt.Event;
 import java.util.ArrayList;
 
+import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -129,19 +131,23 @@ public class Builder {
 					    tabController.setValidity(client.check(), sIn);
 					});
 					tf.setOnAction((event) -> {
+						System.out.println(event);
 						double in = c.getMinDouble();
 						try{
 							in = Double.parseDouble(tf.getText());
 						}catch(NumberFormatException ex){}
-						if(in < c.getMinDouble())
-							in = c.getMinDouble();
-						else if(in > c.getMaxDouble())
-							in = c.getMaxDouble();
-						tf.setText("" + in);
+						if(in < c.getMinInt()){
+							in = c.getMinInt();
+							tf.setText("" + in);
+						}else if(in > c.getMaxInt()){
+							in = c.getMaxInt();
+							tf.setText("" + in);
+						}
 						s.setValue(in);
 						output.setValue(Math.round(in * (1/dInc) ) / (1/dInc));
 						tabController.setValidity(client.check(), sIn);
 					});
+					
 					
 				}else{
 					IntegerHolder output = (IntegerHolder)menuItems.getVariable(i);
@@ -160,16 +166,19 @@ public class Builder {
 					    output.setValue(newValue.intValue());
 					    tabController.setValidity(client.check(), sIn);
 					});
-					tf.setOnAction((event) -> {
+					tf.setOnAction((event) ->{
+						System.out.println("This: " + Event.KEY_RELEASE);
 						int in = c.getMinInt();
 						try{
 							in = Integer.parseInt(tf.getText());
 						}catch(NumberFormatException ex){}
-						if(in < c.getMinInt())
+						if(in < c.getMinInt()){
 							in = c.getMinInt();
-						else if(in > c.getMaxInt())
+							tf.setText("" + in);
+						}else if(in > c.getMaxInt()){
 							in = c.getMaxInt();
-						tf.setText("" + in);
+							tf.setText("" + in);
+						}
 						s.setValue(in);
 						output.setValue(in);
 						tabController.setValidity(client.check(), sIn);
@@ -244,15 +253,14 @@ public class Builder {
 	}
 	
 	/**
-	 * Sets the Changable object's enable function to the inputed value
-	 * @param val the value to set the Changable object's enable function to
+	 * Sets the Changeable object's enable function to the inputed value
+	 * @param val the value to set the Changeable object's enable function to
 	 */
-	public void setChangable(boolean val){
+	public void setChangeable(boolean val){
 		for(Control c : constants){
 			c.setDisable(!val);
 		}
 	}
-	
 	/**
 	 * Adds a Control to the list of Controls that are not able to be changed during
 	 * runtime.

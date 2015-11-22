@@ -14,9 +14,11 @@ public class Round extends Simulation {
 	MenuItems inputF = new MenuItems();
 	
 	@Override
-	public void simulate(Controller[] c) {
+	public double[] simulate(Controller[] c) {
 //		float[] d = {0.7f,0.1f,0.22f,0.43f,0.4f,0.51f,0.62f,0.99f};
 		//System.out.println(trialCount);
+		//TODO: Remove Trial Count for this sim
+		double[] errors = new double[] {0};
 		for (int i = 0; i < trialCount; i++) {
 			float rand = MathUtils.random();
 			double out = c[0].calculate(rand)[0];
@@ -27,8 +29,9 @@ public class Round extends Simulation {
 			else
 				error = out;
 			
-			c[0].addFitness(-error*10);
+			errors[0] += -error*10;
 		}
+		return errors;
 		
 	}
 	
@@ -52,10 +55,6 @@ public class Round extends Simulation {
 		return "Rounding Simulation";
 	}
 
-	
-	
-
-	
 	@Override
 	public Simulation copy() {
 		return new Round();

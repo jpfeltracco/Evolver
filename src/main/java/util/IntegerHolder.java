@@ -42,6 +42,14 @@ public class IntegerHolder implements Holder{
 	public String toString(){
 		return "" + val;
 	}
+	
+	/**
+	 * Gets this IntegerHolder value
+	 * @return this IntegerHolder value
+	 */
+	public int getInt(){
+		return val;
+	}
 
 	@Override
 	public void setRawVariable(Object o) {

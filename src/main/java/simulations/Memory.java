@@ -8,7 +8,7 @@ import ui.Builder.MenuItems;
 public class Memory extends Simulation {
 	static int x = 0;
 	@Override
-	public void simulate(Controller[] c) {
+	public double[] simulate(Controller[] c) {
 		float testerVal = MathUtils.random(); // some new original value
 		float mem = MathUtils.random(); // some random old value
 		
@@ -20,11 +20,7 @@ public class Memory extends Simulation {
 		
 		double error = Math.abs(testerVal - newOutputs[0]);
 		
-		if (verbose) {
-			System.out.println(testerVal + "\t" + newOutputs[0]);
-		} else {
-			c[0].addFitness(-error);
-		}
+		return new double[] {-error};
 	}
 	
 	@Override

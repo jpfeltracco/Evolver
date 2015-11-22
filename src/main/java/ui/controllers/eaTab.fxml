@@ -195,11 +195,11 @@
                         </LineChart>
                         <HBox prefWidth="200.0" spacing="5.0">
                            <children>
-                              <ComboBox promptText="Graph Type">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </ComboBox>
+                              <MenuButton mnemonicParsing="false" text="Graph">
+                                <items>
+                                    <RadioMenuItem mnemonicParsing="false" onAction="#toggleGraphAnimate" selected="true" text="Animate Graph" />
+                                </items>
+                              </MenuButton>
                               <Pane HBox.hgrow="ALWAYS" />
                               <HBox alignment="CENTER" spacing="5.0">
                                  <children>
