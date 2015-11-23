@@ -13,9 +13,9 @@ public class World {
 	public final int BALLSPEED = 20;
 	private final double MAXBOUNCEANGLE = Math.toRadians(75); // 75 degrees
 
-	public final Paddle paddleP1;
-	public final Paddle paddleP2;
-	public final Ball ball;
+	public Paddle paddleP1;
+	public Paddle paddleP2;
+	public Ball ball;
 //	public final WorldListener listener;
 
 	public int scoreP1;
@@ -24,16 +24,18 @@ public class World {
 	
 	public float accelP1 = 0;
 	public float accelP2 = 0;
+	
+	public final boolean animate;
 
-	public World(WorldListener listener) {
+	public World(WorldListener listener, boolean animate) {
 		this.ball = new Ball(10, 10);
 		this.paddleP1 = new Paddle(1, 16);
 		this.paddleP2 = new Paddle(47, 16);
 		this.scoreP1 = 0;
 		this.scoreP2 = 0;
+		this.animate = animate;
 //		this.listener = listener;
 		this.state = WORLD_STATE_RUNNING;
-
 	}
 
 	public void update(float deltaTime) {
@@ -41,7 +43,10 @@ public class World {
 			updateBall(deltaTime);
 			updatePaddles(deltaTime, accelP1, accelP2);
 			checkCollisions();
-			checkGameOver();
+			if(animate)
+				checkGameRestart();
+			else
+				checkGameOver();
 		}
 	}
 
@@ -100,6 +105,22 @@ public class World {
 	public boolean checkGameOver() {
 		if (scoreP1 > 0 || scoreP2 > 0) {
 			state = WORLD_STATE_GAME_END;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean checkGameRestart() {
+		if (scoreP1 > 0 || scoreP2 > 0) {
+			System.out.println("GAME RESTARTING");
+			state = WORLD_STATE_GAME_END;
+			this.ball = new Ball(10, 10);
+			this.paddleP1 = new Paddle(1, 16);
+			this.paddleP2 = new Paddle(47, 16);
+			this.scoreP1 = 0;
+			this.scoreP2 = 0;
+//			this.listener = listener;
+			this.state = WORLD_STATE_RUNNING;
 			return true;
 		}
 		return false;

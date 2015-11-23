@@ -21,7 +21,7 @@ import util.*;
 
 public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	public boolean running = true;
-
+	private boolean active = false;
 	public enum Type {
 		HALF, RANDOM, NONE
 	}
@@ -53,6 +53,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	private Vector<Float> avgFit = new Vector<Float>();
 	
 	public int genNum = 0;
+	public boolean initSucess = false;
 	
 	public void setDataBridge(DataBridge g){
 		dataBridge = g;
@@ -64,6 +65,10 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	public synchronized Vector<Float> getAvgFit() {
 		return avgFit;
+	}
+	
+	public boolean getActive(){
+		return active;
 	}
 	
 	ArrayList<Double> runningAvg = new ArrayList<Double>();
@@ -96,6 +101,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		
 		//this.running = false;
 		long timeTaken;
+		active = true;
 		while (GUI.running && this.running) {
 			timeTaken = System.nanoTime();
 			// Setup simulations
@@ -238,6 +244,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		}
 		
 		System.out.println("EA stopped");
+		active = false;
 		
 	}
 	
@@ -412,6 +419,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		dataBridge.setProgress(0);
 		System.out.println();
 		failedToStart = false;
+		initSucess = true;
 		return true;
 	}
 	

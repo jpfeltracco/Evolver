@@ -85,6 +85,7 @@ public class FXController implements Initializable {
 	
 	@FXML
 	private void onSaveSettings(){
+		//TODO: When the project is saved when the evolution process is still active, the graph saves wrong
 		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
 				

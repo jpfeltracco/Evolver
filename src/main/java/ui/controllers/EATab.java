@@ -191,31 +191,21 @@ public class EATab {
 		changeSim(simulation);
 	}
 	
+	Simulation renderSim;
 	@FXML
 	protected void onRenderClicked() {
 		if (rendering) {
 			rendering = false;
+			if(renderSim != null)
+				((Renderable)renderSim).exit();
 			renderButton.setText("Render");
 			vTab.activate();
 		} else {
-			vTab.stop();
 			renderButton.setText("Stop Render");
 			stopped = true;
 			rendering = true;
 			
-			elementHolder = ea.getExportedElements();
-			Arrays.sort(elementHolder.getElements());
-			
-			Controller[] controllers = new Controller[vTab.simulation.getControlPerSim()];
-			for (int i = 0; i < vTab.simulation.getControlPerSim(); i++) {
-				controllers[i] = vTab.controller.clone();
-				controllers[i].setConfig(elementHolder.getElements()[elementHolder.getElements().length - 1 - i].clone());
-			}
-			
-			Simulation sim = vTab.simulation.clone();
-			// TODO Make controllers accessible to Pong directly so we don't have to pass into render
-			sim.setControllers(controllers);
-			((Renderable) sim).render(controllers);
+			(new Thread(new RenderObject(ea, vTab, renderSim, this))).start();
 			
 			
 		}
@@ -252,6 +242,7 @@ public class EATab {
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 		clearButton.setDisable(true);
 		fitnessGrapher.setProgress(0);
+		renderButton.setDisable(true);
 		
 	}
 	
@@ -289,7 +280,7 @@ public class EATab {
 			
 		} else {
 			stopped = true;
-			renderButton.setDisable(true);
+			//renderButton.setDisable(true);
 			ea.setRunning(false);
 			clearButton.setDisable(false);
 			graphClean.setDisable(false);
@@ -649,7 +640,7 @@ public class EATab {
 	protected Button clearButton;
 	
 	@FXML
-	protected Button renderButton;
+	public Button renderButton;
 
 	@FXML
 	protected ComboBox<String> simType;

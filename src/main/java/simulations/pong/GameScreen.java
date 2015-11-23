@@ -45,7 +45,7 @@ public class GameScreen extends Screen implements InputProcessor{
 				Assets.playSound(Assets.bounceSound);
 			}
 		};
-		world = new World(worldListener);
+		world = new World(worldListener,true);
 		renderer = new WorldRenderer(batcher, world);
 		player1Score = 0;
 		player2Score = 0;

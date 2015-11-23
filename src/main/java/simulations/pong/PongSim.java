@@ -1,5 +1,6 @@
 package simulations.pong;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.math.MathUtils;
@@ -9,6 +10,7 @@ import simulations.Renderable;
 import simulations.Simulation;
 import simulations.pong.World.WorldListener;
 import ui.Builder.MenuItems;
+import ui.controllers.EATab;
 
 public class PongSim extends Simulation implements Renderable {
 	float spf = 1 / 60f;
@@ -22,9 +24,9 @@ public class PongSim extends Simulation implements Renderable {
 			@Override
 			public void bump() {
 			}
-		});
-
-		while (!world.checkGameOver()) {
+		}, false);
+		long startTime = System.nanoTime();
+		while (!world.checkGameOver() && System.nanoTime() - startTime < 500000000.0) { // 0.5 seconds
 			world.update(.1f);
 			float accel1 = 0;
 			float accel2 = 0;
@@ -100,19 +102,21 @@ public class PongSim extends Simulation implements Renderable {
 		return true;
 	}
 
+	LwjglApplication app;
+	Pong p;
 	@Override
-	public void render(Controller[] c) {
+	public void render(Controller[] c, EATab etab) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Awesome";
 		config.width = 700;
 		config.height = 500;
 		config.resizable = false;
 		config.forceExit = false;
-		Pong p = new Pong(c[0], c[1]);
+		p = new Pong(c[0], c[1], etab);
 
-		new LwjglApplication(p, config);
+		app = new LwjglApplication(p, config);
 
-		GameScreen s = (GameScreen) p.getStartScreen();
+		/*GameScreen s = (GameScreen) p.getStartScreen();
 
 		while (!s.world.checkGameOver()) {
 			float accel1 = 0;
@@ -125,6 +129,15 @@ public class PongSim extends Simulation implements Renderable {
 			accel2 = MathUtils.clamp(accel2, -20, 20);
 
 			s.world.update(spf);
+		}*/
+	}
+
+	@Override
+	public void exit() {
+		if(app != null){
+			Gdx.app.exit();
+//			app.exit();
+//			p.dispose();
 		}
 	}
 

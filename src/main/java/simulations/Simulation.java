@@ -107,7 +107,7 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 	
 	
 	//-------------------------------------------------------------------
-	static String[] names = new String[] {"XOR","Pong","Round","Through","Memory", "TruthTable"};
+	static String[] names = new String[] {"Pong","XOR","Round","Through","Memory", "TruthTable"};
 	public static String[] getTypeOfSimulations(){
 		return names;
 	}

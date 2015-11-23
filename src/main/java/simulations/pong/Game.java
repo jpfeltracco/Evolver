@@ -4,18 +4,13 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 
 public abstract class Game implements ApplicationListener{
-	Screen screen;
+	public Screen screen;
 	
 	public abstract Screen getStartScreen();
 	
 	@Override
 	public void create() {
 		screen = getStartScreen();
-	}
-
-	@Override
-	public void dispose() {
-		screen.dispose();
 	}
 
 	@Override

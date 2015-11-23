@@ -10,6 +10,6 @@ public class PongDesktop {
 		config.width = 700;
 		config.height = 500;
 		config.resizable = false;
-		new LwjglApplication(new Pong(null, null), config); // We don't know a way to get controllers in here yet
+		new LwjglApplication(new Pong(null, null, null), config); // We don't know a way to get controllers in here yet
 	}
 }
