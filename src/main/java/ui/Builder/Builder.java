@@ -91,6 +91,7 @@ public class Builder {
 				cb.setOnAction((event) -> {
 					bol.setValue(cb.isSelected());
 					tabController.setValidity(client.check(), sIn);
+					tabController.setChanged(true);
 				});
 				if(!menuItems.getChangable(i)){
 					constants.add((Control)cb);
@@ -127,7 +128,7 @@ public class Builder {
 					s.valueProperty().addListener((observable, oldValue, newValue) -> {
 					    tf.setText(String.format("%."+dString+"f", newValue.floatValue()));
 					    output.setValue(Math.round(newValue.floatValue() * (1/dInc) ) / (1/dInc));
-					    
+					    tabController.setChanged(true);
 					    tabController.setValidity(client.check(), sIn);
 					});
 					tf.setOnAction((event) -> {
@@ -146,6 +147,7 @@ public class Builder {
 						s.setValue(in);
 						output.setValue(Math.round(in * (1/dInc) ) / (1/dInc));
 						tabController.setValidity(client.check(), sIn);
+						tabController.setChanged(true);
 					});
 					
 					
@@ -165,6 +167,7 @@ public class Builder {
 					    tf.setText("" + newValue.intValue());
 					    output.setValue(newValue.intValue());
 					    tabController.setValidity(client.check(), sIn);
+					    tabController.setChanged(true);
 					});
 					tf.setOnAction((event) ->{
 						System.out.println("This: " + Event.KEY_RELEASE);
@@ -182,6 +185,7 @@ public class Builder {
 						s.setValue(in);
 						output.setValue(in);
 						tabController.setValidity(client.check(), sIn);
+						tabController.setChanged(true);
 					});
 					
 				}
@@ -210,6 +214,7 @@ public class Builder {
 				textfield.textProperty().addListener((observable, oldValue, newValue) -> {
 				    output.setValue(newValue);
 				    tabController.setValidity(client.check(), sIn);
+				    tabController.setChanged(true);
 				});
 				if(!menuItems.getChangable(i)){
 					constants.add((Control)textfield);
@@ -240,6 +245,7 @@ public class Builder {
 				comboB.setOnAction((event) -> {
 					ch.setFocus(comboB.getValue());
 					tabController.setValidity(client.check(), sIn);
+					tabController.setChanged(true);
 				});
 				if(!menuItems.getChangable(i)){
 					constants.add((Control)comboB);

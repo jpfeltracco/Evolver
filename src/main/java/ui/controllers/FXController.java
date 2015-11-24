@@ -1,10 +1,13 @@
 package ui.controllers;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,6 +18,8 @@ import controllers.Controller;
 //import de.codecentric.centerdevice.platform.osx.NSMenuBarAdapter;
 //import de.codecentric.centerdevice.platform.osx.NativeMenuBar;
 import evolver.ElementHolder;
+import goals.Goal;
+import goals.TestGoal;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -58,6 +63,9 @@ public class FXController implements Initializable {
 	private MenuItem duplicateTab;
 	
 	@FXML
+	private MenuItem saveAsMenu;
+	
+	@FXML
 	private Menu openRecent;
 	
 	@FXML
@@ -82,6 +90,72 @@ public class FXController implements Initializable {
 			addNewEATab();
 		}
 	}
+	
+	@FXML
+	private void saveGoal(){
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save VDriver Goal");
+        fileChooser.setInitialDirectory(GUI.lastFileLocation);
+        
+        fileChooser.getExtensionFilters().addAll(
+        	new FileChooser.ExtensionFilter("Evolve Goal", "*.egl"),
+        	new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        
+        File selection = fileChooser.showSaveDialog(GUI.stage);
+        if(selection == null){
+        	System.out.println("Save Goal Failed");
+        	return;
+        }
+        
+        GUI.lastFileLocation = new File(selection.getParent());
+        GUI.lastFileName = selection.getName();
+        
+		
+		
+	}
+	
+	@FXML
+	private void openAsVDriver(){
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open VDriver Project");
+        fileChooser.setInitialDirectory(GUI.lastFileLocation);
+        
+        fileChooser.getExtensionFilters().addAll(
+        	new FileChooser.ExtensionFilter("Evolve Files", new String[] {"*.evo", "*.evs"}),
+           	new FileChooser.ExtensionFilter("Evolve Project", "*.evo"),
+           	new FileChooser.ExtensionFilter("Evolve Setting", "*.evs"),
+           	new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        
+        List<File> selection = fileChooser.showOpenMultipleDialog(GUI.stage);
+        if(selection == null){
+        	System.out.println("Open Failed");
+        	return;
+        }
+        GUI.lastFileLocation = new File(selection.get(0).getParent());
+        GUI.lastFileName = selection.get(0).getName();
+        
+        fileChooser = new FileChooser();
+		fileChooser.setTitle("Open VDriver Goal");
+        fileChooser.setInitialDirectory(GUI.lastFileLocation);
+        
+        fileChooser.getExtensionFilters().addAll(
+        	new FileChooser.ExtensionFilter("Evolve Goal", "*.egl"),
+        	new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        
+        File selectionGoal = fileChooser.showOpenDialog(GUI.stage);
+        if(selectionGoal == null){
+        	System.out.println("Open Goal Failed");
+        	return;
+        }
+        
+        for(File f : selection){
+        	openFile(f, selectionGoal);
+        }
+	}
+	
 	
 	@FXML
 	private void onSaveSettings(){
@@ -118,9 +192,10 @@ public class FXController implements Initializable {
 	}
 	
 	@FXML
-	private void saveEvolution(){
+	private void saveAs(){
 		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+				
 				final FileChooser fileChooser = new FileChooser();
 				
 				
@@ -150,6 +225,22 @@ public class FXController implements Initializable {
 		        
 				if(ea.saveAll(true, selectedDirectory)){
 					addRecentFile(selectedDirectory);
+				}
+				
+				return;
+			}
+		}
+	}
+	
+	
+	@FXML
+	private void saveEvolution(){
+		for(EATab ea : tabControllers){
+			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+				if(ea.saved){
+					ea.saveAll(true);
+				}else{
+					saveAs();
 				}
 				return;
 			}
@@ -276,12 +367,86 @@ public class FXController implements Initializable {
 		}
 	    
 		//if(!settingFile)
-			addNewEATab(name, selection, sim, control, inputF, elements, graphData);
+			addNewEATab(name, selection, sim, control, inputF, elements, graphData, selection);
 		//else
 			//new VDriver(sim, control, inputF, elements);
 			
 	}
 
+	public void openFile(File selection, File goalLoc){
+		String name = selection.getName().substring(0,selection.getName().indexOf("."));
+		addRecentFile(selection);
+		for(Tab t : EATabs.getTabs()){
+			if(t.getId().indexOf("FILE") == -1)
+				continue;
+			System.out.println(t.getId().substring(5) + "\tvs.\t" + selection.getAbsolutePath());
+			if(t.getId().substring(5).equals(selection.getAbsolutePath())){
+				EATabs.getSelectionModel().select(t);
+				return;
+			}
+		}
+		
+		boolean settingFile = selection.getName().endsWith("evs");
+        
+        int index = 0;
+        
+        SaveObject save = null;
+	    Simulation sim = null;
+	    Controller control = null;
+	    MenuItems inputF = null;
+	    ElementHolder elements = null;
+	    byte[][] graphData = null;
+		try{
+			FileInputStream fileIn = new FileInputStream(selection);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			save = (SaveObject) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			ByteArrayInputStream byteIn = new ByteArrayInputStream(save.controller[index]);
+			in = new ObjectInputStream(byteIn);
+			control = (Controller) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			byteIn = new ByteArrayInputStream(save.simulation[index]);
+			in = new ObjectInputStream(byteIn);
+			sim = (Simulation) in.readObject();
+			in.close();
+			fileIn.close();
+			
+			if(!settingFile){
+				byteIn = new ByteArrayInputStream(save.elements[index]);
+				in = new ObjectInputStream(byteIn);
+				elements = (ElementHolder) in.readObject();
+				in.close();
+				fileIn.close();
+				
+				graphData = save.graph[index];
+			}
+			
+			byteIn = new ByteArrayInputStream(save.evolve[index]);
+			in = new ObjectInputStream(byteIn);
+			inputF = (MenuItems) in.readObject();
+			in.close();
+			fileIn.close();
+		}catch(IOException i){
+			System.out.println("Open Failed: " + i.getMessage());
+			return;
+		}catch(ClassNotFoundException c){
+			System.out.println("Class not found.");
+			c.printStackTrace();
+			return;
+		}
+	    
+		//if(!settingFile)
+		new VDriver(sim, control, inputF, elements, new TestGoal());
+		//	addNewEATab(name, selection, sim, control, inputF, elements, graphData);
+		//else
+			//new VDriver(sim, control, inputF, elements);
+	}
+
+	
 	@FXML
 	public void onClose(){
 		Tab t = EATabs.getSelectionModel().getSelectedItem();
@@ -306,12 +471,12 @@ public class FXController implements Initializable {
 
 	}
 
-	public void addNewEATab(String name, File file, Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData) {
+	public void addNewEATab(String name, File file, Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData, File loc) {
 		
 		Tab t = getNewEATab(name, file);
 		
 		//Add Tab Pane
-		EATab tc = new EATab(t.getId(), t, this, s, c, inputF, elements, graphData);
+		EATab tc = new EATab(t.getId(), t, this, s, c, inputF, elements, graphData, loc);
 		tabControllers.add(tc);
 		
 		//Show Tab
@@ -471,7 +636,8 @@ public class FXController implements Initializable {
 		
 		
 		saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown));
-		saveSettings.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown, KeyCombination.SHIFT_DOWN));
+		saveSettings.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown, KeyCombination.SHIFT_DOWN));
+		saveAsMenu.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown, KeyCombination.SHIFT_DOWN));
 		openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, metaDown));
 		exportController.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown));
 		closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, metaDown));

@@ -69,6 +69,11 @@ public class EATab {
 	boolean status[] = new boolean[3];
 	VTab vTab;
 	boolean rendering = false;
+	File currentSaveLoc;
+	String tabText;
+	
+	boolean saved = false;
+	boolean changed = false;
 	
 	
 	public EATab(String tabID, Tab tab, FXController fxController){
@@ -91,11 +96,14 @@ public class EATab {
 		changeController(controller);
 		original = true;
 		
+		
 		//vTab = new VTab(simulation, controller, ea, null, fitnessGrapher);
 		
 	}
 	
-	public EATab(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, MenuItems inputF, ElementHolder elements, byte[][] graphData){
+	public EATab(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, MenuItems inputF, ElementHolder elements, byte[][] graphData, File loc){
+		currentSaveLoc = loc;
+		saved = true;
 		this.tabID = tabID;
 		this.tab = tab;
 		this.fxController = fxController;
@@ -162,6 +170,7 @@ public class EATab {
 		changeSim(simulation);
 		changeController(controller);
 		original = true;
+		
 		
 		//vTab = new VTab(simulation, controller, null, elements, fitnessGrapher);
 		
@@ -261,7 +270,7 @@ public class EATab {
 	protected void onStartClicked() {
 		if (startClicked = !startClicked) {
 			stopped = false;
-			
+			changed = true;
 			clearButton.setDisable(true);
 			graphClean.setDisable(true);
 			builder.setChangeable(false);
@@ -283,7 +292,8 @@ public class EATab {
 			//vTab.re
 			vTab = new VTab(simulation, controller, ea, null, elementHolder, fitnessGrapher);
 			vTab.activate();
-			
+			changed = true;
+			updateTabText();
 			startButton.setText("Stop");
 			
 			
@@ -369,10 +379,16 @@ public class EATab {
 		//Set the Simulation and Controller drop downs
 		simType.getItems().addAll(Simulation.getTypeOfSimulations());
 		controllerType.getItems().addAll(Controller.getTypeOfControllers());
+		
+		setTabText(tab.getText(),false);
 	}
 	
 	public String getTabID(){
 		return tabID;
+	}
+	
+	public boolean saveAll(boolean saveElement){
+		return saveAll(saveElement, currentSaveLoc);
 	}
 	
 	public boolean saveAll(boolean saveElement, File file){
@@ -428,14 +444,46 @@ public class EATab {
 			return false;
 		}
 	    String name = selectedDirectory.getName().substring(0,selectedDirectory.getName().indexOf("."));
-	    tab.setText(name);
+	    setTabText(name, false);
+	    
 	    if(!tab.getId().contains("FILE")){
 	    	fxController.EATabsArray.set(fxController.EATabsArray.indexOf(tab), null);
 	    }
 	    tab.setId("FILE-" + selectedDirectory.getAbsolutePath());
-	    
+	    saved = true;
+	    currentSaveLoc = selectedDirectory;
 	    return true;
 	    
+	}
+	
+	public void setChanged(boolean val){
+		if(changed != val && original){
+			changed = val;
+			setTabText(tabText);
+		}	
+	}
+	
+	public void setTabText(String name, boolean val){
+		if(original)
+			changed = val;
+		setTabText(name);
+	}
+	
+	public void setTabText(String name){
+		tabText = name;
+		if(!original)
+			return;
+		if(changed)
+			tab.setText("*"+tabText);
+		else
+			tab.setText(tabText);
+	}
+	
+	public void updateTabText(){
+		if(changed)
+			tab.setText("*"+tabText);
+		else
+			tab.setText(tabText);
 	}
 	
 	public void setValidity(boolean val, Object section){
@@ -591,7 +639,8 @@ public class EATab {
 		String val = (String)simType.getValue();
 		
 		System.out.println("Making Sim: " + sim);
-		
+
+		setChanged(true);
 
 		simLabel.setText(val);
 		simType.getSelectionModel().select(val);
@@ -624,6 +673,7 @@ public class EATab {
         grid.add(controllerType, 1, 0);
         grid.add(new Label("Type:"), 0, 0);
         
+        setChanged(true);
         
         if(control instanceof TabMenu){
         	((TabMenu)control).getMenuItems().clear();

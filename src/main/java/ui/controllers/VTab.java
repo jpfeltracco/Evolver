@@ -32,8 +32,11 @@ public class VTab implements Runnable{
 		this.grapher = grapher;
 		this.ea = ea;
 		
-		if(eaMenuItems != null)
+		if(eaMenuItems != null){
+			ea.getMenuItems().clear();
+			ea.menuInit();
 			ea.getMenuItems().setDefaults(eaMenuItems);
+		}
 		
 		System.out.println("Initializing EA...");
 		ea.menuInit();

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import evolver.ElementHolder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,8 +59,9 @@ public class DataBridge {
 	//--------------------------Functions----------------------------
 	
 	//TODO: Implement the check system for goals and stuff
-	public void check(){
-		//new Thread(new GoalChecker(vDriver)).start();
+	public void check(ElementHolder elements){
+		vDriver.check(elements);
+		//new Thread(new GoalChecker(vDriver, elements)).start();
 	}
 	
 	//----------------------------Graph------------------------------
