@@ -22,6 +22,7 @@
                   <Menu fx:id="openRecent" mnemonicParsing="false" text="Open Recent" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="saveProject" mnemonicParsing="false" onAction="#saveEvolution" text="Save" />
+                  <MenuItem fx:id="saveAsMenu" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
                   <MenuItem fx:id="saveSettings" mnemonicParsing="false" onAction="#onSaveSettings" text="Save Settings" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="exportController" mnemonicParsing="false" onAction="#onExportController" text="Export Controller" />
@@ -36,6 +37,7 @@
             <Menu mnemonicParsing="false" text=" Connection">
                <items>
                   <MenuItem mnemonicParsing="false" text="Form New Connection" />
+                  <MenuItem mnemonicParsing="false" onAction="#openAsVDriver" text="Test VDriver" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">

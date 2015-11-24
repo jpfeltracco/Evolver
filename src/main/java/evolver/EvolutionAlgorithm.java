@@ -154,6 +154,9 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			Arrays.sort(elements);
 			
+			//TODO: Finish this section. Goal is to implement goals here, via the DateBridge.
+			if(dataBridge.isVirtual())
+				dataBridge.check(getExportedElements());
 			
 			//InsertionSort(elements);
 			
@@ -217,9 +220,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			dataBridge.setGeneration(genNum);
 			elements = nextGen;
 			
-			//TODO: Finish this section. Goal is to implement goals here, via the DateBridge.
-			if(dataBridge.isVirtual())
-				dataBridge.check();
+			
 			
 			
 			//Delay amount specified by the GUI
