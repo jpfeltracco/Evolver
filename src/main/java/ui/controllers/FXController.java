@@ -22,6 +22,7 @@ import goals.Goal;
 import goals.TestGoal;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -76,6 +77,9 @@ public class FXController implements Initializable {
 	
 	@FXML
     private MenuBar menuBar;
+	
+	@FXML
+	private AreaChart<Number,Number> systemGraph;
 	
 	//-----------------------------FXML Functions----------------------------
 	
@@ -643,6 +647,10 @@ public class FXController implements Initializable {
 		closeButton.setAccelerator(new KeyCodeCombination(KeyCode.W, metaDown));
 		newProject.setAccelerator(new KeyCodeCombination(KeyCode.N, metaDown));
 		duplicateTab.setAccelerator(new KeyCodeCombination(KeyCode.D, metaDown));
+		
+		
+		new Thread(new CPU(systemGraph)).start();
+		
 	}
 
 }
