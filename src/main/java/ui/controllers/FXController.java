@@ -79,7 +79,13 @@ public class FXController implements Initializable {
     private MenuBar menuBar;
 	
 	@FXML
-	private AreaChart<Number,Number> systemGraph;
+	private AreaChart<Number,Number> memoryGraph;
+	
+	@FXML
+	private AreaChart<Number,Number> cpuGraph;
+	
+	@FXML
+	private AreaChart<Number,Number> threadGraph;
 	
 	//-----------------------------FXML Functions----------------------------
 	
@@ -649,7 +655,7 @@ public class FXController implements Initializable {
 		duplicateTab.setAccelerator(new KeyCodeCombination(KeyCode.D, metaDown));
 		
 		
-		new Thread(new CPU(systemGraph)).start();
+		new Thread(new CPU(memoryGraph, cpuGraph, threadGraph)).start();
 		
 	}
 

@@ -2,6 +2,7 @@ package ui.controllers;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.lang.management.ThreadMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.PlatformManagedObject;
 import java.util.ArrayList;
@@ -21,34 +22,82 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.NumberAxis;
 
 public class CPU implements Runnable{
-	private final AreaChart<Number,Number> chart;
-	ArrayList<String> graphSeriesTitles = new ArrayList<String>();
-	ObservableList<Series<Number, Number>> graphSeries = FXCollections.observableArrayList();
-	static final int MAXSIZE = 150;
+	private final AreaChart<Number,Number> memoryChart;
+	private final AreaChart<Number,Number> cpuChart;
+	private final AreaChart<Number,Number> threadChart;
+	
+	ArrayList<String> threadSeriesTitles = new ArrayList<String>();
+	ObservableList<Series<Number, Number>> threadSeries = FXCollections.observableArrayList();
+	
+	ArrayList<String> cpuSeriesTitles = new ArrayList<String>();
+	ObservableList<Series<Number, Number>> cpuSeries = FXCollections.observableArrayList();
+	
+	ArrayList<String> memorySeriesTitles = new ArrayList<String>();
+	ObservableList<Series<Number, Number>> memorySeries = FXCollections.observableArrayList();
+	
+	static final int MAXSIZE = 100;
 	static final int WAITTIME = 1000;
 	
-	public CPU(AreaChart<Number,Number> chart){
-		this.chart = chart;
+	public CPU(AreaChart<Number,Number> memoryChart, AreaChart<Number,Number> cpuChart, AreaChart<Number,Number> threadChart){
+		this.memoryChart = memoryChart;
+		this.cpuChart = cpuChart;
+		this.threadChart = threadChart;
+		
+		//------
 		
 		Series<Number, Number> s = new Series<Number, Number>();
-		graphSeriesTitles.add("CPU Usage");
+		cpuSeriesTitles.add("CPU Usage");
 		s.setName("CPU Usage");
-		graphSeries.add(s);
+		cpuSeries.add(s);
+		
+		//------
 		
 		s = new Series<Number, Number>();
-		graphSeriesTitles.add("Max Heap");
+		memorySeriesTitles.add("Max Heap");
 		s.setName("Max Heap");
-		graphSeries.add(s);
+		memorySeries.add(s);
 		
 		s = new Series<Number, Number>();
-		graphSeriesTitles.add("Used Heap");
+		memorySeriesTitles.add("Used Heap");
 		s.setName("Used Heap");
-		graphSeries.add(s);
+		memorySeries.add(s);
 		
-		this.chart.setData(graphSeries);
-		this.chart.setCreateSymbols(true);
-		this.chart.getXAxis().autoRangingProperty().set(false);
-		((NumberAxis)this.chart.getXAxis()).setUpperBound(MAXSIZE + WAITTIME/1000.0);
+		//------
+		
+		s = new Series<Number, Number>();
+		threadSeriesTitles.add("Peak Thread Count");
+		s.setName("Peak Thread Count");
+		threadSeries.add(s);
+		
+		s = new Series<Number, Number>();
+		threadSeriesTitles.add("Thread Count");
+		s.setName("Thread Count");
+		threadSeries.add(s);
+		
+		//------
+		
+		this.memoryChart.setData(memorySeries);
+		this.memoryChart.setCreateSymbols(false);
+		this.memoryChart.getXAxis().autoRangingProperty().set(false);
+		((NumberAxis)this.memoryChart.getXAxis()).setUpperBound(MAXSIZE + WAITTIME/1000.0);
+		
+		//------
+		
+		this.threadChart.setData(threadSeries);
+		this.threadChart.setCreateSymbols(false);
+		this.threadChart.getXAxis().autoRangingProperty().set(false);
+		((NumberAxis)this.threadChart.getXAxis()).setUpperBound(MAXSIZE + WAITTIME/1000.0);
+		
+		//------
+		
+		this.cpuChart.setData(cpuSeries);
+		this.cpuChart.setCreateSymbols(false);
+		this.cpuChart.getXAxis().autoRangingProperty().set(false);
+		this.cpuChart.getYAxis().autoRangingProperty().set(false);
+		//this.cpuChart.getXAxis().setTickLength(20);
+		//this.cpuChart.getYAxis().setTickLength(20);
+		((NumberAxis)this.cpuChart.getYAxis()).setUpperBound(100);
+		((NumberAxis)this.cpuChart.getXAxis()).setUpperBound(MAXSIZE + WAITTIME/1000.0);
 	}
 	
 	long nanoTime;
@@ -74,6 +123,7 @@ public class CPU implements Runnable{
 			    
 			    OperatingSystemMXBean po = ManagementFactory.getOperatingSystemMXBean();
 			    MemoryMXBean mem = ManagementFactory.getMemoryMXBean();
+			    ThreadMXBean thread = ManagementFactory.getThreadMXBean();
 			    
 			    double timeSec = (System.nanoTime() - nanoTime)/1000000000.0;
 			    if (!list.isEmpty()){
@@ -84,7 +134,7 @@ public class CPU implements Runnable{
 				    // usually takes a couple of seconds before we get real values
 				    if (value != -1.0){
 				    // returns a percentage value with 1 decimal point precision
-				    	addToSystemGraph("CPU Usage", timeSec, ((int)(value * 1000) / 10.0));
+				    	addToSystemGraph("CPU Usage", cpuChart, timeSec, ((int)(value * 1000) / 10.0));
 				    	//System.out.println("CPU: " + ((int)(value * 1000) / 10.0));
 				    }
 			    }
@@ -98,10 +148,11 @@ public class CPU implements Runnable{
 			    /*Data<Number, Number> dat = new XYChart.Data<Number, Number>(timeSec,vals[1]);
 				getSeries(name).getData().add(dat);*/
 				
-			   
+			    addToSystemGraph("Thread Count", threadChart, timeSec, thread.getThreadCount());
+			    addToSystemGraph("Peak Thread Count", threadChart, timeSec, thread.getPeakThreadCount());
 				
-			    addToSystemGraph("Max Heap", timeSec, (double)mem.getHeapMemoryUsage().getCommitted() / 1048576.0);
-			    addToSystemGraph("Used Heap", timeSec, (double)mem.getHeapMemoryUsage().getUsed() / 1048576.0);
+			    addToSystemGraph("Max Heap", memoryChart, timeSec, (double)mem.getHeapMemoryUsage().getCommitted() / 1048576.0);
+			    addToSystemGraph("Used Heap", memoryChart, timeSec, (double)mem.getHeapMemoryUsage().getUsed() / 1048576.0);
 			    
 			    
 			    
@@ -116,12 +167,12 @@ public class CPU implements Runnable{
 		}
 	}
 	
-	public void addToSystemGraph(String series, Number data1, Number data2){
+	public void addToSystemGraph(String series, AreaChart<Number,Number> chart, Number data1, Number data2){
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				Data<Number, Number> dat = new XYChart.Data<Number, Number>(data1, data2);
-				ObservableList<Data<Number, Number>> dataHolder = getSeries(series).getData();
+				ObservableList<Data<Number, Number>> dataHolder = getSeries(series, chart).getData();
 				dataHolder.add(dat);
 				if((double)data1 > ((NumberAxis)chart.getXAxis()).getUpperBound())
 					((NumberAxis)chart.getXAxis()).setUpperBound((double)data1);
@@ -140,11 +191,28 @@ public class CPU implements Runnable{
 	 * @param name the name of the Series to return
 	 * @return the Series
 	 */
-	public Series<Number,Number> getSeries(String name){
-		for(int i = 0; i < graphSeriesTitles.size(); i++){
-			if(graphSeriesTitles.get(i).equals(name))
-				return graphSeries.get(i);
+	public Series<Number,Number> getSeries(String name, AreaChart<Number,Number> chart){
+		switch(chart.getTitle()){
+		case "Memory":
+			for(int i = 0; i < memorySeriesTitles.size(); i++){
+				if(memorySeriesTitles.get(i).equals(name))
+					return chart.getData().get(i);
+			}
+			break;
+		case"CPU":
+			for(int i = 0; i < cpuSeriesTitles.size(); i++){
+				if(cpuSeriesTitles.get(i).equals(name))
+					return chart.getData().get(i);
+			}
+			break;
+		case"Threads":
+			for(int i = 0; i < threadSeriesTitles.size(); i++){
+				if(threadSeriesTitles.get(i).equals(name))
+					return chart.getData().get(i);
+			}
+			break;
 		}
+		
 		return null;
 	}
 	
