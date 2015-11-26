@@ -92,7 +92,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		System.out.println("\tavailableControllers: " + availableControllers);
 		
 		check();
-		
+		dataBridge.setProgress(-1);
 		
 		//this.running = false;
 		long timeTaken;
@@ -237,7 +237,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			}
 			
 		}
-		
+		dataBridge.setProgress(0);
 		System.out.println("EA stopped");
 		
 	}

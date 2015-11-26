@@ -50,13 +50,16 @@ import simulations.Simulation;
 import ui.Builder.Builder;
 import ui.Builder.MenuItems;
 import ui.Builder.TabMenu;
+import ui.controllers.custom.TetheredButton;
+import ui.controllers.custom.TetheredProgressBar;
+//import ui.Builder.TetheredButton;
 import ui.graph.DataBridge;
 
 
 public class EATab {
 	
 	final String tabID;
-	final Tab tab;
+	public final Tab tab;
 	final FXController fxController;
 	final String FXMLTYPE = "eaTab.fxml";
 	public DataBridge fitnessGrapher;
@@ -364,7 +367,7 @@ public class EATab {
 		//ea.setGrapher(fitnessGrapher);
 		
 		//Set the initial button enables
-		startButton.setDisable(true);
+		startButton.setTetheredDisable(true);
 		clearButton.setDisable(true);
 		graphClean.setDisable(false);
 		renderButton.setDisable(true);
@@ -379,6 +382,8 @@ public class EATab {
 		//Set the Simulation and Controller drop downs
 		simType.getItems().addAll(Simulation.getTypeOfSimulations());
 		controllerType.getItems().addAll(Controller.getTypeOfControllers());
+		
+		progressBar.setLabel(progressLabel);
 		
 		setTabText(tab.getText(),false);
 	}
@@ -451,6 +456,8 @@ public class EATab {
 	    }
 	    tab.setId("FILE-" + selectedDirectory.getAbsolutePath());
 	    saved = true;
+	    changed = false;
+	    updateTabText();
 	    currentSaveLoc = selectedDirectory;
 	    return true;
 	    
@@ -460,6 +467,7 @@ public class EATab {
 		if(changed != val && original){
 			changed = val;
 			setTabText(tabText);
+			updateName();
 		}	
 	}
 	
@@ -467,6 +475,7 @@ public class EATab {
 		if(original)
 			changed = val;
 		setTabText(name);
+		updateName();
 	}
 	
 	public void setTabText(String name){
@@ -477,6 +486,7 @@ public class EATab {
 			tab.setText("*"+tabText);
 		else
 			tab.setText(tabText);
+		updateName();
 	}
 	
 	public void updateTabText(){
@@ -484,6 +494,15 @@ public class EATab {
 			tab.setText("*"+tabText);
 		else
 			tab.setText(tabText);
+		//updateName();
+	}
+	
+	private void updateName(){
+		fxController.tabArea.setContent(fxController.tabBuilder.build());
+	}
+	
+	public String getTabText(){
+		return tabText;
 	}
 	
 	public void setValidity(boolean val, Object section){
@@ -509,7 +528,7 @@ public class EATab {
 				break;
 			}
 		}
-		startButton.setDisable(!ready);
+		startButton.setTetheredDisable(!ready);
 	}
 	
 	protected GridPane getNewGrid(){
@@ -623,6 +642,8 @@ public class EATab {
 
 	public boolean close(){
 
+		fxController.tabArea.setContent(fxController.tabBuilder.removeEATab(this));
+		
 		System.out.println("Closing tabID: " + tabID);
 		ea.setRunning(false);
 		return true;
@@ -693,7 +714,7 @@ public class EATab {
 	//----------------------------FXML Objects----------------------------
 	
 	@FXML
-	protected Button startButton;
+	public TetheredButton startButton;
 	
 	@FXML
 	protected Button clearButton;
@@ -756,7 +777,7 @@ public class EATab {
 	protected StackPane SimComboBox;
 	
 	@FXML
-	public ProgressBar progressBar;
+	public TetheredProgressBar progressBar;
 	
 	@FXML
 	public Label progressLabel;

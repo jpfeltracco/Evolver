@@ -19,7 +19,7 @@ import ui.controllers.VDriver;
 public class DataBridge {
 	LineChart<Number, Number> chart;
 	ArrayList<String> graphSeriesTitles = new ArrayList<String>();
-	ObservableList<Series<Number, Number>> graphSeries = FXCollections.observableArrayList();
+	ObservableList<Series<Number, Number>> graphSeries = FXCollections.observableArrayList();;
 	EATab eaTab;
 	VDriver vDriver;
 	final boolean virtual;
@@ -34,9 +34,8 @@ public class DataBridge {
 		this.eaTab = eaTab;
 		this.chart = chart;
 		//EAController.addSeries(graphSeries);
-		System.out.println("Thing: " + chart);
 		chart.setData(graphSeries);
-		chart.setCreateSymbols(false);
+		//chart.setCreateSymbols(false);
 	}
 	
 	/**
@@ -226,8 +225,8 @@ public class DataBridge {
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					eaTab.progressBar.setProgress(d);
-					eaTab.progressLabel.setText(generateTimeRemainingLabel(d, timeAtStart));
+					eaTab.progressBar.setTetherProgress(d, generateTimeRemainingLabel(d, timeAtStart));
+					//eaTab.progressLabel.setText(generateTimeRemainingLabel(d, timeAtStart));
 				}
 			});
 		}
@@ -244,7 +243,7 @@ public class DataBridge {
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					eaTab.progressBar.setProgress(d);
+					eaTab.progressBar.setTetherProgress(d);
 					eaTab.progressLabel.setText(generateTimeRemainingLabel(d, -1));
 				}
 			});
