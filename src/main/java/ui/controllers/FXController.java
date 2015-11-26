@@ -258,14 +258,17 @@ public class FXController implements Initializable {
 	@FXML
 	private void saveEvolution(){
 		for(EATab ea : tabControllers){
-			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+			if(ea.tabID.equals(EATabs.getSelectionModel().getSelectedItem().getId())){
 				saveEvolution(ea);
 				return;
 			}
 		}
+		System.out.println("NO ID FOUND");
 	}
 	
 	public void saveEvolution(EATab ea){
+		System.out.println("Saving Evolution");
+		System.out.println("\tSaved: " + ea.saved);
 		if(ea.saved){
 			ea.saveAll(true);
 		}else{
@@ -348,7 +351,7 @@ public class FXController implements Initializable {
 	    Controller control = null;
 	    MenuItems inputF = null;
 	    ElementHolder elements = null;
-	    byte[][] graphData = null;
+	    byte[][][] graphData = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(selection);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -421,7 +424,7 @@ public class FXController implements Initializable {
 	    Controller control = null;
 	    MenuItems inputF = null;
 	    ElementHolder elements = null;
-	    byte[][] graphData = null;
+	    byte[][][] graphData = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(selection);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -512,7 +515,7 @@ public class FXController implements Initializable {
 
 	}
 
-	public void addNewEATab(String name, File file, Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData, File loc) {
+	public void addNewEATab(String name, File file, Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][][] graphData, File loc) {
 		
 		Tab t = getNewEATab(name, file);
 		

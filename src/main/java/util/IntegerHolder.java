@@ -5,7 +5,7 @@ package util;
  * @author Keenan Nicholson
  *
  */
-public class IntegerHolder implements Holder{
+public class IntegerHolder extends Holder{
 	private int val = 0;
 	
 	/**
@@ -29,6 +29,7 @@ public class IntegerHolder implements Holder{
 	 */
 	public void setValue(int i){
 		this.val = i;
+		changed();
 	}
 	
 	/**
@@ -54,7 +55,7 @@ public class IntegerHolder implements Holder{
 	@Override
 	public void setRawVariable(Object o) {
 		val = (Integer)o;
-		
+		changed();
 	}
 
 	@Override
@@ -67,6 +68,7 @@ public class IntegerHolder implements Holder{
 		if(!(h instanceof IntegerHolder))
 			throw new RuntimeException("A IntegerHolder can only be set to values of other IntegerHolders.");
 		setValue((Integer)h.getRawVariable());
+		changed();
 	}
 	
 	@Override

@@ -17,6 +17,7 @@ import ui.Builder.MenuItems;
 import ui.Builder.MenuItems.EntryType;
 import ui.controllers.GUI;
 import ui.graph.DataBridge;
+import ui.graph.DataBridge.ChartType;
 import util.*;
 
 public class EvolutionAlgorithm extends TabMenu implements Runnable {
@@ -38,6 +39,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	private  Simulation simType;
 	private  int controlPerSim;
 	private  int numThreads;
+	private  int sameBestElement = 0;
+	private Element best;
 	
 	private int availableControllers;
 	private Element[] elements;
@@ -158,8 +161,16 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			if(dataBridge.isVirtual())
 				dataBridge.check(getExportedElements());
 			
+			if(best == null || !controllerType.isSame(best, elements[elements.length-1])){
+				best = elements[elements.length-1].clone();
+				sameBestElement = 0;
+			}else{
+				sameBestElement ++;
+			}
+			
 			//InsertionSort(elements);
 			
+			int foundersAction = 0;
 			int numRepeat = 0;
 			int split = elements.length - 1;
 			while (controllerType.isSame(elements[elements.length - 1], elements[split]) && split >= 1) {
@@ -171,6 +182,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 				if (numRepeat / (float) elements.length > foundersPercent) {
 					elements[j] = controllerType.generateRandomConfig();
+					foundersAction ++;
 //					System.out.println("randomized");
 				}
 				else {
@@ -179,6 +191,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				}
 			}
 			
+			
+			
 			Element.numElements = 0;
 			Element[] nextGen = new Element[elements.length];
 			
@@ -186,16 +200,21 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			bestElement = elements[elements.length-1];
 			
+			dataBridge.setFitness(bestElement.getFitness());
+			
 			if(genNum%graphAmt.getValue() == 0){	
 
-				dataBridge.graphData("Fitness", new Number[] {genNum, bestElement.getFitness()});
+				dataBridge.graphData("Fitness", ChartType.FITNESS, new Number[] {genNum, bestElement.getFitness()});
 				double fit = 0.0;
 				for(Element e : elements){
 					fit += e.getFitness();
 				}
 				fit /= elements.length;
-				dataBridge.graphData("Average Population Fitness", new Number[] {genNum, fit});
+				dataBridge.graphData("Average Population Fitness", ChartType.FITNESS, new Number[] {genNum, fit});
 				runningAvg.clear();
+				
+				dataBridge.graphData("Founders Changes", ChartType.ACTION, new Number[] {genNum, foundersAction});
+				dataBridge.graphData("Same Best Element", ChartType.ACTION, new Number[] {genNum, sameBestElement});
 				
 			}
 
@@ -410,6 +429,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			}
 		}
 		
+		
+		checkGraphs();
 		dataBridge.setProgress(0);
 		System.out.println();
 		failedToStart = false;
@@ -430,20 +451,36 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	IntegerHolder menuGamePerElement = new IntegerHolder(40);
 	IntegerHolder preferedControllers = new IntegerHolder(15);
 	IntegerHolder graphAmt = new IntegerHolder(10);
-	
 	IntegerHolder delayAmt = new IntegerHolder(0);
+	BooleanHolder viewGraph = new BooleanHolder(false);
 
 	@Override
 	public void menuInit(MenuItems menu) {
 		menu.add("Reproduction", EntryType.COMBOBOX, menuReproductionType,false);
-		menu.add("Delay", EntryType.SLIDER, delayAmt, new Constraint(0,1000), true);
-		menu.add("Graph Frequancy (/GEN)", EntryType.SLIDER, graphAmt, new Constraint(1,1000),true);
 		menu.add("Mutation Amt", EntryType.SLIDER, menuMutationAmt, new Constraint(0,1,4),true);
 		menu.add("Mutation Rate", EntryType.SLIDER, menuMutationRate, new Constraint(0,1,4),true);
 		menu.add("Founders %", EntryType.SLIDER, menuFoundersPercent, new Constraint(0,1,4),true);
 		menu.add("Mutiplier", EntryType.SLIDER, menuMult, new Constraint(1,100),false);
 		menu.add("Games Per Element", EntryType.SLIDER, menuGamePerElement, new Constraint(1,100),false);
 		menu.add("Controller #", EntryType.SLIDER, preferedControllers, new Constraint(1,25),false);
+		menu.addSeparator();
+		menu.add("Delay", EntryType.SLIDER, delayAmt, new Constraint(0,1000), true);
+		menu.add("Graph Frequancy (Generations per Data Point)", EntryType.SLIDER, graphAmt, new Constraint(1,1000),true);
+		menu.add("View Graph Data", EntryType.CHECKBOX, viewGraph, true);
+		
+		viewGraph.addListener((val) -> {
+			System.out.println("VAR CHANGE");
+			checkGraphs();
+		});
+	
+	}
+	
+	public void checkGraphs(){
+		System.out.println(viewGraph.getValue());
+		System.out.println(dataBridge);
+		if(dataBridge == null)
+			return;
+		dataBridge.viewGraphs(viewGraph.getValue());
 	}
 
 

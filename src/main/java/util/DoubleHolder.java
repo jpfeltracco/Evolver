@@ -5,7 +5,7 @@ package util;
  * @author Keenan Nicholson
  *
  */
-public class DoubleHolder implements Holder{
+public class DoubleHolder extends Holder{
 	private double val;
 	
 	/**
@@ -29,6 +29,7 @@ public class DoubleHolder implements Holder{
 	 */
 	public void setValue(double d){
 		this.val = d;
+		changed();
 	}
 	
 	/**
@@ -62,6 +63,7 @@ public class DoubleHolder implements Holder{
 	@Override
 	public void setRawVariable(Object o) {
 		val = (Double)o;
+		changed();
 	}
 
 	@Override
@@ -73,10 +75,7 @@ public class DoubleHolder implements Holder{
 	public void setToHolder(Holder h) {
 		if(!(h instanceof DoubleHolder))
 			throw new RuntimeException("A DoubleHolder can only be set to values of other DoubleHolders.");
-		System.out.println("BEFORE:\t" + getValue());
-		System.out.println("SET:\t" + (Double)h.getRawVariable());
-		setValue((Double)h.getRawVariable());
-		System.out.println("AFTER:\t" + getValue());
+		changed();
 		
 	}
 	

@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -42,7 +43,6 @@ public class TabListBuilder {
 		this.fxController = fxController;
 	}
 	
-	
 	public GridPane addEATab(EATab eaTab){
 		
 		System.out.println("Contained: " + eaTabs.contains(eaTab));
@@ -69,7 +69,17 @@ public class TabListBuilder {
 		for(int i = 0; i < eaTabs.size(); i++){
 			EATab eaTab = eaTabs.get(i);
 			
-			Label label = new Label(eaTab.getTabText());
+			/*Label label = new Label(eaTab.getTabText() + "  Gen: 0");
+			eaTab.fitnessGrapher.genHolder.addListener((val) -> {
+				label.setText(eaTab.getTabText() + "  Gen: " + (Integer)val);
+			});*/
+			
+			Label label = new Label(eaTab.getTabText() + "  Fit: --");
+			eaTab.fitnessGrapher.fitHolder.addListener((val) -> {
+				label.setText(eaTab.getTabText() + "  Fit: " + (Math.round(((Double)val)*100.0)/100.0));
+			});
+			
+			
 			Popup popup = new Popup();
 			Label popupMessage = new Label(label.getText());
 			popupMessage.getStylesheets().add("./ui/css/style.css");

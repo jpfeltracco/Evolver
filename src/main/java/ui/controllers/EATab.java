@@ -36,6 +36,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.ColumnConstraints;
@@ -54,11 +55,12 @@ import ui.controllers.custom.TetheredButton;
 import ui.controllers.custom.TetheredProgressBar;
 //import ui.Builder.TetheredButton;
 import ui.graph.DataBridge;
+import ui.graph.DataBridge.ChartType;
 
 
 public class EATab {
 	
-	final String tabID;
+	String tabID;
 	public final Tab tab;
 	final FXController fxController;
 	final String FXMLTYPE = "eaTab.fxml";
@@ -104,7 +106,7 @@ public class EATab {
 		
 	}
 	
-	public EATab(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, MenuItems inputF, ElementHolder elements, byte[][] graphData, File loc){
+	public EATab(String tabID, Tab tab, FXController fxController, Simulation simulation, Controller controller, MenuItems inputF, ElementHolder elements, byte[][][] graphData, File loc){
 		currentSaveLoc = loc;
 		saved = true;
 		this.tabID = tabID;
@@ -121,7 +123,8 @@ public class EATab {
 		initializeTab();
 		
 		if(graphData != null && graphData.length != 0){
-			for(byte[] s : graphData){
+			byte[][] data = graphData[0];
+			for(byte[] s : data){
 				String sCurrentLine;
 				BufferedReader br;
 				StringTokenizer st;
@@ -129,18 +132,39 @@ public class EATab {
 					br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s)));
 					sCurrentLine = br.readLine();
 					String series = sCurrentLine;
-					fitnessGrapher.addSeries(series);
+					fitnessGrapher.addSeries(series, ChartType.FITNESS);
 					sCurrentLine = br.readLine();
 					while ((sCurrentLine = br.readLine()) != null) {
 						st = new StringTokenizer(sCurrentLine, ",");
-						fitnessGrapher.addToSeries(series, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
+						fitnessGrapher.addToSeries(series, ChartType.FITNESS, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
 					}
 					br.close();
 				} catch (IOException e) {
 					throw new RuntimeException("There was an error opening the Elements: " + e);
 				}
-				
 			}
+			
+			data = graphData[1];
+			for(byte[] s : data){
+				String sCurrentLine;
+				BufferedReader br;
+				StringTokenizer st;
+				try {
+					br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s)));
+					sCurrentLine = br.readLine();
+					String series = sCurrentLine;
+					fitnessGrapher.addSeries(series, ChartType.ACTION);
+					sCurrentLine = br.readLine();
+					while ((sCurrentLine = br.readLine()) != null) {
+						st = new StringTokenizer(sCurrentLine, ",");
+						fitnessGrapher.addToSeries(series, ChartType.ACTION, new Number[] {Integer.parseInt(st.nextToken()) , Double.parseDouble(st.nextToken())});
+					}
+					br.close();
+				} catch (IOException e) {
+					throw new RuntimeException("There was an error opening the Elements: " + e);
+				}
+			}
+				
 		}
 		
 
@@ -235,31 +259,38 @@ public class EATab {
 	
 	@FXML
 	protected void checkGraphClean(){
-		if(fitnessGrapher != null && fitnessGrapher.getGraphSize("Fitness")>4)
-			fitnessGrapher.simplifyData("Fitness", 2);
+		if(fitnessGrapher != null && fitnessGrapher.getGraphSize("Fitness", ChartType.FITNESS)>4)
+			fitnessGrapher.simplifyData("Fitness", ChartType.FITNESS, 2);
 	}
 	
 	@FXML
 	public void saveFitnessGraphData(){
-		saveChartAsXML(fitnessGraph);
+		if(graphSelector.getSelectionModel().getSelectedIndex() == 0)
+			saveChartAsXML(fitnessGraph);
+		else if(graphSelector.getSelectionModel().getSelectedIndex() == 1)
+			saveChartAsXML(actionGraph);
 	}
 
 	@FXML 
 	protected void saveFitnessGraph(){
-		saveChartAsPng(fitnessGraph);
+		if(graphSelector.getSelectionModel().getSelectedIndex() == 0)
+			saveChartAsPng(fitnessGraph);
+		else if(graphSelector.getSelectionModel().getSelectedIndex() == 1)
+			saveChartAsPng(actionGraph);
 	}
 	
 	@FXML
 	protected void onClearClicked() {
 		MenuItems def = ea.getMenuItems();
 		
-		fitnessGrapher.resetGraph();
+		fitnessGrapher.resetGraph(ChartType.FITNESS);
+		fitnessGrapher.resetGraph(ChartType.ACTION);
 		builder.setChangeable(true);
 		elementHolder = null;
 		ea = new EvolutionAlgorithm();
+		ea.setDataBridge(fitnessGrapher);
 		ea.menuInit();
 		ea.getMenuItems().setDefaults(def);
-		ea.setDataBridge(fitnessGrapher);
 		GridPane grid = getNewGrid();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 		clearButton.setDisable(true);
@@ -318,6 +349,7 @@ public class EATab {
 	@FXML
 	void toggleGraphAnimate() {
 		fitnessGraph.setAnimated(!fitnessGraph.animatedProperty().get());
+		actionGraph.setAnimated(!actionGraph.animatedProperty().get());
     }
 	
 	//----------------------------Normal Functions-----------------------------
@@ -327,6 +359,7 @@ public class EATab {
 		ea.menuInit();
 		evolutionScrollPane.setContent(builder.build(ea, grid));
 	}
+	
 	
 	public void initializeTab(){
 		//Sets the master Tab to close when this thing is ready, and not before.
@@ -363,7 +396,7 @@ public class EATab {
 		
 		//Set up grapher
 		System.out.println("GRAPH: " + fitnessGraph);
-		fitnessGrapher = new DataBridge(fitnessGraph, this);
+		fitnessGrapher = new DataBridge(fitnessGraph, actionGraph, this);
 		//ea.setGrapher(fitnessGrapher);
 		
 		//Set the initial button enables
@@ -385,6 +418,7 @@ public class EATab {
 		
 		progressBar.setLabel(progressLabel);
 		
+		accordion.setMinWidth(229);
 		setTabText(tab.getText(),false);
 	}
 	
@@ -455,6 +489,7 @@ public class EATab {
 	    	fxController.EATabsArray.set(fxController.EATabsArray.indexOf(tab), null);
 	    }
 	    tab.setId("FILE-" + selectedDirectory.getAbsolutePath());
+	    tabID = "FILE-" + selectedDirectory.getAbsolutePath();
 	    saved = true;
 	    changed = false;
 	    updateTabText();
@@ -536,16 +571,18 @@ public class EATab {
 		grid.setVgap(10);
 		grid.setHgap(2);
 		
+		//grid.setGridLinesVisible(true);
+		
 		ColumnConstraints c = new ColumnConstraints();
-		c.setHgrow(Priority.SOMETIMES);
-		c.setMaxWidth(173.0);
-		c.setMinWidth(10.0);
-		c.setPrefWidth(124.0);
+		//c.setHgrow(Priority.SOMETIMES);
+		c.setMaxWidth(100.0);
+		c.setMinWidth(100.0);
 		grid.getColumnConstraints().add(c);
 		
 		c = new ColumnConstraints();
 		c.setHalignment(HPos.RIGHT);
-		c.setHgrow(Priority.NEVER);
+		c.setHgrow(Priority.ALWAYS);
+		//c.setMinWidth(200);
 		grid.getColumnConstraints().add(c);
 		
 		RowConstraints r = new RowConstraints();
@@ -557,6 +594,10 @@ public class EATab {
 	
 	public void setGeneration(int g){
 		generationTag.setText("" + g);
+	}
+	
+	public void setFitness(double d){
+		fitnessTag.setText("" + (Math.round(d*100.0)/100.0) );
 	}
 	
 	public void saveChartAsPng(LineChart<Number,Number> graph) {
@@ -622,7 +663,10 @@ public class EATab {
 		File file = fileChooser.showSaveDialog(GUI.stage);
 	    
 	    try {
-			fitnessGrapher.writeData(file);
+	    	if(graph.getTitle().equals("Fitness"))
+	    		fitnessGrapher.writeData(file, ChartType.FITNESS);
+	    	else if(graph.getTitle().equals("Actions"))
+	    		fitnessGrapher.writeData(file, ChartType.ACTION);
 		} catch (IOException e) {
 			// TODO: handle exception here
 		}
@@ -732,6 +776,9 @@ public class EATab {
 	protected LineChart<Number, Number> fitnessGraph;
 	
 	@FXML
+	protected LineChart<Number, Number> actionGraph;
+	
+	@FXML
 	protected TitledPane simPane;
 	
 	@FXML 
@@ -774,6 +821,9 @@ public class EATab {
 	protected Label generationTag;
 	
 	@FXML
+	protected Label fitnessTag;
+	
+	@FXML
 	protected StackPane SimComboBox;
 	
 	@FXML
@@ -781,6 +831,9 @@ public class EATab {
 	
 	@FXML
 	public Label progressLabel;
+	
+	@FXML
+	public TabPane graphSelector;
 	
 	
 	
