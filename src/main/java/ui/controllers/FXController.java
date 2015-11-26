@@ -27,9 +27,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import simulations.Simulation;
 import ui.Builder.MenuItems;
+import ui.Builder.TabListBuilder;
 //import osx.*;
 
 public class FXController implements Initializable {
@@ -40,6 +43,8 @@ public class FXController implements Initializable {
 	MenuItem clearRecent;
 	MenuItem noRecentItems;
 	SeparatorMenuItem recentSep;
+	
+	TabListBuilder tabBuilder;
 	
 	//----------------------------FXML Objects----------------------------
 	@FXML
@@ -79,7 +84,16 @@ public class FXController implements Initializable {
     private MenuBar menuBar;
 	
 	@FXML
-	private AreaChart<Number,Number> systemGraph;
+	protected ScrollPane tabArea;
+	
+	@FXML
+	private AreaChart<Number,Number> memoryGraph;
+	
+	@FXML
+	private AreaChart<Number,Number> cpuGraph;
+	
+	@FXML
+	private AreaChart<Number,Number> threadGraph;
 	
 	//-----------------------------FXML Functions----------------------------
 	
@@ -195,42 +209,46 @@ public class FXController implements Initializable {
 		}
 	}
 	
+	private void saveAs(EATab ea){
+		final FileChooser fileChooser = new FileChooser();
+		
+		
+		fileChooser.setTitle("Save Project");
+		fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		
+		System.out.println(GUI.lastFileName);
+		
+		String exts[] = new String[] {".evo"};
+		if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && GUI.checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
+			fileChooser.setInitialFileName(GUI.lastFileName);
+		
+        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
+        extensions[0] = new FileChooser.ExtensionFilter("Evolve Project", "*.evo");
+        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
+        fileChooser.getExtensionFilters().addAll(extensions);
+        
+        
+        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+        if(selectedDirectory == null){
+        	System.out.println("Save Failed");
+        	return;
+        }
+        GUI.lastFileLocation = new File(selectedDirectory.getParent());
+        GUI.lastFileName = selectedDirectory.getName();
+        System.out.println(GUI.lastFileName);
+        
+		if(ea.saveAll(true, selectedDirectory)){
+			addRecentFile(selectedDirectory);
+		}
+		
+		
+	}
+	
 	@FXML
 	private void saveAs(){
 		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				
-				final FileChooser fileChooser = new FileChooser();
-				
-				
-				fileChooser.setTitle("Save Project");
-				fileChooser.setInitialDirectory(GUI.lastFileLocation);  
-				
-				System.out.println(GUI.lastFileName);
-				
-				String exts[] = new String[] {".evo"};
-				if(GUI.lastFileName != null && GUI.lastFileName.length() > 0 && GUI.checkExt(GUI.lastFileName.substring(GUI.lastFileName.indexOf(".")),exts))
-					fileChooser.setInitialFileName(GUI.lastFileName);
-				
-		        FileChooser.ExtensionFilter[] extensions = new FileChooser.ExtensionFilter[2];
-		        extensions[0] = new FileChooser.ExtensionFilter("Evolve Project", "*.evo");
-		        extensions[1] = new FileChooser.ExtensionFilter("All Files", "*.*");
-		        fileChooser.getExtensionFilters().addAll(extensions);
-		        
-		        
-		        File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
-		        if(selectedDirectory == null){
-		        	System.out.println("Save Failed");
-		        	return;
-		        }
-		        GUI.lastFileLocation = new File(selectedDirectory.getParent());
-		        GUI.lastFileName = selectedDirectory.getName();
-		        System.out.println(GUI.lastFileName);
-		        
-				if(ea.saveAll(true, selectedDirectory)){
-					addRecentFile(selectedDirectory);
-				}
-				
+				saveAs(ea);
 				return;
 			}
 		}
@@ -241,13 +259,17 @@ public class FXController implements Initializable {
 	private void saveEvolution(){
 		for(EATab ea : tabControllers){
 			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
-				if(ea.saved){
-					ea.saveAll(true);
-				}else{
-					saveAs();
-				}
+				saveEvolution(ea);
 				return;
 			}
+		}
+	}
+	
+	public void saveEvolution(EATab ea){
+		if(ea.saved){
+			ea.saveAll(true);
+		}else{
+			saveAs(ea);
 		}
 	}
 	
@@ -454,9 +476,20 @@ public class FXController implements Initializable {
 	@FXML
 	public void onClose(){
 		Tab t = EATabs.getSelectionModel().getSelectedItem();
-		if(!t.getId().equals("SYSTEM") && !t.getId().equals("NEW") )
-			EATabs.getTabs().remove(t);
+		for(EATab et: tabControllers){
+			if(et.tab == t){
+				closeTab(et);
+				return;
+			}
+		}
 		//GUI.stage.close();
+	}
+	
+	public void closeTab(EATab t){
+		if(!t.tab.getId().equals("SYSTEM") && !t.tab.getId().equals("NEW")){
+			t.close();
+			EATabs.getTabs().remove(t.tab);
+		}
 	}
 	
 	//----------------------------Normal Functions----------------------------
@@ -472,6 +505,10 @@ public class FXController implements Initializable {
 		EATabs.getTabs().add(t);
 		EATabs.getTabs().sort(new TabOrder());
 		EATabs.getSelectionModel().select(t);
+		
+		
+		//System.out.println("Result: " + tabBuilder.addEATab(tc));
+		tabArea.setContent(tabBuilder.addEATab(tc));
 
 	}
 
@@ -487,6 +524,9 @@ public class FXController implements Initializable {
 		EATabs.getTabs().add(t);
 		EATabs.getTabs().sort(new TabOrder());
 		EATabs.getSelectionModel().select(t);
+		
+		//System.out.println("Result: " + tabBuilder.addEATab(tc));
+		tabArea.setContent(tabBuilder.addEATab(tc));
 	
 	}
 	
@@ -583,6 +623,7 @@ public class FXController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		System.setProperty("glass.accessible.force", "false"); 
+		tabBuilder = new TabListBuilder(this);
 		addNewEATab();
 		EATabs.getSelectionModel().select(1);
 		
@@ -649,7 +690,7 @@ public class FXController implements Initializable {
 		duplicateTab.setAccelerator(new KeyCodeCombination(KeyCode.D, metaDown));
 		
 		
-		new Thread(new CPU(systemGraph)).start();
+		new Thread(new CPU(memoryGraph, cpuGraph, threadGraph)).start();
 		
 	}
 

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import ui.controllers.custom.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import ui.controllers.custom.*?>
 
 <SplitPane dividerPositions="0.4397993311036789" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
   <items>
@@ -15,7 +17,7 @@
               <items>
                   <HBox spacing="10.0">
                      <children>
-                        <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
+                        <TetheredButton fx:id="startButton" mnemonicParsing="false" onAction="#onStartClicked" text="Start" />
                       <Button fx:id="clearButton" mnemonicParsing="false" onAction="#onClearClicked" text="Clear" />
                         <Button fx:id="renderButton" mnemonicParsing="false" onAction="#onRenderClicked" text="Render" />
                         <Button fx:id="graphClean" mnemonicParsing="false" onAction="#checkGraphClean" text="Clean" />
@@ -150,11 +152,11 @@
                <children>
                   <StackPane alignment="BOTTOM_CENTER" prefHeight="20.0">
                      <children>
-                        <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0">
+                        <TetheredProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0">
                            <StackPane.margin>
                               <Insets bottom="3.0" />
                            </StackPane.margin>
-                        </ProgressBar>
+                        </TetheredProgressBar>
                      </children>
                      <padding>
                         <Insets left="10.0" />
