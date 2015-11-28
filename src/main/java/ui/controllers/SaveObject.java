@@ -9,7 +9,7 @@ public class SaveObject implements Serializable{
 	public byte[][] controller;
 	public byte[][] simulation;
 	public byte[][] elements;
-	public byte[][][] graph;
+	public byte[][][][] graph;
 	public byte[][] evolve;
 	public byte[][] goal;
 	public byte[][] otherData;
@@ -18,7 +18,7 @@ public class SaveObject implements Serializable{
 		controller = new byte[numElements][];
 		simulation = new byte[numElements][];
 		elements = new byte[numElements][];
-		graph = new byte[numElements][][];
+		graph = new byte[numElements][][][];
 		evolve = new byte[numElements][];
 		goal = new byte[numElements][];
 		otherData = new byte[numElements][];

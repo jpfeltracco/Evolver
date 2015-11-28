@@ -18,7 +18,7 @@ public class TetheredButton extends Button{
 	private ArrayList<TetheredButton> mimic = new ArrayList<TetheredButton>(10);
 	
 	public TetheredButton(){
-		super();
+		super("Button");
 	}
 	
 	public TetheredButton(String args0){

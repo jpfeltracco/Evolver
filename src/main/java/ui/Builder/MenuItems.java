@@ -64,6 +64,14 @@ public class MenuItems implements Serializable{
 		isEmpty = false;
 	}
 	
+	public void addSeparator(){
+		titles.add(null);
+		types.add(EntryType.SEPARATOR);
+		variables.add(null);
+		constraints.add(null);
+		changableElements.add(null);
+	}
+	
 	/**
 	 * Checks to see if this MenuItems is empty
 	 * @return whether or not this MenuItems is empty
@@ -217,6 +225,8 @@ public class MenuItems implements Serializable{
 			throw new RuntimeException("Variable array sizes do not match. Current size: " + size() + "  Other: " + def.size());
 		}
 		for(int i = 0; i < defVariables.size(); i++){
+			if(variables.get(i) == null)
+				continue;
 			variables.get(i).setRawVariable(defVariables.get(i).getRawVariable());
 		}
 	}
@@ -226,6 +236,6 @@ public class MenuItems implements Serializable{
 	 * @author Keenan Nicholson
 	 */
 	public static enum EntryType{
-		CHECKBOX, SLIDER, TEXT, LABEL, COMBOBOX
+		CHECKBOX, SLIDER, TEXT, LABEL, COMBOBOX, SEPARATOR
 	}
 }

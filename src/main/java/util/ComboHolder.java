@@ -7,7 +7,7 @@ import javafx.scene.control.ComboBox;
  * @author Keenan Nicholson
  *
  */
-public class ComboHolder implements Holder{
+public class ComboHolder extends Holder{
 	Object[] objects;
 	String[] titles;
 	transient ComboBox<Object> comboB;
@@ -24,6 +24,10 @@ public class ComboHolder implements Holder{
 		for(int i = 0; i < objects.length; i++){
 			titles[i] = objects[i].toString();
 		}
+		
+		/*comboB.setOnAction((event) -> {
+			changed();
+		});*/
 		
 	}
 	

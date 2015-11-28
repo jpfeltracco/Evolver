@@ -4,7 +4,10 @@ import java.awt.Event;
 import java.util.ArrayList;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
@@ -13,8 +16,13 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Line;
 import javafx.stage.Popup;
 import ui.controllers.GUI;
+import ui.Builder.MenuItems.EntryType;
 import ui.controllers.EATab;
 import util.BooleanHolder;
 import util.ComboHolder;
@@ -56,10 +64,27 @@ public class Builder {
 			return grid;
 		}
 		for(int i = 0; i < menuItems.size(); i++){
-			Label label = new Label(menuItems.getTitle(i));
-			String message = menuItems.getTitle(i);
+			
+			if(menuItems.getType(i) == EntryType.SEPARATOR){
+				Line line = new Line();
+				line.setEndX(100);
+				line.setStroke(Paint.valueOf("B4B4B4"));
+				GridPane.setColumnSpan(line, 2);
+				GridPane.setRowSpan(line, 1);
+				GridPane.setHalignment(line, HPos.CENTER);
+				GridPane.setValignment(line, VPos.CENTER);
+				GridPane.setMargin(line, new Insets(30));
+				grid.add(line, 0, i + 1);
+				continue;
+			}
+			String title = menuItems.getTitle(i).trim();
+			if(!title.substring(title.length()-1).equals(":")){
+				title += ":";
+			}
+			Label label = new Label(title);
+			label.setEllipsisString("..");
 			Popup popup = new Popup();
-			Label popupMessage = new Label(message);
+			Label popupMessage = new Label(title);
 			popupMessage.getStylesheets().add("./ui/css/style.css");
 			popupMessage.getStyleClass().add("popup");
 			
@@ -83,10 +108,10 @@ public class Builder {
 			case CHECKBOX:
 				//grid.getRowConstraints().add(r);
 				CheckBox cb = new CheckBox();
-				GridPane gp = new GridPane();
-				gp.setAlignment(Pos.CENTER);
-				gp.add(cb, 0, 0);
-				cb.setAlignment(Pos.CENTER);
+				//GridPane gp = new GridPane();
+				//gp.setAlignment(Pos.CENTER);
+				//gp.add(cb, 0, 0);
+				cb.setAlignment(Pos.CENTER_RIGHT);
 				BooleanHolder bol = (BooleanHolder)menuItems.getVariable(i);
 				cb.setOnAction((event) -> {
 					bol.setValue(cb.isSelected());
@@ -96,14 +121,19 @@ public class Builder {
 				if(!menuItems.getChangable(i)){
 					constants.add((Control)cb);
 				}
-				grid.add(gp, 1, i + 1);
+				grid.add(cb, 1, i + 1);
 				break;
 			case SLIDER:
 				//grid.getRowConstraints().add(r);
 				HBox hb = new HBox();
 				hb.setSpacing(5);
+				hb.setAlignment(Pos.CENTER_RIGHT);
+				hb.prefWidth(129);
 				Slider s = new Slider();
+				s.setPrefWidth(129);
+				HBox.setHgrow(s, Priority.ALWAYS);
 				TextField tf = new TextField();
+				HBox.setHgrow(tf, Priority.ALWAYS);
 				Constraint c = menuItems.getConstraint(i);
 				int digits = 0;
 				if(c.getDigitType() == Constraint.Type.DOUBLE){
@@ -233,8 +263,15 @@ public class Builder {
 				grid.add(lab, 1, i + 1);
 				break;
 			case COMBOBOX:
+				hb = new HBox();
 				ComboBox<Object> comboB = new ComboBox<Object>();
 				comboB.setPromptText("Select a Value");
+				comboB.setPrefWidth(200);
+				comboB.setMaxWidth(200);
+				//comboB.setMinWidth(200);
+				hb.getChildren().add(comboB);
+				HBox.setHgrow(comboB, Priority.ALWAYS);
+				
 				ComboHolder ch = ((ComboHolder)menuItems.getVariable(i));
 				ch.setComboBox(comboB);
 				comboB.getItems().addAll(ch.getTitles());
@@ -250,7 +287,8 @@ public class Builder {
 				if(!menuItems.getChangable(i)){
 					constants.add((Control)comboB);
 				}
-				grid.add(comboB, 1, i + 1);
+				
+				grid.add(hb, 1, i + 1);
 				break;
 			}
 		}

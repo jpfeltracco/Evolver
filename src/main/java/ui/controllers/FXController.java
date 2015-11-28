@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import connection.ComManager;
 import controllers.Controller;
 //import de.codecentric.centerdevice.platform.osx.NSMenuBarAdapter;
 //import de.codecentric.centerdevice.platform.osx.NativeMenuBar;
@@ -94,6 +95,32 @@ public class FXController implements Initializable {
 	
 	@FXML
 	private AreaChart<Number,Number> threadGraph;
+	
+	@FXML
+	private AreaChart<Number,Number> vTabGraph;
+	
+	//-------
+	
+	@FXML
+	private TextField addressField;
+	
+	@FXML
+	private TextField portField;
+	
+	@FXML
+	private CheckBox acceptEvolutions;
+	
+	@FXML
+	private CheckBox acceptBenchmarks;
+	
+	@FXML
+	private Button connectButton;
+	
+	@FXML
+	private ProgressBar serverStatusBar;
+	
+	@FXML
+	private TextField serverStatusText;
 	
 	//-----------------------------FXML Functions----------------------------
 	
@@ -258,14 +285,17 @@ public class FXController implements Initializable {
 	@FXML
 	private void saveEvolution(){
 		for(EATab ea : tabControllers){
-			if(ea.tabID == EATabs.getSelectionModel().getSelectedItem().getId()){
+			if(ea.tabID.equals(EATabs.getSelectionModel().getSelectedItem().getId())){
 				saveEvolution(ea);
 				return;
 			}
 		}
+		System.out.println("NO ID FOUND");
 	}
 	
 	public void saveEvolution(EATab ea){
+		System.out.println("Saving Evolution");
+		System.out.println("\tSaved: " + ea.saved);
 		if(ea.saved){
 			ea.saveAll(true);
 		}else{
@@ -348,7 +378,7 @@ public class FXController implements Initializable {
 	    Controller control = null;
 	    MenuItems inputF = null;
 	    ElementHolder elements = null;
-	    byte[][] graphData = null;
+	    byte[][][] graphData = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(selection);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -421,7 +451,7 @@ public class FXController implements Initializable {
 	    Controller control = null;
 	    MenuItems inputF = null;
 	    ElementHolder elements = null;
-	    byte[][] graphData = null;
+	    byte[][][] graphData = null;
 		try{
 			FileInputStream fileIn = new FileInputStream(selection);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -512,7 +542,7 @@ public class FXController implements Initializable {
 
 	}
 
-	public void addNewEATab(String name, File file, Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][] graphData, File loc) {
+	public void addNewEATab(String name, File file, Simulation s, Controller c, MenuItems inputF, ElementHolder elements, byte[][][] graphData, File loc) {
 		
 		Tab t = getNewEATab(name, file);
 		
@@ -680,6 +710,12 @@ public class FXController implements Initializable {
 		adapter.setMenuBar(menuBar);*/
 		
 		
+	
+		
+		new Thread(new ComManager(addressField, portField, acceptEvolutions, acceptBenchmarks
+				, connectButton, serverStatusBar, serverStatusText)).start();
+		
+		
 		saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown));
 		saveSettings.setAccelerator(new KeyCodeCombination(KeyCode.E, metaDown, KeyCombination.SHIFT_DOWN));
 		saveAsMenu.setAccelerator(new KeyCodeCombination(KeyCode.S, metaDown, KeyCombination.SHIFT_DOWN));
@@ -690,7 +726,7 @@ public class FXController implements Initializable {
 		duplicateTab.setAccelerator(new KeyCodeCombination(KeyCode.D, metaDown));
 		
 		
-		new Thread(new CPU(memoryGraph, cpuGraph, threadGraph)).start();
+		new Thread(new CPU(memoryGraph, cpuGraph, threadGraph, vTabGraph)).start();
 		
 	}
 

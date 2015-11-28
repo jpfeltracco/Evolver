@@ -25,6 +25,7 @@ public class CPU implements Runnable{
 	private final AreaChart<Number,Number> memoryChart;
 	private final AreaChart<Number,Number> cpuChart;
 	private final AreaChart<Number,Number> threadChart;
+	private final AreaChart<Number,Number> vDriverChart;
 	
 	ArrayList<String> threadSeriesTitles = new ArrayList<String>();
 	ObservableList<Series<Number, Number>> threadSeries = FXCollections.observableArrayList();
@@ -35,14 +36,17 @@ public class CPU implements Runnable{
 	ArrayList<String> memorySeriesTitles = new ArrayList<String>();
 	ObservableList<Series<Number, Number>> memorySeries = FXCollections.observableArrayList();
 	
+	ArrayList<String> vDriverSeriesTitles = new ArrayList<String>();
+	ObservableList<Series<Number, Number>> vDriverSeries = FXCollections.observableArrayList();
+	
 	static final int MAXSIZE = 100;
 	static final int WAITTIME = 1000;
 	
-	public CPU(AreaChart<Number,Number> memoryChart, AreaChart<Number,Number> cpuChart, AreaChart<Number,Number> threadChart){
+	public CPU(AreaChart<Number,Number> memoryChart, AreaChart<Number,Number> cpuChart, AreaChart<Number,Number> threadChart, AreaChart<Number,Number> vDriverChart){
 		this.memoryChart = memoryChart;
 		this.cpuChart = cpuChart;
 		this.threadChart = threadChart;
-		
+		this.vDriverChart = vDriverChart;
 		//------
 		
 		Series<Number, Number> s = new Series<Number, Number>();
@@ -76,6 +80,13 @@ public class CPU implements Runnable{
 		
 		//------
 		
+
+		s = new Series<Number, Number>();
+		vDriverSeriesTitles.add("Number of VDrivers");
+		s.setName("Number of VDrivers");
+		vDriverSeries.add(s);
+		
+		//------
 		this.memoryChart.setData(memorySeries);
 		this.memoryChart.setCreateSymbols(false);
 		this.memoryChart.getXAxis().autoRangingProperty().set(false);
@@ -98,6 +109,15 @@ public class CPU implements Runnable{
 		//this.cpuChart.getYAxis().setTickLength(20);
 		((NumberAxis)this.cpuChart.getYAxis()).setUpperBound(100);
 		((NumberAxis)this.cpuChart.getXAxis()).setUpperBound(MAXSIZE + WAITTIME/1000.0);
+		
+		//------
+		
+		this.vDriverChart.setData(vDriverSeries);
+		this.vDriverChart.setCreateSymbols(false);
+		this.vDriverChart.getXAxis().autoRangingProperty().set(false);
+		((NumberAxis)this.vDriverChart.getYAxis()).setUpperBound(5);
+		((NumberAxis)this.vDriverChart.getXAxis()).setUpperBound(MAXSIZE + WAITTIME/1000.0);
+		
 	}
 	
 	long nanoTime;
@@ -153,6 +173,8 @@ public class CPU implements Runnable{
 				
 			    addToSystemGraph("Max Heap", memoryChart, timeSec, (double)mem.getHeapMemoryUsage().getCommitted() / 1048576.0);
 			    addToSystemGraph("Used Heap", memoryChart, timeSec, (double)mem.getHeapMemoryUsage().getUsed() / 1048576.0);
+			    
+			    addToSystemGraph("Number of VDrivers", vDriverChart, timeSec, VDriver.getNumVDrivers());
 			    
 			    
 			    
@@ -211,7 +233,13 @@ public class CPU implements Runnable{
 					return chart.getData().get(i);
 			}
 			break;
+		case"Virtual Tab Data":
+		for(int i = 0; i < vDriverSeriesTitles.size(); i++){
+			if(vDriverSeriesTitles.get(i).equals(name))
+				return chart.getData().get(i);
 		}
+		break;
+	}
 		
 		return null;
 	}

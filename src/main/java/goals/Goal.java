@@ -18,10 +18,10 @@ public abstract class Goal {
 	
 	/**
 	 * The max time this Evolution is allowed to run before exiting and reporting back to
-	 * the server. Measured in nano seconds (ns). NOTE: 1 second = 1e+9 nano seconds.
-	 * @return the max Evolution time in nano seconds
+	 * the server. Measured in milliseconds (ms). NOTE: 1 second = 1000 milliseconds.
+	 * @return the max Evolution time in milliseconds
 	 */
-	public abstract long maxEvolveTime();
+	public abstract int maxEvolveTime();
 	
 	/**
 	 * Use this to adjust the goal based on the starting position of this evolution.
@@ -61,6 +61,20 @@ public abstract class Goal {
 	 */
 	public boolean check(ElementHolder elements){
 		elapsedTime = System.nanoTime() - systemTime;
-		return elapsedTime > maxEvolveTime() || checkComplete(elements);
+		if(elapsedTime > (maxEvolveTime()*1000000.0)){
+			reason = "Timeout: CurrentTime: " + elapsedTime + " > " + (maxEvolveTime()*1000000.0);
+			return true;
+		}
+		if (checkComplete(elements)){
+			reason = "Goal Reached";
+			return true;
+		}
+		
+		return false;
+	}
+	
+	String reason;
+	public String exitReason(){
+		return reason;
 	}
 }

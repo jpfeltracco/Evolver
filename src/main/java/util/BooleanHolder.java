@@ -5,7 +5,7 @@ package util;
  * @author Keenan Nicholson
  *
  */
-public class BooleanHolder implements Holder{
+public class BooleanHolder extends Holder{
 	private boolean val;
 	
 	/**
@@ -29,6 +29,7 @@ public class BooleanHolder implements Holder{
 	 */
 	public void setValue(boolean bol){
 		this.val = bol;
+		changed();
 	}
 	
 	/**
@@ -45,7 +46,8 @@ public class BooleanHolder implements Holder{
 
 	@Override
 	public void setRawVariable(Object o) {
-		val = (Boolean)o;	
+		val = (Boolean)o;
+		changed();
 	}
 
 	@Override
@@ -58,7 +60,10 @@ public class BooleanHolder implements Holder{
 		if(!(h instanceof BooleanHolder))
 			throw new RuntimeException("A BooleanHolder can only be set to values of other BooleanHolders.");
 		setValue((Boolean)h.getRawVariable());
+		changed();
 	}
+	
+	
 	
 	@Override
 	public Holder clone() {

@@ -5,7 +5,7 @@ package util;
  * @author Keenan Nicholson
  *
  */
-public class StringHolder implements Holder{
+public class StringHolder extends Holder{
 	private String val;
 	
 	/**
@@ -28,6 +28,7 @@ public class StringHolder implements Holder{
 	 */
 	public void setValue(String s){
 		this.val = s;
+		changed();
 	}
 	
 	/**
@@ -49,6 +50,7 @@ public class StringHolder implements Holder{
 	@Override
 	public void setRawVariable(Object o) {
 		val = (String)o;
+		changed();
 	}
 
 	@Override
@@ -61,6 +63,7 @@ public class StringHolder implements Holder{
 		if(!(h instanceof StringHolder))
 			throw new RuntimeException("A StringHolder can only be set to values of other StringHolders.");
 		setValue((String)h.getRawVariable());
+		changed();
 	}
 	
 	@Override
