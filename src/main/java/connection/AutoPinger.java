@@ -16,7 +16,7 @@ public class AutoPinger implements Runnable {
 	public void run() {
 		while(GUI.running && this.running){
 			
-			if(connection != null && connection.isOpen() && connection.ping())
+			if(connection != null && connection.ping())
 				System.out.println("Ping");
 			else
 				System.out.println("Ping Failure");
