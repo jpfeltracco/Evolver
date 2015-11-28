@@ -1,5 +1,7 @@
 package connection;
 
+import java.util.Scanner;
+
 import ui.controllers.GUI;
 
 public class AutoPinger implements Runnable {
@@ -22,6 +24,10 @@ public class AutoPinger implements Runnable {
 				System.out.println("Ping Failure");
 			try {
 				Thread.sleep(5000);
+				Scanner reader = new Scanner(System.in);
+				
+				System.out.println("Result: " + reader.nextLine());
+				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

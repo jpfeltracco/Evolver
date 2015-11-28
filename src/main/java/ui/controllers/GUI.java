@@ -36,6 +36,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import simulations.Simulation;
 import simulations.XOR;
+import ui.terminal.Console;
 
 /**
  * Created by jpfel on 11/2/2015.
@@ -63,7 +64,7 @@ public class GUI extends Application {
     	
     	initFiles();
     	
-    	
+    	Console terminal = new Console();
     	
     	
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
