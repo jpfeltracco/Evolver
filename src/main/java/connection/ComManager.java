@@ -47,17 +47,14 @@ public class ComManager implements Runnable{
 		connectButton.setDisable(false);
 		
 		connectButton.setOnAction((event) ->{
-			if(connection == null){
-				connection = new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText);
-				autoPinger.setConnection(connection);
-				if(connection.open() == 0)
-					connectButton.setText("Close");
-			}else if(connection.isOpen()){
+			if(connection != null && connection.isOpen()){
 				connection.close();
 				
 				connection = null;
 				connectButton.setText("Connect");
 			}else{
+				connection = new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText);
+				autoPinger.setConnection(connection);
 				if(connection.open() == 0)
 					connectButton.setText("Close");
 			}
