@@ -203,7 +203,7 @@
               <tabs>
                 <Tab text="1">
                      <content>
-                        <LineChart fx:id="fitnessGraph" prefHeight="434.0" prefWidth="417.0" title="Fitness">
+                        <LineChart fx:id="fitnessGraph" animated="false" prefHeight="434.0" prefWidth="417.0" title="Fitness">
                           <xAxis>
                             <NumberAxis side="BOTTOM" />
                           </xAxis>
@@ -215,7 +215,7 @@
                 </Tab>
                 <Tab text="2">
                      <content>
-                        <LineChart fx:id="actionGraph" prefHeight="434.0" prefWidth="417.0" title="Actions">
+                        <LineChart fx:id="actionGraph" animated="false" prefHeight="434.0" prefWidth="417.0" title="Actions">
                           <xAxis>
                             <NumberAxis side="BOTTOM" />
                           </xAxis>
@@ -237,7 +237,7 @@
                <children>
                   <MenuButton mnemonicParsing="false" text="Graph">
                     <items>
-                        <RadioMenuItem mnemonicParsing="false" onAction="#toggleGraphAnimate" selected="true" text="Animate Graph" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#toggleGraphAnimate" text="Animate Graph" />
                     </items>
                   </MenuButton>
                   <Pane HBox.hgrow="ALWAYS" />

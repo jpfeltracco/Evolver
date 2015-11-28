@@ -14,9 +14,9 @@ public class TestGoal extends Goal{
 	}
 
 	@Override
-	public long maxEvolveTime() {
+	public int maxEvolveTime() {
 		// TODO Auto-generated method stub
-		return (long)10000000000.0; //10 seconds
+		return 10000; //10 seconds
 	}
 
 	@Override
