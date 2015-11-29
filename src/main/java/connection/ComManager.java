@@ -53,18 +53,13 @@ public class ComManager implements Runnable{
 				connection = null;
 				connectButton.setText("Connect");
 			}else{
-
-				connection = new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText);
-				if(connection.open() == 0)
-					connectButton.setText("Close");
-
-				/*new Thread(() -> {
+				new Thread(() -> {
 					setConnection(new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText));
 					if(connection.open() == 0)
 						Platform.runLater(() -> {
 							connectButton.setText("Close");
 						});
-				});*/
+				});
 
 			}
 		});
