@@ -141,7 +141,6 @@ public class CPU implements Runnable{
 			    AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
 
 			    
-			    OperatingSystemMXBean po = ManagementFactory.getOperatingSystemMXBean();
 			    MemoryMXBean mem = ManagementFactory.getMemoryMXBean();
 			    ThreadMXBean thread = ManagementFactory.getThreadMXBean();
 			    

@@ -1,6 +1,7 @@
 package ui.controllers;
 
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -53,6 +54,8 @@ public class GUI extends Application {
 	static ArrayList<File> recentFiles = new ArrayList<File>(MAXRECENTFILES + 1);
 	public static String[] allowedExts = new String[] {".evs", ".evo"};
 	
+	public static String VERSION = "1.0";
+	
     public static void run() {
         launch();
     }
@@ -62,8 +65,6 @@ public class GUI extends Application {
     	
     	
     	initFiles();
-    	
-    	
     	
     	
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
@@ -83,10 +84,10 @@ public class GUI extends Application {
 			GUI.stage.getIcons().add(img);
 			if(System.getProperty("os.name").contains("Mac")){
 				java.awt.Image img2 = new ImageIcon(getClass().getResource("/assets/icon.png").getPath()).getImage();
-//				com.apple.eawt.Application.getApplication().setDockIconImage(img2);
-//				com.apple.eawt.Application.getApplication().setDockIconBadge("Testing");
+				com.apple.eawt.Application.getApplication().setDockIconImage(img2);
+				com.apple.eawt.Application.getApplication().setDockIconBadge("Testing");
 			}
-			//com.apple.eawt.Application.getApplication().
+			//com.apple.eawt.Application.getApplication();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -120,7 +121,7 @@ public class GUI extends Application {
 			BufferedReader br = new BufferedReader(fr);
 			String path = br.readLine();
 			lastFileName = br.readLine();
-			System.out.println(path + "\t" +  lastFileName);
+			//System.out.println(path + "\t" +  lastFileName);
 			if(path == null || path.length() == 0){
 				lastFileLocation = new File(System.getProperty("user.home"));
 			}else{
@@ -158,7 +159,6 @@ public class GUI extends Application {
 				pw.println();
 			
 			for(File f : recentFiles){
-				System.out.println(f.getAbsolutePath());
 				pw.println(f.getAbsolutePath());
 			}
 	    } catch (IOException e) {
@@ -181,10 +181,8 @@ public class GUI extends Application {
     	for(File file : recentFiles)
     		if(file.getAbsolutePath().equals(f.getAbsolutePath()))
     			return null;
-    	System.out.println("Added: " + f.getAbsolutePath());
     	recentFiles.add(f);
     	if(recentFiles.size() > MAXRECENTFILES){
-    		System.out.println("Removed: " + recentFiles.get(0).getAbsolutePath());
     		removeMenuItem = recentFiles.get(0).getAbsolutePath();
     		recentFiles.remove(0);
     	}

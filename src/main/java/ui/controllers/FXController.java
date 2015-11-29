@@ -4,10 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,7 +36,10 @@ import javafx.stage.FileChooser;
 import simulations.Simulation;
 import ui.Builder.MenuItems;
 import ui.Builder.TabListBuilder;
+import ui.terminal.ConsoleRunner;
+import ui.terminal.Interceptor;
 //import osx.*;
+import ui.terminal.Terminal;
 
 public class FXController implements Initializable {
 	ArrayList<Tab> EATabsArray = new ArrayList<Tab>();
@@ -46,6 +51,10 @@ public class FXController implements Initializable {
 	SeparatorMenuItem recentSep;
 	
 	TabListBuilder tabBuilder;
+	
+	Terminal terminal;
+	ConsoleRunner console;
+	public static Interceptor out;
 	
 	//----------------------------FXML Objects----------------------------
 	@FXML
@@ -121,6 +130,15 @@ public class FXController implements Initializable {
 	
 	@FXML
 	private TextField serverStatusText;
+	
+	@FXML
+	private TextArea consoleArea;
+	
+	@FXML
+	private TextArea consoleOutput;
+	
+	@FXML
+	private TextField consoleInput;
 	
 	//-----------------------------FXML Functions----------------------------
 	
@@ -301,6 +319,53 @@ public class FXController implements Initializable {
 		}else{
 			saveAs(ea);
 		}
+	}
+	
+	@FXML
+	public void clearConsole(){
+		out.clearTerminal();
+	}
+	
+	@FXML
+	public void saveConsole(){
+		final FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Export System Console");
+		fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text File", "*.txt"),
+        		new FileChooser.ExtensionFilter("All Files", "*.*"));
+        
+	    File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+	    
+	    try {
+			PrintWriter out = new PrintWriter(selectedDirectory);
+			out.print(FXController.out.getConsoleText());
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+	
+	@FXML
+	public void saveOutput(){
+		final FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Export User Console");
+		fileChooser.setInitialDirectory(GUI.lastFileLocation);  
+		
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text File", "*.txt"),
+        		new FileChooser.ExtensionFilter("All Files", "*.*"));
+        
+	    File selectedDirectory = fileChooser.showSaveDialog(GUI.stage);
+	    
+	    try {
+			PrintWriter out = new PrintWriter(selectedDirectory);
+			out.print(FXController.out.getOutputText());
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 	
 	
@@ -652,13 +717,20 @@ public class FXController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.setProperty("glass.accessible.force", "false"); 
+		System.setProperty("glass.accessible.force", "false");
+		
+		out = new Interceptor(consoleArea, consoleOutput);
+		terminal = new Terminal(consoleInput, out);
+		ConsoleRunner console = new ConsoleRunner();
+		
+		new Thread(console).start();
+		
 		tabBuilder = new TabListBuilder(this);
-		addNewEATab();
-		EATabs.getSelectionModel().select(1);
+		//addNewEATab();
+		//EATabs.getSelectionModel().select(1);
 		
 		
-		System.out.println(System.getProperty("os.name"));
+		System.out.println(System.getProperty("os.name") + "   Evolve " + GUI.VERSION + "   JavaFX " + System.getProperty("javafx.version"));
 		
 		
 		
@@ -699,17 +771,7 @@ public class FXController implements Initializable {
 			openRecent.getItems().add(clearRecent);
 		}else{
 			openRecent.getItems().add(noRecentItems);
-		}
-		
-		
-		/*NativeMenuBar adapter = new NSMenuBarAdapter();
-
-		MenuBar menuBar = adapter.getMenuBar();
-		menuBar.getMenus().get(0).setText("Hello World");
-		menuBar.getMenus().get(0).getItems().get(0).setText("Yeeha");
-		adapter.setMenuBar(menuBar);*/
-		
-		
+		}		
 	
 		
 		new Thread(new ComManager(addressField, portField, acceptEvolutions, acceptBenchmarks
