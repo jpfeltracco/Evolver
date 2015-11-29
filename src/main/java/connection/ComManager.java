@@ -57,7 +57,7 @@ public class ComManager implements Runnable{
 				connection = new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText);
 				if(connection.open() == 0)
 					connectButton.setText("Close");
-
+				//Test
 				/*new Thread(() -> {
 					setConnection(new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText));
 					autoPinger.setConnection(connection);
