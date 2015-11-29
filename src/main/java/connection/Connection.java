@@ -44,7 +44,7 @@ public class Connection {
         id = new byte[SocketWrapper.idLength];
         new Random().nextBytes(id);
         isOpen = false;
-        autoPinger = new AutoPinger(this);
+        autoPinger = new AutoPinger(this); 
 	}
 	
 	/**

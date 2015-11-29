@@ -34,8 +34,8 @@ public class AutoPinger implements Runnable {
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				// we dont care about printing this
 			}
 		}
 	}
