@@ -30,11 +30,7 @@ package connection;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
 
@@ -48,19 +44,44 @@ import java.nio.ByteBuffer;
 //                                     ___|___
 //
 
+
+/**
+ * Socket Wrapper is the underlying framework for external connections with RPIServer.
+ * It uses java Sockets to form a tcp connection with the desired host in a reliable fashion
+ * @author Norris Nicholson
+ * @version 1.0
+ * @see Connection.java
+ */
 public class SocketWrapper {
 
+	
+	/**
+	 * routintPort is the given routing port (int) for this SocketWrapper
+	 */
 	public int routingPort;
+	
+	/**
+	 * portNumber is the given port number (int) for this SocketWrapper. 
+	 * This will change depending on what port the routing server returns
+	 */
 	public int portNumber;
+	
+	/**
+	 * hostName is the host name of the external server which holds both the
+	 * routing server and subsequent ports.
+	 */
 	public String hostName;
+	
+	
 	private Socket clientSocket;
-	private ServerSocket serverSocket;
 	private OutputStream out;
 	private InputStream in;
 
-	//private Queue<byte> byteQueue;
-
-	private static boolean verbose = true;
+	/**
+	 * verbose sets this SocketWrapper to verbose mode. When it is false, nothing
+	 * will be printed
+	 */
+	public boolean verbose = true;
 
 	public static final byte EXIT = 0x01;
 	public static final byte REQUEST_PORT = 0x02;
@@ -83,20 +104,32 @@ public class SocketWrapper {
 	public static final int minMessageSize = checksumLength + sizeIentLength + 1;
 
 
+	/**
+	 * Instantiates a new instance of SocketWrapper with a hostname and routing port.
+	 * @param hostName The hostname of the external server (eg. "nornick3.zapto.org")
+	 * @param routingPort The routing port on that external server (eg. 2223)
+	 */
 	public SocketWrapper(String hostName, int routingPort) {
 		this.routingPort = routingPort;
 		this.portNumber = routingPort;
 		this.hostName = hostName;
 		println("[Constructor] Connection constructor starting: " + hostName + ":" + routingPort);
-		//byteQueue = new Queue<byte>();
 	}
 
-	// 0 = success - got new connection
-	// 1 = success - Already connected
-	// 2 = could not reach server
-	// 3 = no open ports
-	// 4 = invalid port recieved
-	// 5 = valid port recieved but unble to open connection with it
+	/**
+	 * The main method used for starting a connection with the remote server. connect 
+	 * contacts the external server on the routing port and requests a service port.
+	 * If one is available, connect opens a connection with the server on that port.
+	 * Returns:
+	 *  0 : Success - established a new connection
+	 *  1 : Success - a connection was already open with the host on a service port
+	 *  2 : Failure - could not reach the server on the given host
+	 *  3 : Failure - contacted the routing server but there were no available service ports
+	 *  4 : Failure - invalid port received. Might be a message mismatch
+	 *  5 : Failure - valid port received but was unable to connect to it. Might be a server problem
+	 * @param id the unique identifier for this instance of Evolve.
+	 * @return an escape integer, as specified above.
+	 */
 	public int connect(byte[] id) {
 		if(isOpen() && portNumber != routingPort)
 			return 1;
@@ -149,6 +182,10 @@ public class SocketWrapper {
 	    return 0;
 	}
 
+	
+	/**
+	 * Closes the current connection safely.
+	 */
 	public void close(){
 		println("[Close] Closing connection");
 		println("[Close] Current status: " + isOpen());
@@ -170,6 +207,10 @@ public class SocketWrapper {
 		}
 	}
 
+	/**
+	 * Opens a connection on hostName:portNumber
+	 * @return Success
+	 */
 	public boolean open() {
 		println("[Open] Opening Connection");
 		println("[Open] Current status: " + isOpen());
@@ -200,6 +241,10 @@ public class SocketWrapper {
 		return true;
 	}
 
+	/**
+	 * Used by open() to create and open a Socket with the appropriate credentials.
+	 * @return Success
+	 */
 	private boolean openSocket() {
 		try {
 			print("[Socket] Opening Sockets (Waiting for connection)...");
@@ -215,6 +260,10 @@ public class SocketWrapper {
 		return true;
 	}
 
+	/**
+	 * Checks if the input buffer has any bytes available for reading.
+	 * @return if the input buffer has any bytes abailable for reading
+	 */
 	public boolean inputReady(){
 		//println("[Input] Checking Input Status");
     	try {
@@ -229,7 +278,12 @@ public class SocketWrapper {
     	}
         return false;
     }
-
+	
+	/**
+	 * Parses through any input from the input buffer. This method blocks until a 
+	 * message of sufficient size is received
+	 * @return a byte array containing input from the buffer. Null if no open
+	 */
 	public byte[] parseInput(){
 		println("[Parse] Parsing Input");
 		println("[Parse] Current status: " + isOpen());
@@ -295,13 +349,6 @@ public class SocketWrapper {
 			return null;
 		}
 
-
-		//byte[] checksum = new byte[checksumLength];
-		//byte[] messageOut = new byte[msg.length - checksumLength];
-
-		//System.arraycopy(msg, checksumLength, messageOut, 0, msg.length - checksumLength);
-		//System.arraycopy(msg, 0, checksum, 0, checksumLength);
-
 		if (verbose) {
 			switch(msg[0]) {
 				case EXIT:
@@ -356,10 +403,22 @@ public class SocketWrapper {
 		return msg;
     }
 
+	/**
+	 * Generic sendMessage command that does not require a command byte
+	 * @param message the byte array message to send
+	 * @return true on message send success
+	 */
     public boolean sendMessage(byte[] message) {
     	return sendMessage(GENERIC, message);
     }
 
+    /**
+     * Sends a message and a command to the server and waits for a checksum to return.
+     * The checksum determines the success of delivery.
+     * @param command a single command byte
+     * @param message a byte array message to send
+     * @return true on message send success
+     */
 	public boolean sendMessage(byte command, byte[] message){
 
 		// if the message is null, fill it with an empty charactor (To keep the peace)
@@ -466,7 +525,12 @@ public class SocketWrapper {
   		}
     }
 
-
+	/**
+	 * removes the command byte from a given input byte array
+	 * (removes the first byte and returns the rest)
+	 * @param input a byte array to intemperate
+	 * @return a new byte array without the command byte
+	 */
     public static byte[] removeCommand(byte[] input) {
     	if (input.length > 0) {
 	    	byte[] newArr = new byte[input.length - 1];
@@ -476,7 +540,11 @@ public class SocketWrapper {
 	    	return null;
 	    }
     }
-
+    
+    /**
+     * Returns true if a connection is currently open
+     * @return true if a connection is currently open
+     */
 	public boolean isOpen() {
 		if (clientSocket == null) {
 			return false;
@@ -487,25 +555,20 @@ public class SocketWrapper {
 		return true;
     }
 
-    public int available() throws IOException{
-    	return in.available();
+	/**
+	 * returns the number of available bytes in the input buffer
+	 * @return the number of available bytes in the input buffer
+	 */
+    public int available(){
+    	try {
+    		if (in != null)
+    			return in.available();
+    		else 
+    			return 0;
+    	} catch (IOException e) {
+    		return 0;
+    	}
     }
-
- //    public int getPort() {
-	// 	return portNumber;
-	// }
-
-	// public byte[] getPortBytes() {
-	// 	return ByteBuffer.allocate(4).putInt(portNumber).array();
-	// }
-
-	// public int getRoutingPort() {
-	// 	return routingPort;
-	// }
-
-	// public byte[] getRoutingPortBytes() {
-	// 	return ByteBuffer.allocate(4).putInt(routingPort).array();
-	// }
 
 	private String prefix;
 	private void println(String str, boolean err) {
