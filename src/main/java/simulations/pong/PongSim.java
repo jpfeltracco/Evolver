@@ -18,6 +18,8 @@ public class PongSim extends Simulation implements Renderable {
 		// c[0] will be our left paddle
 		// c[1] will be our right paddle
 
+		
+		
 		World world = new World(new WorldListener() {
 			@Override
 			public void bump() {

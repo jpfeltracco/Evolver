@@ -53,10 +53,14 @@ public class ComManager implements Runnable{
 				connection = null;
 				connectButton.setText("Connect");
 			}else{
-				connection = new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText);
-				autoPinger.setConnection(connection);
-				if(connection.open() == 0)
-					connectButton.setText("Close");
+				new Thread(() -> {
+					setConnection(new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText));
+					autoPinger.setConnection(connection);
+					if(connection.open() == 0)
+						Platform.runLater(() -> {
+							connectButton.setText("Close");
+						});
+				});
 			}
 		});
 		
@@ -100,6 +104,10 @@ public class ComManager implements Runnable{
 			}
 			
 		});*/
+	}
+	
+	public synchronized void setConnection(Connection c){
+		connection = c;
 	}
 	
 	protected void checkFields(){

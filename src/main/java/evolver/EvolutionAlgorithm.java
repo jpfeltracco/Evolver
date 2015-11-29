@@ -352,9 +352,9 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	public synchronized boolean check() {
 		if(!menuItems.checkAllInit())
 			return false;
-		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
-		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
-		System.out.println("\nReproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("Reproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("Reproduction:\t" + menuReproductionType.getFocusObject());
+		System.out.println("Reproduction:\t" + menuReproductionType.getFocusObject());
 		System.out.println("M Amt:\t" + menuMutationAmt.getValue());
 		System.out.println("M Rate:\t" + menuMutationRate.getValue());
 		System.out.println("Founders:\t" + menuFoundersPercent.getValue());
