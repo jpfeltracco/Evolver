@@ -21,7 +21,7 @@ public class ComManager implements Runnable{
 	private final ProgressBar serverStatusBar;
 	private final TextField serverStatusText;
 	private Connection connection;
-	private AutoPinger autoPinger;
+	
 	
 	protected boolean portValid = true;
 	protected boolean addrValid = true;
@@ -42,7 +42,7 @@ public class ComManager implements Runnable{
 		selectedAddr = addressField.getPromptText();
 		selectedPort = Integer.parseInt(portField.getPromptText());
 		
-		autoPinger = new AutoPinger(connection);
+		
 		
 		connectButton.setDisable(false);
 		
@@ -53,14 +53,20 @@ public class ComManager implements Runnable{
 				connection = null;
 				connectButton.setText("Connect");
 			}else{
-				new Thread(() -> {
+
+				connection = new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText);
+				if(connection.open() == 0)
+					connectButton.setText("Close");
+				//Test
+				/*new Thread(() -> {
 					setConnection(new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText));
 					autoPinger.setConnection(connection);
 					if(connection.open() == 0)
 						Platform.runLater(() -> {
 							connectButton.setText("Close");
 						});
-				});
+				});*/
+
 			}
 		});
 		

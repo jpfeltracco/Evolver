@@ -24,11 +24,13 @@ public class AutoPinger implements Runnable {
 	public void run() {
 	
 		while(GUI.running && this.running){
-			
-			if(connection != null && connection.ping())
-				System.out.println("Ping");
-			else
-				System.out.println("Ping Failure");
+			if (connection != null && connection.isOpen()) {
+				if (connection.ping()) {
+					System.out.println("Ping");
+				} else {
+					System.out.println("Ping Failure");
+				}
+			}
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
