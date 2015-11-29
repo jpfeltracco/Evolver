@@ -24,6 +24,8 @@ public class World {
 	
 	public float accelP1 = 0;
 	public float accelP2 = 0;
+	
+	public long time;
 
 	public World(WorldListener listener) {
 		this.ball = new Ball(10, 10);
