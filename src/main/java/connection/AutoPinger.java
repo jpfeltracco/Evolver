@@ -1,14 +1,14 @@
 package connection;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+//import java.io.FileInputStream;
+//import java.io.InputStream;
+//import java.io.FileNotFoundException;
+//import java.util.Scanner;
 
 import ui.controllers.GUI;
-import ui.terminal.TerminalScanner;
+//import ui.terminal.TerminalScanner;
 
-@SuppressWarnings("unused")
+
 public class AutoPinger implements Runnable {
 
 	private Connection connection;
@@ -16,7 +16,7 @@ public class AutoPinger implements Runnable {
 	
 	public AutoPinger(Connection connection){
 		this.connection = connection;
-		//new Thread(this).start();
+		new Thread(this).start();
 		
 	}
 	
