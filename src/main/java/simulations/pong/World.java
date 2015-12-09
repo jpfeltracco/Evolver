@@ -35,6 +35,7 @@ public class World {
 		this.scoreP2 = 0;
 //		this.listener = listener;
 		this.state = WORLD_STATE_RUNNING;
+		time = System.nanoTime();
 
 	}
 
@@ -100,10 +101,11 @@ public class World {
 	}
 
 	public boolean checkGameOver() {
-		if (scoreP1 > 0 || scoreP2 > 0) {
+		if (scoreP1 > 0 || scoreP2 > 0 || System.nanoTime() - time > 500000000.0) { //0.5 seconds
 			state = WORLD_STATE_GAME_END;
 			return true;
 		}
+		
 		return false;
 	}
 

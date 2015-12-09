@@ -1,12 +1,20 @@
 package evolver;
 
+import java.awt.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import com.badlogic.gdx.math.MathUtils;
 
@@ -104,9 +112,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		long oldTime;
 		ArrayList<Double> timeAvg = new ArrayList<Double>();
 		//this.running = false;
-		long timeTaken;
 		while (GUI.running && this.running) {
-			timeTaken = System.nanoTime();
 			// Setup simulations
 			
 			/*for(int i = 0; i < elements.length; i++)
@@ -123,9 +129,9 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 
 			
 			Element[] appliedElements = new Element[gamesPerElement * elements.length];
-			for(int i = 0; i < appliedElements.length; i++)
+			for(int i = 0; i < appliedElements.length; i++){
 				appliedElements[i] = elementHolder.get(i);
-
+			}
 			
 			/*for(int i = 0; i < appliedElements.length; i++)
 				System.out.print(appliedElements[i].id + ", ");
@@ -149,23 +155,45 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			oldTime = System.nanoTime();
 			//Thread[] threadsArray = new Thread[numThreads];
+			
+			//Collection<Callable<Object>> callables = new HashSet<Callable<Object>>();
+			
 			threadCount.set(numThreads);
 			for(int i = 0; i < numThreads; i++){
 				//threadsArray[i] = new Thread(sims[i]);
-				Thread t = new Thread(sims[i]);
-				t.setDaemon(true);
-				threads.execute(t);
+				//Thread t = new Thread(sims[i]);
+				//t.setDaemon(true);
+				//threadList.add(t)
 				//threadsArray[i].start();
+				//callables.add(sims[i]);
+				threads.execute(sims[i]);
 			}
+			/*ArrayList<Future> futures = null;
+			try {
+				futures = (ArrayList) threads.invokeAll((Collection<? extends Callable<Object>>) callables, (long)500, TimeUnit.MILLISECONDS);
 			
-			while(threadCount.get()!=0){
+			for(Future f : futures){
+				try {
+					System.out.println(f.get());
+				} catch (InterruptedException | ExecutionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}*/
+			
+			while(threadCount.get()!=0){				
 				try {
 					Thread.sleep(1);
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+				}	
 			}
+			
+
+
+			
+			
 			
 			/*try{
 				for(Thread t : threadsArray)
@@ -293,6 +321,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 		}
 		dataBridge.setProgress(0);
+		threads.shutdownNow();
 		System.out.println("EA stopped");
 		
 	}
@@ -440,6 +469,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		numThreads = availableControllers / controlPerSim; 
 		numPerGen = mult * (numThreads * controlPerSim);
 		
+		System.out.println("Generation Size: " + numPerGen);
+		
 		//System.out.println("numThreads: " + numThreads);
 		//System.out.println("controlPerSim: " + controlPerSim);
 		//System.out.println("NumPerGen: " + numPerGen);
@@ -470,6 +501,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		dataBridge.setProgress(0);
 		
 		threads = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+		threads.prestartAllCoreThreads();
 		
 		System.out.println();
 		failedToStart = false;
