@@ -47,6 +47,7 @@ dependencies {
         
         //compile "org.controlsfx:fxsampler:1.0.9"
         compile "org.encog:encog-core:3.3.0"
+        compile "com.apple:AppleJavaExtensions:1.4"
 
 }
 

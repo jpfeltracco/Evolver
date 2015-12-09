@@ -1,10 +1,9 @@
 package connection;
 
+import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import java.util.Random;
-import java.util.ArrayList;
-import java.io.IOException;
 
 /**
  * Connection forms the bridge between a SocketWrapper and the rest of Evolver.
@@ -19,6 +18,13 @@ public class Connection {
     private byte[] id;
 	
 	private final ProgressBar serverStatusBar;
+	
+	/*	Platform.runLater(() -> {
+			serverStatusBar.setProgress(value);
+		});
+	 */
+	
+	
 	private final TextField serverStatusText;
 	private AutoPinger autoPinger;
 	
@@ -45,6 +51,8 @@ public class Connection {
         new Random().nextBytes(id);
         isOpen = false;
         autoPinger = new AutoPinger(this); 
+        
+        
 	}
 	
 	/**
@@ -63,7 +71,9 @@ public class Connection {
 		int result = connection.connect(id);
         isOpen = (result == 0 || result == 1);
         if (isOpen) {
-        	serverStatusText.setText("Open");
+        	Platform.runLater(() -> {
+        		serverStatusText.setText("Open");
+        	});
         	autoPinger.setRunning(true);
         }
         return result;
@@ -80,7 +90,9 @@ public class Connection {
 		
         connection.close();
 		isOpen = false;
-		serverStatusText.setText("Closed");
+		Platform.runLater(() -> {
+    		serverStatusText.setText("Closed");
+    	});
 	}
 	
 	/**

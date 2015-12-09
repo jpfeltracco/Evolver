@@ -103,6 +103,7 @@ public class SocketWrapper {
 
 	public static final int minMessageSize = checksumLength + sizeIentLength + 1;
 
+	//TODO: Add GUI.running to every while loop to prevent blocking
 
 	/**
 	 * Instantiates a new instance of SocketWrapper with a hostname and routing port.

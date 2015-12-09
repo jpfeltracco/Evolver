@@ -43,7 +43,6 @@ public class ComManager implements Runnable{
 		selectedPort = Integer.parseInt(portField.getPromptText());
 		
 		
-		
 		connectButton.setDisable(false);
 		
 		connectButton.setOnAction((event) ->{
@@ -59,7 +58,7 @@ public class ComManager implements Runnable{
 						Platform.runLater(() -> {
 							connectButton.setText("Close");
 						});
-				});
+				}).start();
 
 			}
 		});
