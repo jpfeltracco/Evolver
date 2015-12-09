@@ -43,7 +43,6 @@ public class ComManager implements Runnable{
 		selectedPort = Integer.parseInt(portField.getPromptText());
 		
 		
-		
 		connectButton.setDisable(false);
 		
 		connectButton.setOnAction((event) ->{
@@ -53,19 +52,13 @@ public class ComManager implements Runnable{
 				connection = null;
 				connectButton.setText("Connect");
 			}else{
-
-				connection = new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText);
-				if(connection.open() == 0)
-					connectButton.setText("Close");
-				//Test
-				/*new Thread(() -> {
+				new Thread(() -> {
 					setConnection(new Connection(selectedAddr, selectedPort, serverStatusBar, serverStatusText));
-					autoPinger.setConnection(connection);
 					if(connection.open() == 0)
 						Platform.runLater(() -> {
 							connectButton.setText("Close");
 						});
-				});*/
+				}).start();
 
 			}
 		});

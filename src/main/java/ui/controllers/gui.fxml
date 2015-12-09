@@ -85,13 +85,13 @@
                                     <Label text="Accept:" GridPane.rowIndex="1" />
                                     <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="1">
                                        <children>
-                                          <TextField fx:id="addressField" promptText="nornick3.zapto.org" HBox.hgrow="ALWAYS">
+                                          <TextField fx:id="addressField" promptText="127.0.0.1" HBox.hgrow="ALWAYS">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
                                           </TextField>
                                           <Label text=":" />
-                                          <TextField fx:id="portField" maxWidth="90.0" promptText="22">
+                                          <TextField fx:id="portField" maxWidth="90.0" promptText="2223">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
