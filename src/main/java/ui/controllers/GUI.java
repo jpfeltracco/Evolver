@@ -37,6 +37,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import simulations.Simulation;
 import simulations.XOR;
+import testers.HigherOrLowerTester;
 
 /**
  * Created by jpfel on 11/2/2015.
@@ -91,6 +92,10 @@ public class GUI extends Application {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+        
+        /*new Thread(() -> {
+        	new HigherOrLowerTester();
+        }).start();*/
         
        
         //menuBar.setUseSystemMenuBar(true);

@@ -27,6 +27,7 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 				controllers[z].addFitness(fitnesses[z]);
 			}
 		}
+		ea.threadCount.decrementAndGet();
 	}
 	
 	/**
@@ -107,7 +108,7 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 	
 	
 	//-------------------------------------------------------------------
-	static String[] names = new String[] {"XOR","Pong","Round","Through","Memory", "TruthTable"};
+	static String[] names = new String[] {"XOR","Pong","Round","Through","HigherOrLower","Memory", "TruthTable"};
 	public static String[] getTypeOfSimulations(){
 		return names;
 	}
@@ -140,6 +141,8 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 			return (Simulation)(new Through());
 		case "XOR":
 			return (Simulation)(new XOR());
+		case "HigherOrLower":
+			return (Simulation)(new HigherOrLower());
 		case "Pong":
 			return (Simulation)(new PongSim());
 		case "TruthTable":

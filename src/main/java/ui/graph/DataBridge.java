@@ -14,6 +14,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import ui.controllers.EATab;
+import ui.controllers.GUI;
 import ui.controllers.VDriver;
 import util.DoubleHolder;
 import util.IntegerHolder;
@@ -328,6 +329,7 @@ public class DataBridge {
 	 * @param d the percentage complete
 	 * @param timeAtStart the time since start. (Via System.nanoTime())
 	 */
+
 	public void setProgress(double d, long timeAtStart){
 		if(!virtual){
 			Platform.runLater(new Runnable() {
@@ -363,28 +365,42 @@ public class DataBridge {
 	 * @param g the generation to set the tag to
 	 */
 	public IntegerHolder genHolder = new IntegerHolder(0);
+	long lastGenUpdate = -1;
 	public void setGeneration(int g){
 		if(!virtual){
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					eaTab.setGeneration(g);
-					genHolder.setValue(g);
-				}
-			});
+			if(lastGenUpdate == -1)
+				lastGenUpdate = System.nanoTime();
+			if(System.nanoTime() - lastGenUpdate > 16670000){
+				lastGenUpdate = System.nanoTime();
+			
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						eaTab.setGeneration(g);
+						genHolder.setValue(g);
+					}
+				});
+			}
 		}
 	}
 	
+	long lastFitnessUpdate = -1;
 	public DoubleHolder fitHolder = new DoubleHolder(0);
 	public void setFitness(double d){
 		if(!virtual){
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					eaTab.setFitness(d);
-					fitHolder.setValue(d);
-				}
-			});
+			if(lastFitnessUpdate == -1)
+				lastFitnessUpdate = System.nanoTime();
+			if(System.nanoTime() - lastFitnessUpdate > 16670000){
+				lastFitnessUpdate = System.nanoTime();
+			
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						eaTab.setFitness(d);
+						fitHolder.setValue(d);
+					}
+				});
+			}
 		}
 	}
 	

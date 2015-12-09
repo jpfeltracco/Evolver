@@ -1,6 +1,8 @@
 package controllers;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -141,7 +143,16 @@ public class MLP extends Controller {
 	@Override
 	public void saveConfig(File loc) {
 		System.out.println(loc.getAbsolutePath());
-		mlpNet.save(loc.getAbsolutePath());
+		mlpNet.save(loc.getAbsolutePath());	
+	}
+	
+	public void loadConfig(File loc) {
+		try {
+			mlpNet = (MultiLayerPerceptron)MultiLayerPerceptron.load(new FileInputStream(loc));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
