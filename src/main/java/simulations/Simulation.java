@@ -1,6 +1,7 @@
 package simulations;
 
 import java.io.Serializable;
+import java.util.concurrent.Callable;
 
 import controllers.Controller;
 import evolver.Element;
@@ -19,6 +20,10 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 	
 	public void run(){
 		for(int i = 0; i < elements.length / getControlPerSim(); i++){
+			if(Thread.interrupted()){
+				ea.threadCount.decrementAndGet();
+				return;
+			}
 			for(int j = 0; j < getControlPerSim(); j++){
 				controllers[j].setConfig(elements[j + i*getControlPerSim()]);
 			}
@@ -28,6 +33,7 @@ public abstract class Simulation extends TabMenu implements Runnable, Serializab
 			}
 		}
 		ea.threadCount.decrementAndGet();
+		return;
 	}
 	
 	/**

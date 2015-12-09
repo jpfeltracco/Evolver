@@ -370,7 +370,7 @@ public class DataBridge {
 		if(!virtual){
 			if(lastGenUpdate == -1)
 				lastGenUpdate = System.nanoTime();
-			if(System.nanoTime() - lastGenUpdate > 16670000){
+			if(System.nanoTime() - lastGenUpdate > 83333333){
 				lastGenUpdate = System.nanoTime();
 			
 				Platform.runLater(new Runnable() {
@@ -390,7 +390,7 @@ public class DataBridge {
 		if(!virtual){
 			if(lastFitnessUpdate == -1)
 				lastFitnessUpdate = System.nanoTime();
-			if(System.nanoTime() - lastFitnessUpdate > 16670000){
+			if(System.nanoTime() - lastFitnessUpdate > 83333333){
 				lastFitnessUpdate = System.nanoTime();
 			
 				Platform.runLater(new Runnable() {
