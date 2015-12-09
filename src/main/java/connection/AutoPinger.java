@@ -1,7 +1,6 @@
 package connection;
 import ui.controllers.GUI;
 
-
 public class AutoPinger implements Runnable {
 
 	private Connection connection;
