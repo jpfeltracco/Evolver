@@ -74,14 +74,14 @@ public class TabListBuilder {
 				label.setText(eaTab.getTabText() + "  Gen: " + (Integer)val);
 			});*/
 			
-			Label label = new Label(eaTab.getTabText() + "  Fit: --");
+			final Label label = new Label(eaTab.getTabText() + "  Fit: --");
 			eaTab.fitnessGrapher.fitHolder.addListener((val) -> {
 				label.setText(eaTab.getTabText() + "  Fit: " + (Math.round(((Double)val)*100.0)/100.0));
 			});
 			
 			
-			Popup popup = new Popup();
-			Label popupMessage = new Label(label.getText());
+			final Popup popup = new Popup();
+			final Label popupMessage = new Label(label.getText());
 			popupMessage.getStylesheets().add("./ui/css/style.css");
 			popupMessage.getStyleClass().add("popup");
 			

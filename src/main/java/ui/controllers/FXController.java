@@ -16,6 +16,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.badlogic.gdx.Gdx;
+
 import connection.ComManager;
 import controllers.Controller;
 //import de.codecentric.centerdevice.platform.osx.NSMenuBarAdapter;
@@ -23,6 +25,7 @@ import controllers.Controller;
 import evolver.ElementHolder;
 import goals.Goal;
 import goals.TestGoal;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
@@ -571,6 +574,10 @@ public class FXController implements Initializable {
 	@FXML
 	public void onClose(){
 		Tab t = EATabs.getSelectionModel().getSelectedItem();
+		if(t.getId().equals("SYSTEM")){
+			GUI.running = false;
+			Platform.exit();
+		}
 		for(EATab et: tabControllers){
 			if(et.tab == t){
 				closeTab(et);
@@ -723,7 +730,9 @@ public class FXController implements Initializable {
 		terminal = new Terminal(consoleInput, out);
 		ConsoleRunner console = new ConsoleRunner();
 		
-		new Thread(console).start();
+		Thread t = new Thread(console);
+		t.setDaemon(true);
+		t.start();
 		
 		tabBuilder = new TabListBuilder(this);
 		//addNewEATab();

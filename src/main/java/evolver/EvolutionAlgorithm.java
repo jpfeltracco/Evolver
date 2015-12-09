@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.math.MathUtils;
 
@@ -52,6 +55,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 	
 	private DataBridge dataBridge;
 	private boolean renderNextGen = false;
+	private ThreadPoolExecutor threads; 
+	public AtomicInteger threadCount = new AtomicInteger(0);
 	
 	private Vector<Float> avgFit = new Vector<Float>();
 	
@@ -96,7 +101,8 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		
 		check();
 		dataBridge.setProgress(-1);
-		
+		long oldTime;
+		ArrayList<Double> timeAvg = new ArrayList<Double>();
 		//this.running = false;
 		long timeTaken;
 		while (GUI.running && this.running) {
@@ -141,19 +147,45 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				sims[i].setElements(el);
 			}
 			
-			
-			Thread[] threads = new Thread[numThreads];
+			oldTime = System.nanoTime();
+			//Thread[] threadsArray = new Thread[numThreads];
+			threadCount.set(numThreads);
 			for(int i = 0; i < numThreads; i++){
-				threads[i] = new Thread(sims[i]);
-				threads[i].start();
+				//threadsArray[i] = new Thread(sims[i]);
+				Thread t = new Thread(sims[i]);
+				t.setDaemon(true);
+				threads.execute(t);
+				//threadsArray[i].start();
 			}
 			
-			try{
-				for(Thread t : threads)
-					t.join();
-			}catch(InterruptedException e){}
-				
+			while(threadCount.get()!=0){
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 			
+			/*try{
+				for(Thread t : threadsArray)
+					t.join();
+			}catch(InterruptedException e){}*/
+			
+			double out = (double)(System.nanoTime() - oldTime)/1000000.0;
+			if(timeAvg.size() >= 500)
+				timeAvg.remove(0);	
+			timeAvg.add(out);
+			
+			double sum = 0.0;
+			for(Double d : timeAvg){
+				sum += d;
+			}
+			double avg = sum/(double)timeAvg.size();
+			
+//			dataBridge.graphData("Millis per gen", ChartType.ACTION, new Number[] {genNum, out});
+//			dataBridge.graphData("Avg Millis per gen", ChartType.ACTION, new Number[] {genNum, avg});
+			//dataBridge.setFitness(avg);
 			
 			Arrays.sort(elements);
 			
@@ -202,6 +234,7 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 			
 			dataBridge.setFitness(bestElement.getFitness());
 			
+			
 			if(genNum%graphAmt.getValue() == 0){	
 
 				dataBridge.graphData("Fitness", ChartType.FITNESS, new Number[] {genNum, bestElement.getFitness()});
@@ -212,6 +245,9 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 				fit /= elements.length;
 				dataBridge.graphData("Average Population Fitness", ChartType.FITNESS, new Number[] {genNum, fit});
 				runningAvg.clear();
+				
+				dataBridge.graphData("Millis per gen", ChartType.ACTION, new Number[] {genNum, out});
+				dataBridge.graphData("Avg Millis per gen", ChartType.ACTION, new Number[] {genNum, avg});
 				
 				dataBridge.graphData("Founders Changes", ChartType.ACTION, new Number[] {genNum, foundersAction});
 				dataBridge.graphData("Same Best Element", ChartType.ACTION, new Number[] {genNum, sameBestElement});
@@ -432,6 +468,9 @@ public class EvolutionAlgorithm extends TabMenu implements Runnable {
 		
 		checkGraphs();
 		dataBridge.setProgress(0);
+		
+		threads = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+		
 		System.out.println();
 		failedToStart = false;
 		return true;
