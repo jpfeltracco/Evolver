@@ -1,20 +1,20 @@
 package simulations;
 
-import com.badlogic.gdx.math.MathUtils;
 import controllers.Controller;
 import ui.Builder.MenuItems;
+import util.Rand;
 
 public class Through extends Simulation {
-	
+
 	@Override
 	public double[] simulate(Controller[] c) {
-		double in = MathUtils.random() * 2 - 1;//i;
+		double in = Rand.r.nextFloat() * 2 - 1;//i;
 		double out = c[0].calculate(in)[0];
 		double error = Math.abs(out * .5 - in);
 		return new double[] {-error};
-			
-	}		
-	
+
+	}
+
 	@Override
 	public int getNumInputs() {
 		return 1;
@@ -34,7 +34,7 @@ public class Through extends Simulation {
 	public Simulation copy() {
 		return new Through();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Through Simulation";

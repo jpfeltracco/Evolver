@@ -17,8 +17,6 @@ import javax.swing.ImageIcon;
 
 import org.neuroph.util.TransferFunctionType;
 
-import com.badlogic.gdx.Gdx;
-
 import controllers.Controller;
 import controllers.MLP;
 import core.Main;
@@ -43,43 +41,43 @@ import testers.HigherOrLowerTester;
  * Created by jpfel on 11/2/2015.
  */
 public class GUI extends Application {
-	
+
 	Thread eaThread;
 	public static Stage stage;
 	public static boolean running = true;
 	public static File lastFileLocation;
 	public static String lastFileName;
-	public URL fileLocURL = getClass().getResource("/assets/fileloc.dat");
-	
+	public URL fileLocURL = getClass().getResource("/home/jpfeltracco/Documents/repos/Evolver/src/main/java/assets/fileloc.dat");
+
 	private static final int MAXRECENTFILES = 7;
 	static ArrayList<File> recentFiles = new ArrayList<File>(MAXRECENTFILES + 1);
 	public static String[] allowedExts = new String[] {".evs", ".evo"};
-	
+
 	public static String VERSION = "1.0";
-	
+
     public static void run() {
         launch();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-    	
-    	
-    	initFiles();
-    	
-    	
+
+
+    	//initFiles();
+
+
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
 
-        Scene scene = new Scene(root, 750, 600); 
+        Scene scene = new Scene(root, 750, 600);
         stage = primaryStage;
-        
+
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        
+
         stage.setX(primaryScreenBounds.getMinX());
         stage.setY(primaryScreenBounds.getMinY());
         stage.setWidth(primaryScreenBounds.getWidth());
         stage.setHeight(primaryScreenBounds.getHeight());
-        
+
         try {
 			Image img = new Image(new FileInputStream(getClass().getResource("/assets/icon.png").getPath()));
 			GUI.stage.getIcons().add(img);
@@ -92,28 +90,28 @@ public class GUI extends Application {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-        
+
         /*new Thread(() -> {
         	new HigherOrLowerTester();
         }).start();*/
-        
-       
+
+
         //menuBar.setUseSystemMenuBar(true);
-        
+
         primaryStage.setTitle("Genetic Algorithm Framework");
         primaryStage.setScene(scene);
         primaryStage.show();
-        
+
         //addEA();
     }
-    
+
     @Override
     public void stop() {
     	System.out.println("GUI Stop");
     	setFileLoc();
     	running = false;
     }
-    
+
     private void initFiles(){
     	//System.out.println("FILE: " + getClass().getResource("/assets/fileloc.dat").toString());
     	//System.out.println("EXISTS: " + lastFileSystemLoc.exists());
@@ -147,22 +145,22 @@ public class GUI extends Application {
 		} catch (IOException e2){
 			e2.printStackTrace();
 		}
-		
-    	
-  
-    	
-    	
+
+
+
+
+
     }
-    
+
     public void setFileLoc(){
-		
+
 		try (PrintWriter pw = new PrintWriter(fileLocURL.getPath())) {
 			pw.println(lastFileLocation.getAbsolutePath());
 			if(lastFileName != null)
 				pw.println(lastFileName);
 			else
 				pw.println();
-			
+
 			for(File f : recentFiles){
 				pw.println(f.getAbsolutePath());
 			}
@@ -171,7 +169,7 @@ public class GUI extends Application {
 
 	    }
 	}
-    
+
     public static boolean checkExt(String ext, String[] exts){
 		for(String s : exts){
 			if(s.equals(ext))
@@ -179,7 +177,7 @@ public class GUI extends Application {
 		}
 		return false;
 	}
-    
+
     public static String removeMenuItem;
     public static MenuItem addRecentFile(File f){
     	removeMenuItem = null;
@@ -195,11 +193,11 @@ public class GUI extends Application {
 		m.setText(f.getAbsolutePath());
 		return m;
     }
-    
+
     public static String getRemovedItem(){
     	return removeMenuItem;
     }
-    
- 
-    
+
+
+
 }

@@ -9,17 +9,15 @@ import java.util.Random;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 
-import com.badlogic.gdx.math.MathUtils;
-
 import evolver.Element;
 import ui.Builder.MenuItems;
 import ui.Builder.MenuItems.EntryType;
 import util.StringHolder;
+import util.Rand;
 
 public class EncogMLP extends Controller {
 	BasicNetwork net;
-	Random r = new Random();
-	
+
 	@Override
 	public double[] calculate(double... in) {
 		double[] out = new double[net.getOutputCount()];
@@ -43,7 +41,7 @@ public class EncogMLP extends Controller {
 		Element e = new Element();
 		e.config = new double[net.encodedArrayLength()];
 		for (int i = 0; i < net.encodedArrayLength(); i++) {
-			e.config[i] = r.nextGaussian();
+			e.config[i] = Rand.r.nextGaussian();
 		}
 		return e;
 	}
@@ -52,7 +50,7 @@ public class EncogMLP extends Controller {
 	@Override
 	public void mutateElement(Element e, float mutateAmt) {
 		for(int i = 0; i < mutateAmt * e.config.length; i++){
-			e.config[(int) (MathUtils.random() * e.config.length)] = r.nextGaussian();
+			e.config[(int) (Rand.r.nextFloat() * e.config.length)] = Rand.r.nextGaussian();
 		}
 	}
 
@@ -87,16 +85,16 @@ public class EncogMLP extends Controller {
 	}
 
 	StringHolder internalSize = new StringHolder("3, 3, 3");
-	
+
 	private int[] netDim;
 	private int[] dims;
-	
+
 	@Override
 	public boolean check() {
 		ArrayList<Integer> internalSizeArray;
 //		if(!menu.checkAllInit())
 //			return false;
-		
+
 		String[] arr = internalSize.getValue().split(",");
 		internalSizeArray = new ArrayList<Integer>(arr.length);
 		for(int i = 0; i < arr.length; i++){
@@ -109,18 +107,18 @@ public class EncogMLP extends Controller {
 				}
 			}
 		}
-		
+
 		if(internalSizeArray.size() == 0)
 			return false;
-		
+
 		netDim = new int[internalSizeArray.size()];
 		for(int i = 0; i < internalSizeArray.size(); i++){
 			this.netDim[i] = internalSizeArray.get(i);
 		}
-		
+
 		return true;
 	}
-	
+
 	//Helper Methods:
 	private int[] calculateDimArray(){
 		int[] dims = new int[netDim.length + 2];
@@ -138,7 +136,7 @@ public class EncogMLP extends Controller {
 
 	@Override
 	public boolean start(int numIn, int numOut) {
-		dims = calculateDimArray();	
+		dims = calculateDimArray();
 		net = new BasicNetwork();
 		for (int i : dims)
 			net.addLayer(new BasicLayer(i));
@@ -151,5 +149,5 @@ public class EncogMLP extends Controller {
 	public void menuInit(MenuItems menu) {
 		menu.add("Net Dim", EntryType.TEXT, internalSize, false);
 	}
-	
+
 }

@@ -1,28 +1,28 @@
 package simulations;
 
-import com.badlogic.gdx.math.MathUtils;
-
 import controllers.Controller;
 import ui.Builder.MenuItems;
+import java.util.Random;
 
 public class Memory extends Simulation {
 	static int x = 0;
+    Random r = new Random();
 	@Override
 	public double[] simulate(Controller[] c) {
-		float testerVal = MathUtils.random(); // some new original value
-		float mem = MathUtils.random(); // some random old value
-		
+		float testerVal = r.nextFloat(); // some new original value
+		float mem = r.nextFloat(); // some random old value
+
 		// First input is next val, second is mem val
 		double[] outputs = c[0].calculate(testerVal, mem); // only use this to get a new mem
-		
-		float rand = MathUtils.random(); // New val to put in
+
+		float rand = r.nextFloat(); // New val to put in
 		double[] newOutputs = c[0].calculate(rand, outputs[1]); // put in new val and mem from prev
-		
+
 		double error = Math.abs(testerVal - newOutputs[0]);
-		
+
 		return new double[] {-error};
 	}
-	
+
 	@Override
 	public int getNumInputs() {
 		return 2;
@@ -57,7 +57,7 @@ public class Memory extends Simulation {
 	}
 
 	@Override
-	public boolean start() { 
+	public boolean start() {
 		return true;
 	}
 

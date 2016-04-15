@@ -1,7 +1,5 @@
 package simulations;
 
-import com.badlogic.gdx.math.MathUtils;
-
 import controllers.Controller;
 import ui.Builder.Constraint;
 import ui.Builder.TabMenu;
@@ -12,7 +10,7 @@ import util.*;
 public class Round extends Simulation {
 	int trialCount;
 	MenuItems inputF = new MenuItems();
-	
+
 	@Override
 	public double[] simulate(Controller[] c) {
 //		float[] d = {0.7f,0.1f,0.22f,0.43f,0.4f,0.51f,0.62f,0.99f};
@@ -20,7 +18,7 @@ public class Round extends Simulation {
 		//TODO: Remove Trial Count for this sim
 		double[] errors = new double[] {0};
 		for (int i = 0; i < trialCount; i++) {
-			float rand = MathUtils.random();
+			float rand = Rand.r.nextFloat();
 			double out = c[0].calculate(rand)[0];
 			//System.out.println(out);
 			double error = 0;
@@ -28,13 +26,13 @@ public class Round extends Simulation {
 				error = 1 - out;
 			else
 				error = out;
-			
+
 			errors[0] += -error*10;
 		}
 		return errors;
-		
+
 	}
-	
+
 	@Override
 	public int getNumInputs() {
 		return 1;
@@ -76,6 +74,6 @@ public class Round extends Simulation {
 	public void menuInit(MenuItems inputF) {
 		inputF.add("Trial Count", EntryType.SLIDER, numTrials, new Constraint(1,20) ,true);
 	}
-	
+
 
 }
