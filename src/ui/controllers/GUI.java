@@ -47,7 +47,7 @@ public class GUI extends Application {
 	public static boolean running = true;
 	public static File lastFileLocation;
 	public static String lastFileName;
-	public URL fileLocURL = getClass().getResource("/home/jpfeltracco/Documents/repos/Evolver/src/main/java/assets/fileloc.dat");
+	public URL fileLocURL = getClass().getResource("/assets/fileloc.dat");
 
 	private static final int MAXRECENTFILES = 7;
 	static ArrayList<File> recentFiles = new ArrayList<File>(MAXRECENTFILES + 1);
@@ -66,7 +66,7 @@ public class GUI extends Application {
     	//initFiles();
 
 
-        Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/controllers/gui.fxml"));
 
         Scene scene = new Scene(root, 750, 600);
         stage = primaryStage;
@@ -145,25 +145,20 @@ public class GUI extends Application {
 		} catch (IOException e2){
 			e2.printStackTrace();
 		}
-
-
-
-
-
     }
 
     public void setFileLoc(){
-
 		try (PrintWriter pw = new PrintWriter(fileLocURL.getPath())) {
-			pw.println(lastFileLocation.getAbsolutePath());
-			if(lastFileName != null)
-				pw.println(lastFileName);
-			else
-				pw.println();
-
-			for(File f : recentFiles){
-				pw.println(f.getAbsolutePath());
-			}
+            // TODO fix this, lastFileLocation is null :(
+			// pw.println(lastFileLocation.getAbsolutePath());
+			// if(lastFileName != null)
+			// 	pw.println(lastFileName);
+			// else
+			// 	pw.println();
+            //
+			// for(File f : recentFiles){
+			// 	pw.println(f.getAbsolutePath());
+			// }
 	    } catch (IOException e) {
 	        e.printStackTrace();
 
@@ -197,7 +192,4 @@ public class GUI extends Application {
     public static String getRemovedItem(){
     	return removeMenuItem;
     }
-
-
-
 }

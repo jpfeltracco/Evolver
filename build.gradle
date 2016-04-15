@@ -1,14 +1,8 @@
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 
 ext {
         appName = "AI-Platform"
-        gdxVersion = '1.9.1'
         roboVMVersion = '1.8.0'
-        //box2DLightsVersion = '1.4'
-        //ashleyVersion = '1.6.0'
-        //aiVersion = '1.6.0'
     }
 
 repositories {
@@ -20,13 +14,14 @@ repositories {
 
 dependencies {
         compile "org.neuroph:neuroph-core:2.9"
-        
         compile "org.encog:encog-core:3.3.0"
         compile "com.apple:AppleJavaExtensions:1.4"
 }
 
 project.ext.mainClassName = "core.Main"
-project.ext.assetsDir = new File("src/main/java/");
+project.ext.assetsDir = new File("src/assets")
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.resources.srcDirs = ['src']
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -47,19 +42,3 @@ task dist(type: Jar) {
     }
 }
 
-dist.dependsOn classes
-
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
-}
