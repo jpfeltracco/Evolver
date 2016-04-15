@@ -5,69 +5,69 @@ package util;
  * @author Keenan Nicholson
  *
  */
-public class StringHolder extends Holder{
-	private String val;
-	
-	/**
-	 * Create a new StringHolder with the default value of null.
-	 */
-	public StringHolder(){}
-	
-	/**
-	 * Create a new StringHolder with the default value of s.
-	 * @param s the initial value
-	 */
-	public StringHolder(String s){
-		this.val = s;
-	}
-	
-	
-	/**
-	 * Sets this StringHolder to a value of s
-	 * @param s the value to set this StringHolder to
-	 */
-	public void setValue(String s){
-		this.val = s;
-		changed();
-	}
-	
-	/**
-	 * Gets this StringHolder value
-	 * @return this StringHolder value
-	 */
-	public String getValue(){
-		return this.val;
-	}
-	
-	public String toString(){
-		return val;
-	}
-	
-	public boolean initialized(){
-		return val != null;
-	}
+public class StringHolder extends Holder {
+    private String val;
 
-	@Override
-	public void setRawVariable(Object o) {
-		val = (String)o;
-		changed();
-	}
+    /**
+     * Create a new StringHolder with the default value of null.
+     */
+    public StringHolder() {}
 
-	@Override
-	public Object getRawVariable() {
-		return val;
-	}
-	
-	@Override
-	public void setToHolder(Holder h) {
-		if(!(h instanceof StringHolder))
-			throw new RuntimeException("A StringHolder can only be set to values of other StringHolders.");
-		setValue((String)h.getRawVariable());
-		changed();
-	}
-	
-	@Override
-	public Holder clone() {
-		return new StringHolder(val);
-	}
+    /**
+     * Create a new StringHolder with the default value of s.
+     * @param s the initial value
+     */
+    public StringHolder(String s) {
+        this.val = s;
+    }
+
+    /**
+     * Sets this StringHolder to a value of s
+     * @param s the value to set this StringHolder to
+     */
+    public void setValue(String s) {
+        this.val = s;
+        changed();
+    }
+
+    /**
+     * Gets this StringHolder value
+     * @return this StringHolder value
+     */
+    public String getValue() {
+        return this.val;
+    }
+
+    public String toString() {
+        return val;
+    }
+
+    public boolean initialized() {
+        return val != null;
+    }
+
+    @Override
+    public void setRawVariable(Object o) {
+        val = (String) o;
+        changed();
+    }
+
+    @Override
+    public Object getRawVariable() {
+        return val;
+    }
+
+    @Override
+    public void setToHolder(Holder h) {
+        if (!(h instanceof StringHolder))
+            throw new RuntimeException(
+                    "A StringHolder can only be set to values of other StringHolders.");
+        setValue((String) h.getRawVariable());
+        changed();
+    }
+
+    @Override
+    public Holder clone() {
+        return new StringHolder(val);
+    }
 }

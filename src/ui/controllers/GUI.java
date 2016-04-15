@@ -41,19 +41,18 @@ import testers.HigherOrLowerTester;
  * Created by jpfel on 11/2/2015.
  */
 public class GUI extends Application {
+    Thread eaThread;
+    public static Stage stage;
+    public static boolean running = true;
+    public static File lastFileLocation;
+    public static String lastFileName;
+    public URL fileLocURL = getClass().getResource("/assets/fileloc.dat");
 
-	Thread eaThread;
-	public static Stage stage;
-	public static boolean running = true;
-	public static File lastFileLocation;
-	public static String lastFileName;
-	public URL fileLocURL = getClass().getResource("/assets/fileloc.dat");
+    private static final int MAXRECENTFILES = 7;
+    static ArrayList<File> recentFiles = new ArrayList<File>(MAXRECENTFILES + 1);
+    public static String[] allowedExts = new String[] {".evs", ".evo"};
 
-	private static final int MAXRECENTFILES = 7;
-	static ArrayList<File> recentFiles = new ArrayList<File>(MAXRECENTFILES + 1);
-	public static String[] allowedExts = new String[] {".evs", ".evo"};
-
-	public static String VERSION = "1.0";
+    public static String VERSION = "1.0";
 
     public static void run() {
         launch();
@@ -62,9 +61,7 @@ public class GUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-
-    	//initFiles();
-
+        //initFiles();
 
         Parent root = FXMLLoader.load(getClass().getResource("/ui/controllers/gui.fxml"));
 
@@ -79,22 +76,26 @@ public class GUI extends Application {
         stage.setHeight(primaryScreenBounds.getHeight());
 
         try {
-			Image img = new Image(new FileInputStream(getClass().getResource("/assets/icon.png").getPath()));
-			GUI.stage.getIcons().add(img);
-			if(System.getProperty("os.name").contains("Mac")){
-				java.awt.Image img2 = new ImageIcon(getClass().getResource("/assets/icon.png").getPath()).getImage();
-				com.apple.eawt.Application.getApplication().setDockIconImage(img2);
-				com.apple.eawt.Application.getApplication().setDockIconBadge("Testing");
-			}
-			//com.apple.eawt.Application.getApplication();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+            Image img =
+                    new Image(
+                            new FileInputStream(
+                                    getClass().getResource("/assets/icon.png").getPath()));
+            GUI.stage.getIcons().add(img);
+            if (System.getProperty("os.name").contains("Mac")) {
+                java.awt.Image img2 =
+                        new ImageIcon(getClass().getResource("/assets/icon.png").getPath())
+                                .getImage();
+                com.apple.eawt.Application.getApplication().setDockIconImage(img2);
+                com.apple.eawt.Application.getApplication().setDockIconBadge("Testing");
+            }
+            //com.apple.eawt.Application.getApplication();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         /*new Thread(() -> {
         	new HigherOrLowerTester();
         }).start();*/
-
 
         //menuBar.setUseSystemMenuBar(true);
 
@@ -107,89 +108,88 @@ public class GUI extends Application {
 
     @Override
     public void stop() {
-    	System.out.println("GUI Stop");
-    	setFileLoc();
-    	running = false;
+        System.out.println("GUI Stop");
+        setFileLoc();
+        running = false;
     }
 
-    private void initFiles(){
-    	//System.out.println("FILE: " + getClass().getResource("/assets/fileloc.dat").toString());
-    	//System.out.println("EXISTS: " + lastFileSystemLoc.exists());
+    private void initFiles() {
+        //System.out.println("FILE: " + getClass().getResource("/assets/fileloc.dat").toString());
+        //System.out.println("EXISTS: " + lastFileSystemLoc.exists());
 
-		try {
-			String pathName = fileLocURL.getPath();
-			//if(pathName.indexOf("!") != -1)
-				//pathName = pathName.substring(0, pathName.indexOf("!")) + pathName.substring(pathName.indexOf("!") + 1);
-			FileReader fr = new FileReader(pathName);
-			BufferedReader br = new BufferedReader(fr);
-			String path = br.readLine();
-			lastFileName = br.readLine();
-			//System.out.println(path + "\t" +  lastFileName);
-			if(path == null || path.length() == 0){
-				lastFileLocation = new File(System.getProperty("user.home"));
-			}else{
-				lastFileLocation = new File(path);
-				if(!lastFileLocation.exists()){
-					lastFileLocation = new File(System.getProperty("user.home"));
-				}
-			}
-			String line;
-			while((line = br.readLine()) != null){
-				File tmp = new File(line.trim());
-				if(tmp.exists())// && checkExt(tmp.getName().substring(tmp.getName().indexOf(".")), allowedExts))
-					addRecentFile(tmp);
-			}
-			br.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e2){
-			e2.printStackTrace();
-		}
+        try {
+            String pathName = fileLocURL.getPath();
+            //if(pathName.indexOf("!") != -1)
+            //pathName = pathName.substring(0, pathName.indexOf("!")) + pathName.substring(pathName.indexOf("!") + 1);
+            FileReader fr = new FileReader(pathName);
+            BufferedReader br = new BufferedReader(fr);
+            String path = br.readLine();
+            lastFileName = br.readLine();
+            //System.out.println(path + "\t" +  lastFileName);
+            if (path == null || path.length() == 0) {
+                lastFileLocation = new File(System.getProperty("user.home"));
+            } else {
+                lastFileLocation = new File(path);
+                if (!lastFileLocation.exists()) {
+                    lastFileLocation = new File(System.getProperty("user.home"));
+                }
+            }
+            String line;
+            while ((line = br.readLine()) != null) {
+                File tmp = new File(line.trim());
+                if (tmp
+                        .exists()) // && checkExt(tmp.getName().substring(tmp.getName().indexOf(".")), allowedExts))
+                addRecentFile(tmp);
+            }
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
     }
 
-    public void setFileLoc(){
-		try (PrintWriter pw = new PrintWriter(fileLocURL.getPath())) {
+    public void setFileLoc() {
+        try (PrintWriter pw = new PrintWriter(fileLocURL.getPath())) {
             // TODO fix this, lastFileLocation is null :(
-			// pw.println(lastFileLocation.getAbsolutePath());
-			// if(lastFileName != null)
-			// 	pw.println(lastFileName);
-			// else
-			// 	pw.println();
+            // pw.println(lastFileLocation.getAbsolutePath());
+            // if(lastFileName != null)
+            // 	pw.println(lastFileName);
+            // else
+            // 	pw.println();
             //
-			// for(File f : recentFiles){
-			// 	pw.println(f.getAbsolutePath());
-			// }
-	    } catch (IOException e) {
-	        e.printStackTrace();
+            // for(File f : recentFiles){
+            // 	pw.println(f.getAbsolutePath());
+            // }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	    }
-	}
-
-    public static boolean checkExt(String ext, String[] exts){
-		for(String s : exts){
-			if(s.equals(ext))
-				return true;
-		}
-		return false;
-	}
+    public static boolean checkExt(String ext, String[] exts) {
+        for (String s : exts) {
+            if (s.equals(ext)) return true;
+        }
+        return false;
+    }
 
     public static String removeMenuItem;
-    public static MenuItem addRecentFile(File f){
-    	removeMenuItem = null;
-    	for(File file : recentFiles)
-    		if(file.getAbsolutePath().equals(f.getAbsolutePath()))
-    			return null;
-    	recentFiles.add(f);
-    	if(recentFiles.size() > MAXRECENTFILES){
-    		removeMenuItem = recentFiles.get(0).getAbsolutePath();
-    		recentFiles.remove(0);
-    	}
-    	MenuItem m = new MenuItem();
-		m.setText(f.getAbsolutePath());
-		return m;
+
+    public static MenuItem addRecentFile(File f) {
+        removeMenuItem = null;
+        for (File file : recentFiles)
+            if (file.getAbsolutePath().equals(f.getAbsolutePath())) return null;
+        recentFiles.add(f);
+        if (recentFiles.size() > MAXRECENTFILES) {
+            removeMenuItem = recentFiles.get(0).getAbsolutePath();
+            recentFiles.remove(0);
+        }
+        MenuItem m = new MenuItem();
+        m.setText(f.getAbsolutePath());
+        return m;
     }
 
-    public static String getRemovedItem(){
-    	return removeMenuItem;
+    public static String getRemovedItem() {
+        return removeMenuItem;
     }
 }

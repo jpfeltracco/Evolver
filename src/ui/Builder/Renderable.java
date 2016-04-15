@@ -1,5 +1,3 @@
 package ui.Builder;
 
-public interface Renderable {
-
-}
+public interface Renderable {}
