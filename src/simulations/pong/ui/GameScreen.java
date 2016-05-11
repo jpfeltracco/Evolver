@@ -1,15 +1,15 @@
-package pong.ui;
+package simulations.pong.ui;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import pong.Game;
-import pong.objects.Paddle;
-import pong.objects.Paddle.Movement;
+import simulations.pong.Game;
+import simulations.pong.objects.Paddle;
+import simulations.pong.objects.Paddle.Movement;
 
-import static pong.Constants.*;
+import static simulations.pong.Constants.*;
 
 public class GameScreen extends Pane
 {

@@ -1,4 +1,4 @@
-package pong;
+package simulations.pong;
 
 public class Utilities
 {

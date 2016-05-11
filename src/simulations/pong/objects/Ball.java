@@ -1,4 +1,4 @@
-package pong.objects;
+package simulations.pong.objects;
 
 public class Ball extends GameObject
 {

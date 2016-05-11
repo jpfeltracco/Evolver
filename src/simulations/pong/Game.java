@@ -1,14 +1,14 @@
-package pong;
+package simulations.pong;
 
 import java.util.Random;
 import javafx.animation.AnimationTimer;
 import javafx.scene.media.AudioClip;
-import pong.ai.DefaultAi;
-import pong.ai.PaddleAi;
-import pong.objects.Ball;
-import pong.objects.Paddle;
+import simulations.pong.ai.DefaultAi;
+import simulations.pong.ai.PaddleAi;
+import simulations.pong.objects.Ball;
+import simulations.pong.objects.Paddle;
 
-import static pong.Constants.*;
+import static simulations.pong.Constants.*;
 
 public class Game
 {

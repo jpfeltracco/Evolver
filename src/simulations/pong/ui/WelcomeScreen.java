@@ -1,11 +1,11 @@
-package pong.ui;
+package simulations.pong.ui;
 
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
-import static pong.Constants.*;
+import static simulations.pong.Constants.*;
 
 public class WelcomeScreen extends Pane
 {

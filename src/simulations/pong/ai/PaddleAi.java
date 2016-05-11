@@ -1,7 +1,7 @@
-package pong.ai;
+package simulations.pong.ai;
 
-import pong.Game;
-import pong.objects.Paddle;
+import simulations.pong.Game;
+import simulations.pong.objects.Paddle;
 
 public abstract class PaddleAi
 {

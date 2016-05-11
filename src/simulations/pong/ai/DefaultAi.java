@@ -1,9 +1,9 @@
-package pong.ai;
+package simulations.pong.ai;
 
-import pong.Game;
-import pong.objects.Paddle;
+import simulations.pong.Game;
+import simulations.pong.objects.Paddle;
 
-import static pong.Constants.*;
+import static simulations.pong.Constants.*;
 
 public class DefaultAi extends PaddleAi
 {

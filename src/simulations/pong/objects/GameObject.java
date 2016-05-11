@@ -1,4 +1,4 @@
-package pong.objects;
+package simulations.pong.objects;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;

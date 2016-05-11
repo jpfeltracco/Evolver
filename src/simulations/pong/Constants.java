@@ -1,6 +1,6 @@
-package pong;
+package simulations.pong;
 
-import static pong.Utilities.degreesToRadians;
+import static simulations.pong.Utilities.degreesToRadians;
 
 /*
  * Note: the units used in this class (and by extension the rest of the source code) are pixels

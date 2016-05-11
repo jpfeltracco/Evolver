@@ -1,4 +1,4 @@
-package pong.ui;
+package simulations.pong.ui;
 
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
@@ -9,9 +9,9 @@ import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
-import pong.Game;
+import simulations.pong.Game;
 
-import static pong.Constants.*;
+import static simulations.pong.Constants.*;
 
 public class Pong extends Application
 {
